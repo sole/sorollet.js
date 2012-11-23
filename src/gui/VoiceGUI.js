@@ -48,8 +48,20 @@ SOROLLET.VoiceGUI = function( signals ) {
 
 	oscillatorConfigPanel.add( new UI.Break() );
 
-	var mixPanel = new UI.Panel();
-	mixPanel.add( new UI.Text().setValue( 'TO DO: wave mix function' ));
+	var mixPanel = new UI.Panel(),
+		mixRow = new UI.Panel(),
+		mixSelect = new UI.Select()
+			.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_MIX_NAMES)
+			.onChange( function() {
+				scope.synth.waveMixFunction = SOROLLET.VoiceGUI.prototype.WAVE_MIX_FUNCTIONS[ mixSelect.getValue() ];
+			} );
+	mixPanel.add( new UI.Text().setValue( 'OSCILLATOR MIX' ));
+	mixPanel.add( mixRow );
+	mixRow.add( new UI.Text().setValue( 'Type' ) );
+	mixRow.add( mixSelect );
+	
+
+	
 	oscillatorConfigPanel.add( mixPanel );
 
 	// Noise
@@ -90,6 +102,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	this.dom = container.dom;
 	this.oscillatorPanel1 = oscillatorPanel1;
 	this.oscillatorPanel2 = oscillatorPanel2;
+	this.waveMix = mixSelect;
 	this.noiseAmount = noiseAmountInput;
 	this.noiseMix = noiseMixType;
 
@@ -120,6 +133,8 @@ console.log( this.WAVE_NAMES );
 		this.oscillatorPanel2.phase.setValue( synth.wave2Phase );
 		this.oscillatorPanel2.waveType.setValue( this.valueToKey( this.WAVE_FUNCTIONS, synth.wave2Function ) );
 
+		this.waveMix.setValue( this.valueToKey( this.WAVE_MIX_FUNCTIONS, synth.waveMixFunction ) );
+
 		this.noiseAmount.setValue( synth.noiseAmount );
 		this.noiseMix.setValue( this.valueToKey( this.NOISE_MIX_FUNCTIONS, synth.noiseMixFunction ) );
 
@@ -139,7 +154,20 @@ console.log( this.WAVE_NAMES );
 		1: SOROLLET.Voice.prototype.getTriangleBuffer,
 		2: SOROLLET.Voice.prototype.getSquareBuffer,
 		3: SOROLLET.Voice.prototype.getSawtoothBuffer,
-	
+	},
+
+	WAVE_MIX_NAMES: {
+		0: 'Add',
+		1: 'Substract',
+		2: 'Multiply',
+		3: 'Divide'
+	},
+
+	WAVE_MIX_FUNCTIONS: {
+		0: SOROLLET.Voice.prototype.mixAdd,
+		1: SOROLLET.Voice.prototype.mixSubstract,
+		2: SOROLLET.Voice.prototype.mixMultiply,
+		3: SOROLLET.Voice.prototype.mixDivide
 	},
 
 	NOISE_MIX_NAMES: {
