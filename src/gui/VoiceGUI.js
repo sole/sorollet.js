@@ -110,25 +110,15 @@ SOROLLET.VoiceGUI.prototype = {
 
 	attachTo: function( synth ) {
 
-		var waveFunctionToValue = function( fn ) {
-			var functions = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS;
-			for( var key in functions ) {
-				if( fn == functions[key] ) {
-					return key;
-				}
-			}
-		}
-
 		this.oscillatorPanel1.volume.setValue( synth.wave1Volume );
 		this.oscillatorPanel1.octave.setValue( synth.wave1Octave );
 		this.oscillatorPanel1.phase.setValue( synth.wave1Phase );
-		this.oscillatorPanel1.waveType.setValue( waveFunctionToValue( synth.wave1Function ) );
+		this.oscillatorPanel1.waveType.setValue( this.valueToKey( SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS, synth.wave1Function ) );
 
 		this.oscillatorPanel2.volume.setValue( synth.wave2Volume );
 		this.oscillatorPanel2.octave.setValue( synth.wave2Octave );
 		this.oscillatorPanel2.phase.setValue( synth.wave2Phase );
-		this.oscillatorPanel2.waveType.setValue( waveFunctionToValue( synth.wave2Function ) );
-console.log( this );
+		this.oscillatorPanel2.waveType.setValue( this.valueToKey( SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS, synth.wave2Function ) );
 
 		this.noiseAmount.setValue( synth.noiseAmount );
 		this.noiseMix.setValue( this.valueToKey( SOROLLET.VoiceGUI.prototype.NOISE_MIX_FUNCTIONS, synth.noiseMixFunction ) );
