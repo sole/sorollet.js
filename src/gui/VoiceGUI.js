@@ -6,16 +6,17 @@ SOROLLET.VoiceGUI = function( signals ) {
 	this.synth = null;
 	
 	var container = new UI.Panel( 'absolute' );
-	container.setWidth( '500px' );
+	container.setWidth( '250px' );
 	container.setBackgroundColor( '#eee' );
 	container.setOverflow( 'auto' );
 
-	var oscillatorConfigPanel = new UI.Panel(  );
-	oscillatorConfigPanel.setOverflow( 'auto' );
-	container.add( oscillatorConfigPanel );
+	//var oscillatorConfigPanel = new UI.Panel(  );
+	//oscillatorConfigPanel.setOverflow( 'auto' );
+	//container.add( oscillatorConfigPanel );
 
 	var oscillatorPanel1 = new SOROLLET.OscillatorGUI(0);
-	oscillatorConfigPanel.add( oscillatorPanel1 );
+	//oscillatorConfigPanel.add( oscillatorPanel1 );
+	container.add( oscillatorPanel1 );
 	oscillatorPanel1.addEventListener('change', function(e) {
 		
 		if(scope.synth == null) {
@@ -31,7 +32,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 	}, false);
 
 	var oscillatorPanel2 = new SOROLLET.OscillatorGUI(1);
-	oscillatorConfigPanel.add( oscillatorPanel2 );
+	//oscillatorConfigPanel.add( oscillatorPanel2 );
+	container.add( oscillatorPanel2 );
 	oscillatorPanel2.addEventListener('change', function(e) {
 		
 		if(scope.synth == null) {
@@ -46,7 +48,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 
 	}, false);
 
-	oscillatorConfigPanel.add( new UI.Break() );
+	//oscillatorConfigPanel.add( new UI.Break() );
+	container.add( new UI.Break() );
 
 	var mixPanel = new UI.Panel(),
 		mixRow = new UI.Panel(),
@@ -62,12 +65,13 @@ SOROLLET.VoiceGUI = function( signals ) {
 	
 
 	
-	oscillatorConfigPanel.add( mixPanel );
+	//oscillatorConfigPanel.add( mixPanel );
+	container.add( mixPanel );
 
 	// Noise
-	var noiseConfigPanel = new UI.Panel( 'absolute' );
-	noiseConfigPanel.setLeft( '250px' );
-	noiseConfigPanel.setTop( '0px' );
+	var noiseConfigPanel = new UI.Panel(); // 'absolute' );
+	//noiseConfigPanel.setLeft( '250px' );
+	//noiseConfigPanel.setTop( '0px' );
 	noiseConfigPanel.add( new UI.Text().setValue( 'NOISE' ) );
 
 	var noiseRow = new UI.Panel(),
