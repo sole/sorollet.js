@@ -29,7 +29,6 @@ SOROLLET.VoiceGUI = function( signals ) {
 		scope.synth.wave1Type = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
 
 	}, false);
-	this.oscillatorPanel1 = oscillatorPanel1;	
 
 	var oscillatorPanel2 = new SOROLLET.OscillatorGUI(1);
 	oscillatorConfigPanel.add( oscillatorPanel2 );
@@ -46,7 +45,6 @@ SOROLLET.VoiceGUI = function( signals ) {
 		scope.synth.wave2Type = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
 
 	}, false);
-	this.oscillatorPanel2 = oscillatorPanel2;
 
 	oscillatorConfigPanel.add( new UI.Break() );
 
@@ -58,21 +56,57 @@ SOROLLET.VoiceGUI = function( signals ) {
 	var noiseConfigPanel = new UI.Panel( 'absolute' );
 	noiseConfigPanel.setLeft( '250px' );
 	noiseConfigPanel.setTop( '0px' );
-	noiseConfigPanel.add( new UI.Text().setValue('NOISE') );
+	noiseConfigPanel.add( new UI.Text().setValue( 'NOISE' ) );
+
+	var noiseRow = new UI.Panel(),
+		noiseAmountInput = new UI.Number();
+	noiseRow.add( new UI.Text().setValue( 'Amount' ) );
+	noiseAmountInput.min = 0;
+	noiseAmountInput.max = 1;
+	noiseAmountInput.onChange( function() {
+		scope.synth.noiseAmount = noiseAmountInput.getValue();
+	});
+	noiseRow.add( noiseAmountInput );
+	noiseConfigPanel.add( noiseRow );
+
+	var noiseMixRow = new UI.Panel(),
+		noiseMixType = new UI.Select( 'absolute' )
+			.setOptions( SOROLLET.VoiceGUI.prototype.NOISE_MIX_NAMES )
+			.onChange( function() {
+				scope.synth.noiseMixFunction = SOROLLET.VoiceGUI.prototype.NOISE_MIX_FUNCTIONS[ noiseMixType.getValue() ];
+			});
+
+	noiseMixRow.add( new UI.Text().setValue( 'Mix type' ) );
+	noiseMixRow.add( noiseMixType );
+	noiseConfigPanel.add( noiseMixRow );
+
 	container.add( noiseConfigPanel );
 	
 	
 	// Envelopes
 	// TODO
 
+	// Making stuff 'public'
 	this.dom = container.dom;
+	this.oscillatorPanel1 = oscillatorPanel1;
+	this.oscillatorPanel2 = oscillatorPanel2;
+	this.noiseAmount = noiseAmountInput;
+	this.noiseMix = noiseMixType;
+
 
 }
 
-//SOROLLET.VoiceGUI.prototype = Object.create( UI.Element.prototype );
 SOROLLET.VoiceGUI.prototype = {
 
 	constructor: SOROLLET.VoiceGUI,
+
+	valueToKey: function( obj, value ) {
+		for( var key in obj ) {
+			if( value == obj[key] ) {
+				return key;
+			}
+		}
+	},
 
 	attachTo: function( synth ) {
 
@@ -95,6 +129,10 @@ SOROLLET.VoiceGUI.prototype = {
 		this.oscillatorPanel2.phase.setValue( synth.wave2Phase );
 		this.oscillatorPanel2.waveType.setValue( waveFunctionToValue( synth.wave2Function ) );
 console.log( this );
+
+		this.noiseAmount.setValue( synth.noiseAmount );
+		this.noiseMix.setValue( this.valueToKey( SOROLLET.VoiceGUI.prototype.NOISE_MIX_FUNCTIONS, synth.noiseMixFunction ) );
+
 		this.synth = synth;
 		
 	},
@@ -112,6 +150,18 @@ console.log( this );
 		2: SOROLLET.Voice.prototype.getSquareBuffer,
 		3: SOROLLET.Voice.prototype.getSawtoothBuffer,
 	
+	},
+
+	NOISE_MIX_NAMES: {
+		0: 'Add',
+		1: 'Mix',
+		2: 'Multiply'
+	},
+
+	NOISE_MIX_FUNCTIONS: {
+		0: SOROLLET.Voice.prototype.noiseAdd,
+		1: SOROLLET.Voice.prototype.noiseMix,
+		2: SOROLLET.Voice.prototype.noiseMultiply
 	}
 };
 
