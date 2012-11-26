@@ -7,8 +7,6 @@ window.onload = function init() {
 		voiceGUI = new SOROLLET.VoiceGUI(),
 		keyPressed = false;
 
-	//voice.getAmpADSR().setRelease(1);
-		
 	voiceGUI.attachTo(voice);
 
 	jsAudioNode.onaudioprocess = function(event) {
@@ -31,30 +29,31 @@ window.onload = function init() {
 		baseNote = 44;
 	
 	document.addEventListener('keydown', function(event) {
-		event.preventDefault();
-		event.stopPropagation();
 		if(!keyPressed) {
 			keyPressed = true;
 			var key = event.keyCode || event.which,
 				keyChar = String.fromCharCode(key),
 				keyPos = keyList.indexOf(keyChar);
-	//console.log(key, keyPos, keyChar);
 			if(keyPos !== -1) {
+				event.stopPropagation();
+				event.preventDefault();
 				var note = baseNote + keyPos;
-				//console.log(keyChar, note);
 				voice.sendNoteOn(note, 64);
+				return false;
 			}
 		}		
-		return false;
-	}, false);
+		return true;
+	}, true);
 
 	document.addEventListener('keyup', function(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		voice.sendNoteOff();
+		if( keyPressed) {
+			event.stopPropagation();
+			event.preventDefault();
+			voice.sendNoteOff();
+		}
 		keyPressed = false;
 		return false;
-	}, false);
+	}, true);
 
 
 	jsAudioNode.connect(audioContext.destination);
