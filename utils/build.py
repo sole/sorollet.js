@@ -12,6 +12,7 @@ FILES_GUI = [
 	'libs/EventTarget.js',
 	'libs/signals.min.js',
 	'libs/UI.js',
+	'libs/StringFormat.js',
 	'gui/VoiceGUI.js'
 ]
 

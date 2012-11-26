@@ -161,9 +161,9 @@ SOROLLET.VoiceGUI.prototype = {
 	},
 
 	updateEnvelopeLengths: function() {
-		this.ampEnvGUI.attackLength.setValue( this.synth.ampADSR.attackLength );
-		this.ampEnvGUI.decayLength.setValue( this.synth.ampADSR.decayLength );
-		this.ampEnvGUI.releaseLength.setValue( this.synth.ampADSR.releaseLength );
+		this.ampEnvGUI.attackLength.setValue( StringFormat.toFixed( this.synth.ampADSR.attackLength ) );
+		this.ampEnvGUI.decayLength.setValue( StringFormat.toFixed( this.synth.ampADSR.decayLength ) );
+		this.ampEnvGUI.releaseLength.setValue( StringFormat.toFixed( this.synth.ampADSR.releaseLength ) );
 	},
 
 	WAVE_NAMES: {
