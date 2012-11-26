@@ -31,6 +31,7 @@ window.onload = function init() {
 		baseNote = 44;
 	
 	document.addEventListener('keydown', function(event) {
+		event.preventDefault();
 		event.stopPropagation();
 		if(!keyPressed) {
 			keyPressed = true;
@@ -49,6 +50,7 @@ window.onload = function init() {
 
 	document.addEventListener('keyup', function(event) {
 		event.stopPropagation();
+		event.preventDefault();
 		voice.sendNoteOff();
 		keyPressed = false;
 		return false;

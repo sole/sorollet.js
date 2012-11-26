@@ -10,12 +10,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.setBackgroundColor( '#eee' );
 	container.setOverflow( 'auto' );
 
-	//var oscillatorConfigPanel = new UI.Panel(  );
-	//oscillatorConfigPanel.setOverflow( 'auto' );
-	//container.add( oscillatorConfigPanel );
-
 	var oscillatorPanel1 = new SOROLLET.OscillatorGUI(0);
-	//oscillatorConfigPanel.add( oscillatorPanel1 );
 	container.add( oscillatorPanel1 );
 	oscillatorPanel1.addEventListener('change', function(e) {
 		
@@ -32,7 +27,6 @@ SOROLLET.VoiceGUI = function( signals ) {
 	}, false);
 
 	var oscillatorPanel2 = new SOROLLET.OscillatorGUI(1);
-	//oscillatorConfigPanel.add( oscillatorPanel2 );
 	container.add( oscillatorPanel2 );
 	oscillatorPanel2.addEventListener('change', function(e) {
 		
@@ -48,7 +42,6 @@ SOROLLET.VoiceGUI = function( signals ) {
 
 	}, false);
 
-	//oscillatorConfigPanel.add( new UI.Break() );
 	container.add( new UI.Break() );
 
 	var mixPanel = new UI.Panel(),
@@ -63,15 +56,10 @@ SOROLLET.VoiceGUI = function( signals ) {
 	mixRow.add( new UI.Text().setValue( 'Type' ) );
 	mixRow.add( mixSelect );
 	
-
-	
-	//oscillatorConfigPanel.add( mixPanel );
 	container.add( mixPanel );
 
 	// Noise
-	var noiseConfigPanel = new UI.Panel(); // 'absolute' );
-	//noiseConfigPanel.setLeft( '250px' );
-	//noiseConfigPanel.setTop( '0px' );
+	var noiseConfigPanel = new UI.Panel();
 	noiseConfigPanel.add( new UI.Text().setValue( 'NOISE' ) );
 
 	var noiseRow = new UI.Panel(),
@@ -95,12 +83,28 @@ SOROLLET.VoiceGUI = function( signals ) {
 	noiseMixRow.add( new UI.Text().setValue( 'Mix type' ) );
 	noiseMixRow.add( noiseMixType );
 	noiseConfigPanel.add( noiseMixRow );
-
 	container.add( noiseConfigPanel );
 	
 	
 	// Envelopes
-	// TODO
+	
+	var ampEnvGUI = new SOROLLET.ADSRGUI('VOLUME ENVELOPE');
+	container.add( ampEnvGUI );
+	ampEnvGUI.addEventListener( 'change', function( e ) {
+		var env = scope.synth.ampADSR;
+
+		env.setAttack( e.attack );
+		env.setDecay( e.decay );
+		env.setSustainLevel( e.sustain );
+		env.setRelease( e.release );
+		env.setOutputRange( e.outputMin, e.outputMax );
+		env.setTimeScale( e.timeScale );
+		
+		scope.updateEnvelopeLengths();
+		
+	});
+
+
 
 	// Making stuff 'public'
 	this.dom = container.dom;
@@ -109,6 +113,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	this.waveMix = mixSelect;
 	this.noiseAmount = noiseAmountInput;
 	this.noiseMix = noiseMixType;
+	this.ampEnvGUI = ampEnvGUI;
 
 
 }
@@ -126,7 +131,7 @@ SOROLLET.VoiceGUI.prototype = {
 	},
 
 	attachTo: function( synth ) {
-console.log( this.WAVE_NAMES );
+
 		this.oscillatorPanel1.volume.setValue( synth.wave1Volume );
 		this.oscillatorPanel1.octave.setValue( synth.wave1Octave );
 		this.oscillatorPanel1.phase.setValue( synth.wave1Phase );
@@ -142,8 +147,23 @@ console.log( this.WAVE_NAMES );
 		this.noiseAmount.setValue( synth.noiseAmount );
 		this.noiseMix.setValue( this.valueToKey( this.NOISE_MIX_FUNCTIONS, synth.noiseMixFunction ) );
 
+		this.ampEnvGUI.attack.setValue( synth.ampADSR.__unscaledAttackLength );
+		this.ampEnvGUI.decay.setValue( synth.ampADSR.__unscaledDecayLength );
+		this.ampEnvGUI.sustain.setValue( synth.ampADSR.sustainLevel );
+		this.ampEnvGUI.release.setValue( synth.ampADSR.__unscaledReleaseLength );
+		this.ampEnvGUI.timeScale.setValue( synth.ampADSR.timeScale );
+		this.ampEnvGUI.outputMin.setValue( synth.ampADSR.outputMinimumValue );
+		this.ampEnvGUI.outputMax.setValue( synth.ampADSR.outputMaximumValue );
 		this.synth = synth;
-		
+
+		this.updateEnvelopeLengths();	
+	
+	},
+
+	updateEnvelopeLengths: function() {
+		this.ampEnvGUI.attackLength.setValue( this.synth.ampADSR.attackLength );
+		this.ampEnvGUI.decayLength.setValue( this.synth.ampADSR.decayLength );
+		this.ampEnvGUI.releaseLength.setValue( this.synth.ampADSR.releaseLength );
 	},
 
 	WAVE_NAMES: {
@@ -270,5 +290,133 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 	}
 
 	this.dom = panel.dom;
+
+}
+
+SOROLLET.ADSRGUI = function( label ) {
+	var panel = new UI.Panel(),
+		tipSize = '10px';
+
+	panel.add( new UI.Text().setValue( label ) );
+
+	var attackRow = new UI.Panel(),
+		attackInput = new UI.Number(),
+		attackLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
+
+	panel.add(attackRow);
+	attackRow.add( new UI.Text().setValue( 'Attack' ) );
+	attackRow.add( attackInput );
+	attackRow.add( attackLength );
+
+	attackInput.min = 0.0;
+	attackInput.max = 1.0;
+	attackInput.onChange( onChange );
+
+	//
+
+	var decayRow = new UI.Panel(),
+		decayInput = new UI.Number(),
+		decayLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
+
+	panel.add(decayRow);
+	decayRow.add( new UI.Text().setValue( 'Decay' ) );
+	decayRow.add( decayInput );
+	decayRow.add( decayLength );
+
+	decayInput.min = 0.0;
+	decayInput.max = 1.0;
+	decayInput.onChange( onChange );
+
+	//
+	
+	var sustainRow = new UI.Panel(),
+		sustainInput = new UI.Number();
+
+	panel.add(sustainRow);
+	sustainRow.add( new UI.Text().setValue( 'Sustain' ) );
+	sustainRow.add( sustainInput );
+
+	sustainInput.min = 0.0;
+	sustainInput.max = 1.0;
+	sustainInput.onChange( onChange );
+
+	//
+	
+	var releaseRow = new UI.Panel(),
+		releaseInput = new UI.Number(),
+		releaseLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
+
+	panel.add(releaseRow);
+	releaseRow.add( new UI.Text().setValue( 'Release' ) );
+	releaseRow.add( releaseInput );
+	releaseRow.add( releaseLength );
+
+	releaseInput.min = 0.0;
+	releaseInput.max = 1.0;
+	releaseInput.onChange( onChange );
+
+	//
+	
+	var timeScaleRow = new UI.Panel(),
+		timeScaleInput = new UI.Number();
+
+	panel.add(timeScaleRow);
+	timeScaleRow.add( new UI.Text().setValue( 'Time scale' ) );
+	timeScaleRow.add( timeScaleInput );
+
+	timeScaleInput.min = 0.0;
+	timeScaleInput.max = 100.0;
+	timeScaleInput.onChange( onChange );
+	
+	//
+	
+	var outputRow = new UI.Panel(),
+		outputMinInput = new UI.Number(),
+		outputMaxInput = new UI.Number();
+
+	panel.add(outputRow);
+	outputRow.add( new UI.Text().setValue( 'Output range' ) );
+	outputRow.add( outputMinInput );
+	outputRow.add( outputMaxInput );
+
+	var min = -100,
+		max = 100;
+
+	outputMinInput.min = min;
+	outputMinInput.max = max;
+	outputMinInput.onChange( onChange );
+	outputMaxInput.min = min;
+	outputMaxInput.max = max;
+	outputMaxInput.onChange( onChange );
+
+	//
+
+	EventTarget.call( this );
+
+	this.dom = panel.dom;
+	this.attack = attackInput;
+	this.attackLength = attackLength;
+	this.decay = decayInput;
+	this.decayLength = decayLength;
+	this.sustain = sustainInput;
+	this.release = releaseInput;
+	this.releaseLength = releaseLength;
+	this.timeScale = timeScaleInput;
+	this.outputMin = outputMinInput;
+	this.outputMax = outputMaxInput;
+
+	var dispatchEvent = this.dispatchEvent;
+	function onChange() {
+		dispatchEvent({
+			type: 'change',
+			attack: attackInput.getValue(),
+			decay: decayInput.getValue(),
+			sustain: sustainInput.getValue(),
+			release: releaseInput.getValue(),
+			timeScale: timeScaleInput.getValue(),
+			outputMin: outputMinInput.getValue(),
+			outputMax: outputMaxInput.getValue()
+		});
+	}
 
 }
