@@ -104,6 +104,23 @@ SOROLLET.VoiceGUI = function( signals ) {
 		
 	});
 
+	var pitchEnvGUI = new SOROLLET.ADSRGUI('PITCH ENVELOPE');
+	container.add( pitchEnvGUI );
+	pitchEnvGUI.addEventListener( 'change', function( e ) {
+		// TODO refactor this and above functions
+		var env = scope.synth.pitchADSR;
+
+		env.setAttack( e.attack );
+		env.setDecay( e.decay );
+		env.setSustainLevel( e.sustain );
+		env.setRelease( e.release );
+		env.setOutputRange( e.outputMin, e.outputMax );
+		env.setTimeScale( e.timeScale );
+		
+		scope.updateEnvelopeLengths();
+	});
+
+
 
 
 	// Making stuff 'public'
@@ -114,6 +131,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	this.noiseAmount = noiseAmountInput;
 	this.noiseMix = noiseMixType;
 	this.ampEnvGUI = ampEnvGUI;
+	this.pitchEnvGUI = pitchEnvGUI;
 
 
 }
@@ -147,6 +165,7 @@ SOROLLET.VoiceGUI.prototype = {
 		this.noiseAmount.setValue( synth.noiseAmount );
 		this.noiseMix.setValue( this.valueToKey( this.NOISE_MIX_FUNCTIONS, synth.noiseMixFunction ) );
 
+		// TODO refactor
 		this.ampEnvGUI.attack.setValue( synth.ampADSR.__unscaledAttackLength );
 		this.ampEnvGUI.decay.setValue( synth.ampADSR.__unscaledDecayLength );
 		this.ampEnvGUI.sustain.setValue( synth.ampADSR.sustainLevel );
@@ -154,6 +173,16 @@ SOROLLET.VoiceGUI.prototype = {
 		this.ampEnvGUI.timeScale.setValue( synth.ampADSR.timeScale );
 		this.ampEnvGUI.outputMin.setValue( synth.ampADSR.outputMinimumValue );
 		this.ampEnvGUI.outputMax.setValue( synth.ampADSR.outputMaximumValue );
+
+		this.pitchEnvGUI.attack.setValue( synth.pitchADSR.__unscaledAttackLength );
+		this.pitchEnvGUI.decay.setValue( synth.pitchADSR.__unscaledDecayLength );
+		this.pitchEnvGUI.sustain.setValue( synth.pitchADSR.sustainLevel );
+		this.pitchEnvGUI.release.setValue( synth.pitchADSR.__unscaledReleaseLength );
+		this.pitchEnvGUI.timeScale.setValue( synth.pitchADSR.timeScale );
+		this.pitchEnvGUI.outputMin.setValue( synth.pitchADSR.outputMinimumValue );
+		this.pitchEnvGUI.outputMax.setValue( synth.pitchADSR.outputMaximumValue );
+
+
 		this.synth = synth;
 
 		this.updateEnvelopeLengths();	
@@ -161,9 +190,20 @@ SOROLLET.VoiceGUI.prototype = {
 	},
 
 	updateEnvelopeLengths: function() {
-		this.ampEnvGUI.attackLength.setValue( StringFormat.toFixed( this.synth.ampADSR.attackLength ) );
-		this.ampEnvGUI.decayLength.setValue( StringFormat.toFixed( this.synth.ampADSR.decayLength ) );
-		this.ampEnvGUI.releaseLength.setValue( StringFormat.toFixed( this.synth.ampADSR.releaseLength ) );
+		var synth = this.synth,
+			ampEnvGUI = this.ampEnvGUI,
+			ampADSR = synth.ampADSR,
+			pitchEnvGUI = this.pitchEnvGUI,
+			pitchADSR = synth.pitchADSR;
+
+		ampEnvGUI.attackLength.setValue( StringFormat.toFixed( ampADSR.attackLength ) );
+		ampEnvGUI.decayLength.setValue( StringFormat.toFixed( ampADSR.decayLength ) );
+		ampEnvGUI.releaseLength.setValue( StringFormat.toFixed( ampADSR.releaseLength ) );
+		pitchEnvGUI.attackLength.setValue( StringFormat.toFixed( pitchADSR.attackLength ) );
+		pitchEnvGUI.decayLength.setValue( StringFormat.toFixed( pitchADSR.decayLength ) );
+		pitchEnvGUI.releaseLength.setValue( StringFormat.toFixed( pitchADSR.releaseLength ) );
+
+
 	},
 
 	WAVE_NAMES: {
@@ -295,12 +335,13 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 
 SOROLLET.ADSRGUI = function( label ) {
 	var panel = new UI.Panel(),
-		tipSize = '10px';
+		tipSize = '10px',
+		indent = '50px';
 
 	panel.add( new UI.Text().setValue( label ) );
 
 	var attackRow = new UI.Panel(),
-		attackInput = new UI.Number(),
+		attackInput = new UI.Number().setLeft( indent ),
 		attackLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
 
 	panel.add(attackRow);
@@ -315,7 +356,7 @@ SOROLLET.ADSRGUI = function( label ) {
 	//
 
 	var decayRow = new UI.Panel(),
-		decayInput = new UI.Number(),
+		decayInput = new UI.Number().setLeft( indent ),
 		decayLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
 
 	panel.add(decayRow);
@@ -330,7 +371,7 @@ SOROLLET.ADSRGUI = function( label ) {
 	//
 	
 	var sustainRow = new UI.Panel(),
-		sustainInput = new UI.Number();
+		sustainInput = new UI.Number().setLeft( indent );
 
 	panel.add(sustainRow);
 	sustainRow.add( new UI.Text().setValue( 'Sustain' ) );
@@ -343,7 +384,7 @@ SOROLLET.ADSRGUI = function( label ) {
 	//
 	
 	var releaseRow = new UI.Panel(),
-		releaseInput = new UI.Number(),
+		releaseInput = new UI.Number().setLeft( indent ),
 		releaseLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
 
 	panel.add(releaseRow);
@@ -358,7 +399,7 @@ SOROLLET.ADSRGUI = function( label ) {
 	//
 	
 	var timeScaleRow = new UI.Panel(),
-		timeScaleInput = new UI.Number();
+		timeScaleInput = new UI.Number().setLeft( indent );
 
 	panel.add(timeScaleRow);
 	timeScaleRow.add( new UI.Text().setValue( 'Time scale' ) );
@@ -371,8 +412,8 @@ SOROLLET.ADSRGUI = function( label ) {
 	//
 	
 	var outputRow = new UI.Panel(),
-		outputMinInput = new UI.Number(),
-		outputMaxInput = new UI.Number();
+		outputMinInput = new UI.Number().setWidth( '50px' ), //.setLeft( indent ),
+		outputMaxInput = new UI.Number().setWidth( '50px' );
 
 	panel.add(outputRow);
 	outputRow.add( new UI.Text().setValue( 'Output range' ) );
