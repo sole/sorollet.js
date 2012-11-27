@@ -406,7 +406,6 @@ SOROLLET.ADSR.prototype = {
 	},
 
 	beginAttack: function( time ) {
-		console.log('begin attack at', time);
 		this.state = this.STATE_ATTACK;
 		this.attackStartTime = time;
 		this.attackEndTime = time + this.attackLength;
@@ -418,7 +417,6 @@ SOROLLET.ADSR.prototype = {
 		this.releaseStartTime = time;
 		this.releaseEndTime = time + this.releaseLength;
 
-		console.log('begin release at', time, this.releaseStartTime, this.releaseEndTime);
 
 	},
 
@@ -429,9 +427,7 @@ SOROLLET.ADSR.prototype = {
 			map = SOROLLET.Math.map,
 			interpolate = SOROLLET.Math.interpolate;
 
-		// TODO when if( this.state == this.STATE_DECAY || this.state == this.STATE_SUSTAIN ) {
 			scaledSustainLevel = map( this.sustainLevel, 0, 1, this.outputMinimumValue, this.outputMaximumValue );
-		//}
 
 		if( this.state == this.STATE_DONE ) {
 			scaledValue = this.outputMinimumValue;
@@ -440,7 +436,6 @@ SOROLLET.ADSR.prototype = {
 
 				this.state = this.STATE_DECAY;
 				scaledValue = this.outputMaximumValue;
-				console.log('new state', time, 'decay', scaledValue);
 			} else {
 				scaledValue = map( time, this.attackStartTime, this.attackEndTime, this.outputMinimumValue, this.outputMaximumValue );
 			}
@@ -449,7 +444,6 @@ SOROLLET.ADSR.prototype = {
 
 				this.state = this.STATE_SUSTAIN;
 				scaledValue = scaledSustainLevel;
-				console.log('new state', time, 'sustain', scaledValue);
 			} else {
 				scaledValue = map( time, this.attackEndTime, this.decayEndTime, this.outputMaximumValue, scaledSustainLevel );
 			}
@@ -460,7 +454,6 @@ SOROLLET.ADSR.prototype = {
 			if( time > this.releaseEndTime ) {
 				this.state = this.STATE_DONE;
 				scaledValue = this.outputMinimumValue;
-				console.log('new state', time, 'done', scaledValue);
 			} else {
 				scaledValue = map( time, this.releaseStartTime, this.releaseEndTime, scaledSustainLevel, this.outputMinimumValue );
 			}
