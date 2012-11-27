@@ -5,7 +5,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 
 	this.synth = null;
 	
-	var container = new UI.Panel( 'absolute' );
+	var container = new UI.Panel( 'relative' );
 	container.setWidth( '250px' );
 	container.setBackgroundColor( '#eee' );
 	container.setOverflow( 'auto' );
@@ -42,8 +42,6 @@ SOROLLET.VoiceGUI = function( signals ) {
 
 	}, false);
 
-	container.add( new UI.Break() );
-
 	var mixPanel = new UI.Panel(),
 		mixRow = new UI.Panel(),
 		mixSelect = new UI.Select()
@@ -67,6 +65,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	noiseRow.add( new UI.Text().setValue( 'Amount' ) );
 	noiseAmountInput.min = 0;
 	noiseAmountInput.max = 1;
+	noiseAmountInput.setWidth( '40px' );
 	noiseAmountInput.onChange( function() {
 		scope.synth.noiseAmount = noiseAmountInput.getValue();
 	});
@@ -80,9 +79,11 @@ SOROLLET.VoiceGUI = function( signals ) {
 				scope.synth.noiseMixFunction = SOROLLET.VoiceGUI.prototype.NOISE_MIX_FUNCTIONS[ noiseMixType.getValue() ];
 			});
 
-	noiseMixRow.add( new UI.Text().setValue( 'Mix type' ) );
-	noiseMixRow.add( noiseMixType );
-	noiseConfigPanel.add( noiseMixRow );
+	//noiseMixRow.add( new UI.Text().setValue( 'Mix type' ) );
+	//noiseMixRow.add( noiseMixType );
+	noiseRow.add( new UI.Text().setValue( 'Mix type' ) );
+	noiseRow.add( noiseMixType );
+	//noiseConfigPanel.add( noiseMixRow );
 	container.add( noiseConfigPanel );
 	
 	
