@@ -22,7 +22,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 		scope.synth.wave1Volume = e.volume;
 		scope.synth.wave1Octave = e.octave;
 		scope.synth.wave1Phase = e.phase;
-		scope.synth.wave1Type = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
+		scope.synth.wave1Function = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
 
 	}, false);
 
@@ -38,7 +38,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 		scope.synth.wave2Volume = e.volume;
 		scope.synth.wave2Octave = e.octave;
 		scope.synth.wave2Phase = e.phase;
-		scope.synth.wave2Type = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
+		scope.synth.wave2Function = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
 
 	}, false);
 
