@@ -25,12 +25,11 @@ SOROLLET.Voice = function() {
 	this.noiseAmount = 0.0;
 	this.noiseMixFunction = this.noiseAdd;
 
-	var dc = 0.1;
-	this.ampADSR = new SOROLLET.ADSR(0.1, 0.1, 1, dc, 1);
-	this.pitchADSR = new SOROLLET.ADSR(0, 0, 1, dc, 1);
+	this.ampADSR = new SOROLLET.ADSR(0.5, 0, 1, 1, 1);
+	this.pitchADSR = new SOROLLET.ADSR(0, 0, 1, 0, 1);
 
-	this.ampADSR.setOutputRange( 0, 8 );
-	this.pitchADSR.setOutputRange( -48, 0 );
+	this.ampADSR.setOutputRange( 0, 1 );
+	this.pitchADSR.setOutputRange( 0, 0 );
 
 }
 
