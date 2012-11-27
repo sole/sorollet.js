@@ -89,11 +89,11 @@ window.onload = function init() {
 				event.preventDefault();
 				var note = baseNote + keyPos;
 				voice.sendNoteOn(note, 64);
-				return false;
+				//return false;
 			}
-		}		
+		}
 		return true;
-	}, true);
+	}, false);
 
 	document.addEventListener('keyup', function(event) {
 		if( keyPressed ) {
@@ -103,17 +103,18 @@ window.onload = function init() {
 		}
 		keyPressed = false;
 		return false;
-	}, true);
+	}, false);
 
 
 	jsAudioNode.connect(audioContext.destination);
 
 
-	document.body.appendChild(voiceGUI.dom);
-	document.body.appendChild( canvas );
+	var voiceContainer = document.getElementById('voice_container');
+	voiceContainer.appendChild(voiceGUI.dom);
+	voiceContainer.appendChild( canvas );
 
-	canvas.style.position = 'absolute';
-	canvas.style.left = '300px';
+	voiceGUI.dom.style.float = 'left';
+	canvas.style.float = 'left';
 
 	document.body.focus();
 }
