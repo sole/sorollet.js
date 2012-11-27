@@ -806,6 +806,16 @@ UI.Number = function ( position ) {
 
 	};
 
+	var onKeyDown = function( event ) {
+		var key = event.keyCode || event.which;
+		if( key == 27 || key == 13 ) { // ESCape and Return respectively
+			dom.blur();
+			return false;
+		}
+		return true;
+
+	}
+
 	var onFocus = function ( event ) {
 
 		dom.style.backgroundColor = '';
@@ -826,6 +836,7 @@ UI.Number = function ( position ) {
 	dom.addEventListener( 'change', onChange, false );
 	dom.addEventListener( 'focus', onFocus, false );
 	dom.addEventListener( 'blur', onBlur, false );
+	dom.addEventListener( 'keydown', onKeyDown, false );
 
 	return this;
 
