@@ -2020,11 +2020,19 @@ SOROLLET.KeyboardGUI = function( params ) {
 		}
 	}
 
-	function onKeyDown( e ) {
+	function findKeyIndex( e ) {
 		var keyCode = e.keyCode || e.which,
 			keyChar = String.fromCharCode( keyCode ),
 			index = keyboardLayout.indexOf( keyChar );
 		
+		return index;
+
+	}
+
+	function onKeyDown( e ) {
+
+		var index = findKeyIndex( e );
+
 		if( keyPressed ) {
 			return;
 		}
@@ -2038,7 +2046,10 @@ SOROLLET.KeyboardGUI = function( params ) {
 	}
 
 	function onKeyUp( e ) {
-		dispatchKeyUp();
+		// Only fire key up if the key is in the defined layout
+		if( findKeyIndex( e ) !== -1 ) {
+			dispatchKeyUp();
+		}
 	}
 
 	function dispatchKeyDown( index ) {
@@ -2093,9 +2104,6 @@ SOROLLET.KeyboardGUI = function( params ) {
 			dom.appendChild( keyDiv );
 		}
 	}
-
-	console.log(keys);
-	console.log(keys.length);
 
 	dom.addEventListener( 'keydown', onKeyDown, false);
 	dom.addEventListener( 'keyup', onKeyUp, false);

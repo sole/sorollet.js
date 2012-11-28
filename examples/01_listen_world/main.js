@@ -27,7 +27,12 @@ window.onload = function init() {
 
 	};
 
-	jsAudioNode.connect(audioContext.destination);
+	// Maybe this will fix the 'callback stops being called after a while' issue 
+	// (by connecting the node a bit after window.onload)
+	// http://code.google.com/p/chromium/issues/detail?id=82795
+	setTimeout(function() {
+		jsAudioNode.connect(audioContext.destination);
+	}, 1000);
 
 	canvas = document.createElement( 'canvas' );
 	ctx = canvas.getContext('2d');
