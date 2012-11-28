@@ -27,6 +27,8 @@ window.onload = function init() {
 
 	};
 
+	jsAudioNode.connect(audioContext.destination);
+
 	canvas = document.createElement( 'canvas' );
 	ctx = canvas.getContext('2d');
 
@@ -48,6 +50,8 @@ window.onload = function init() {
 
 		ctx.beginPath();
 
+		var x = 0;
+
 		for(var i = 0; i < num; i++) {
 			index += sliceSize ;
 
@@ -56,7 +60,6 @@ window.onload = function init() {
 			}
 			
 			var v = buffer[index],
-				x = sliceWidth * i,
 				y = halfH + v * halfH; // relative to canvas size. Originally it's -1..1
 			
 			if(i == 0) {
@@ -64,6 +67,8 @@ window.onload = function init() {
 			} else {
 				ctx.lineTo(x, y);
 			}
+
+			x += sliceWidth;
 		}
 
 		ctx.lineTo(canvasW, halfH);
@@ -71,50 +76,33 @@ window.onload = function init() {
 		ctx.stroke();
 	}
 
+	// New Keyboard GUI
+	var keyboardGUI = new SOROLLET.KeyboardGUI( { numOctaves: 2 } );
+	keyboardGUI.dom.tabIndex = 1;
+	keyboardGUI.dom.id = 'keyboard';
+	keyboardGUI.addEventListener( 'keydown', function( e ) {
+		
+		var baseNote = 44,
+			note = baseNote + 1 * e.index;
 
-	// Keyboard handling
-	var keyList = 'ZSXDCVGBHNJMQ2W3ER5T6Y7UI9OP'.split(''),
-		baseNote = 44;
+		voice.sendNoteOn( note, 64 );
+
+	}, false);
+
+	keyboardGUI.addEventListener( 'keyup', function( e ) {
+		voice.sendNoteOff();
+	}, false );
+
+
+	//
 	
-	document.addEventListener('keydown', function(event) {
-		if(!keyPressed) {
-			
-			var key = event.keyCode || event.which,
-				keyChar = String.fromCharCode(key),
-				keyPos = keyList.indexOf(keyChar);
-			
-			if(keyPos !== -1) {
-				keyPressed = true;
-				event.stopPropagation();
-				event.preventDefault();
-				var note = baseNote + keyPos;
-				voice.sendNoteOn(note, 64);
-				//return false;
-			}
-		}
-		return true;
-	}, false);
-
-	document.addEventListener('keyup', function(event) {
-		if( keyPressed ) {
-			event.stopPropagation();
-			event.preventDefault();
-			voice.sendNoteOff();
-		}
-		keyPressed = false;
-		return false;
-	}, false);
-
-
-	jsAudioNode.connect(audioContext.destination);
-
-
 	var voiceContainer = document.getElementById('voice_container');
-	voiceContainer.appendChild(voiceGUI.dom);
-	voiceContainer.appendChild( canvas );
+	voiceContainer.appendChild( voiceGUI.dom );
 
-	voiceGUI.dom.style.float = 'left';
-	canvas.style.float = 'left';
+	var canvasKeyboardContainer = document.getElementById('canvasKeyboard_container');
+	canvasKeyboardContainer.appendChild( canvas );
+	canvasKeyboardContainer.appendChild( keyboardGUI.dom );
+	
 
-	document.body.focus();
+	//document.body.focus();
 }

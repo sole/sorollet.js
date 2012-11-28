@@ -13,7 +13,8 @@ FILES_GUI = [
 	'libs/signals.min.js',
 	'libs/UI.js',
 	'libs/StringFormat.js',
-	'gui/VoiceGUI.js'
+	'gui/VoiceGUI.js',
+	'gui/KeyboardGUI.js'
 ]
 
 ALL_FILES = FILES_CORE + FILES_GUI
