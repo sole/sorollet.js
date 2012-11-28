@@ -18,7 +18,6 @@ SOROLLET.KeyboardGUI = function( params ) {
 			return;
 		}
 
-		keyPressed = true;
 		dispatchKeyDown( key.dataset['index'] );
 	}
 
@@ -26,7 +25,6 @@ SOROLLET.KeyboardGUI = function( params ) {
 		if( keyPressed ) {
 			dispatchKeyUp();
 		}
-		keyPressed = false;
 	}
 
 	function onKeyDown( e ) {
@@ -43,16 +41,26 @@ SOROLLET.KeyboardGUI = function( params ) {
 			return;
 		}
 
-		keyPressed = true;
 		dispatchKeyDown( index );
 	}
 
 	function onKeyUp( e ) {
 		dispatchKeyUp();
-		keyPressed = false;
 	}
 
 	function dispatchKeyDown( index ) {
+		
+		keyPressed = true;
+	
+		var key = keys[index],
+			currentClass = key.className;
+		
+		if( currentClass.indexOf('active') == -1 ) {
+			currentClass += ' active';
+		}
+
+		key.className = currentClass;
+
 		scope.dispatchEvent({
 			type: 'keydown',
 			index: index
@@ -60,6 +68,14 @@ SOROLLET.KeyboardGUI = function( params ) {
 	}
 
 	function dispatchKeyUp( ) {
+	
+		var activeKey = dom.querySelector( '.active' );
+		if( activeKey ) {
+			activeKey.className = activeKey.className.replace('active', '');
+		}
+
+		keyPressed = false;
+
 		scope.dispatchEvent({
 			type: 'keyup'
 		});
