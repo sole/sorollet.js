@@ -1704,7 +1704,6 @@ SOROLLET.VoiceGUI.prototype = {
 		this.ampEnvGUI.timeScale.setValue( synth.ampADSR.timeScale );
 		this.ampEnvGUI.outputMin.setValue( synth.ampADSR.outputMinimumValue );
 		this.ampEnvGUI.outputMax.setValue( synth.ampADSR.outputMaximumValue );
-		this.ampEnvGUI.updateGraph();
 
 		this.pitchEnvGUI.attack.setValue( synth.pitchADSR.__unscaledAttackLength );
 		this.pitchEnvGUI.decay.setValue( synth.pitchADSR.__unscaledDecayLength );
@@ -1713,12 +1712,13 @@ SOROLLET.VoiceGUI.prototype = {
 		this.pitchEnvGUI.timeScale.setValue( synth.pitchADSR.timeScale );
 		this.pitchEnvGUI.outputMin.setValue( synth.pitchADSR.outputMinimumValue );
 		this.pitchEnvGUI.outputMax.setValue( synth.pitchADSR.outputMaximumValue );
-		this.pitchEnvGUI.updateGraph();
 
 		this.synth = synth;
 
 		this.updateEnvelopeLengths();	
-	
+		
+		this.ampEnvGUI.updateGraph();
+		this.pitchEnvGUI.updateGraph();
 	},
 
 	updateEnvelopeLengths: function() {
@@ -1875,8 +1875,8 @@ SOROLLET.ADSRGUI = function( label ) {
 	var graphRow = new UI.Panel(),
 		canvas = document.createElement( 'canvas' ),
 		ctx = canvas.getContext( '2d' ),
-		canvasW = 200,
-		canvasH = 100;
+		canvasW = 220,
+		canvasH = 120;
 
 	canvas.width = canvasW;
 	canvas.height = canvasH;
@@ -1889,7 +1889,7 @@ SOROLLET.ADSRGUI = function( label ) {
 	var attackRow = new UI.Panel(),
 		attackInput = new UI.Number().setLeft( indent ),
 		attackLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
-
+	
 	panel.add(attackRow);
 	attackRow.add( new UI.Text().setValue( 'Attack' ) );
 	attackRow.add( attackInput );
@@ -2019,25 +2019,27 @@ SOROLLET.ADSRGUI = function( label ) {
 		ctx.scale(1, -1);
 		
 				
-		var ox = 20,
-			oy = 20,
-			w = canvasW - ox * 2,
-			h = canvasH - oy * 2,
+		var padW = 30,
+			padH = 20,
+			ox = padW,
+			oy = padH,
+			w = canvasW - padW * 2,
+			h = canvasH - padH * 2,
 			segW = w / 4,
 			ax = ox + attackInput.getValue() * segW,
-			ay = 1 * h + oy,
+			ay = oy + h,
 			dx = ax + decayInput.getValue() * segW,
 			dy = oy + sustainInput.getValue() * h,
 			sx = w - releaseInput.getValue() * segW + ox,
 			rx = w + ox,
 			ry = oy;
-
+		
 		// Axis
 		ctx.strokeStyle = '#008800';
 
-		ctx.lineWidth = 3;
+		ctx.lineWidth = 2;
 		ctx.beginPath();
-		ctx.moveTo( ox, h + oy + oy * 0.5 );
+		ctx.moveTo( ox, oy + h + padH * 0.5 );
 		ctx.lineTo( ox, oy );
 		ctx.lineTo( w + ox*1.5, oy );
 		ctx.stroke();
@@ -2049,20 +2051,20 @@ SOROLLET.ADSRGUI = function( label ) {
 		ctx.setLineDash([1, 1, 0, 1]);
 		var hints = [];
 	
-		hints.push( [ [ ox, ay ], [ ax, ay ] ] );
+		hints.push([ [ox, ay], [ax, ay] ]);
 		if( ax != ox ) {
-			hints.push( [ [ ax, oy ], [ ax, ay ] ] );
+			hints.push([ [ax, oy], [ax, ay] ]);
 		}
 
 		if( ax != dx ) {
-			hints.push( [ [ dx, oy ], [ dx, dy ] ] );
+			hints.push([ [dx, oy], [dx, dy] ]);
 		}
 		if( ay != dy ) {
 			hints.push([ [ox, dy], [dx, dy] ]); 
 		}
 
 		if( sx != rx ) {
-			hints.push( [ [ sx, oy ], [ sx, dy ] ] );
+			hints.push([ [sx, oy], [sx, dy] ]);
 		}
 
 		hints.forEach(function(pair) {
@@ -2087,6 +2089,42 @@ SOROLLET.ADSRGUI = function( label ) {
 		ctx.stroke();
 
 		ctx.restore();
+
+		// Labels
+		// (getting out of translated/scale coord system because otherwise
+		// the text shows upside down ò_ó)
+		// XXX the dom.innerHTML thing is a big HACK
+		var textHeight = 10,
+			xAxisY = oy + h + textHeight,
+			yAxisX = ox - 3,
+			yAxisY = oy + h;
+
+		ctx.strokeStyle = '#00ff00';
+		ctx.textAlign = 'center';
+		ctx.font = 'normal ' + textHeight + 'px Helvetica, Arial, sans-serif';
+
+		ctx.strokeText( attackLength.dom.innerHTML, (ox + ax) / 2, xAxisY );
+
+		if( ax != dx ) {
+			ctx.strokeText( decayLength.dom.innerHTML, (ax+dx) / 2, xAxisY );
+		}
+
+		ctx.strokeText( releaseLength.dom.innerHTML, (sx+rx) / 2, xAxisY );
+
+		ctx.textAlign = 'end';
+		ctx.strokeText( outputMinInput.getValue(), yAxisX, yAxisY );
+		ctx.strokeText( outputMaxInput.getValue(), yAxisX, yAxisY - h );
+
+		if( sustainInput.getValue()*1 < 1) {
+			var min = outputMinInput.getValue() * 1,
+				max = outputMaxInput.getValue() * 1,
+				sustainValue = sustainInput.getValue() * 1,
+				diff = max - min,
+				middle = StringFormat.toFixed( min + (diff) * sustainValue );
+
+			ctx.strokeText( middle, yAxisX, yAxisY - h * sustainValue );
+		}
+		
 	}
 
 	this.updateGraph = updateGraph;
