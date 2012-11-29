@@ -1608,11 +1608,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 				scope.synth.noiseMixFunction = SOROLLET.VoiceGUI.prototype.NOISE_MIX_FUNCTIONS[ noiseMixType.getValue() ];
 			});
 
-	//noiseMixRow.add( new UI.Text().setValue( 'Mix type' ) );
-	//noiseMixRow.add( noiseMixType );
 	noiseRow.add( new UI.Text().setValue( 'Mix type' ) );
 	noiseRow.add( noiseMixType );
-	//noiseConfigPanel.add( noiseMixRow );
 	container.add( noiseConfigPanel );
 	
 	
@@ -1629,6 +1626,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 		env.setRelease( e.release );
 		env.setOutputRange( e.outputMin, e.outputMax );
 		env.setTimeScale( e.timeScale );
+
+		ampEnvGUI.updateGraph();
 		
 		scope.updateEnvelopeLengths();
 		
@@ -1646,6 +1645,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 		env.setRelease( e.release );
 		env.setOutputRange( e.outputMin, e.outputMax );
 		env.setTimeScale( e.timeScale );
+
+		pitchEnvGUI.updateGraph();
 		
 		scope.updateEnvelopeLengths();
 	});
@@ -1703,6 +1704,7 @@ SOROLLET.VoiceGUI.prototype = {
 		this.ampEnvGUI.timeScale.setValue( synth.ampADSR.timeScale );
 		this.ampEnvGUI.outputMin.setValue( synth.ampADSR.outputMinimumValue );
 		this.ampEnvGUI.outputMax.setValue( synth.ampADSR.outputMaximumValue );
+		this.ampEnvGUI.updateGraph();
 
 		this.pitchEnvGUI.attack.setValue( synth.pitchADSR.__unscaledAttackLength );
 		this.pitchEnvGUI.decay.setValue( synth.pitchADSR.__unscaledDecayLength );
@@ -1711,7 +1713,7 @@ SOROLLET.VoiceGUI.prototype = {
 		this.pitchEnvGUI.timeScale.setValue( synth.pitchADSR.timeScale );
 		this.pitchEnvGUI.outputMin.setValue( synth.pitchADSR.outputMinimumValue );
 		this.pitchEnvGUI.outputMax.setValue( synth.pitchADSR.outputMaximumValue );
-
+		this.pitchEnvGUI.updateGraph();
 
 		this.synth = synth;
 
@@ -1870,6 +1872,20 @@ SOROLLET.ADSRGUI = function( label ) {
 
 	panel.add( new UI.Text().setValue( label ) );
 
+	var graphRow = new UI.Panel(),
+		canvas = document.createElement( 'canvas' ),
+		ctx = canvas.getContext( '2d' ),
+		canvasW = 200,
+		canvasH = 100;
+
+	canvas.width = canvasW;
+	canvas.height = canvasH;
+
+	graphRow.dom.appendChild( canvas );
+	panel.add( graphRow );
+
+	//
+
 	var attackRow = new UI.Panel(),
 		attackInput = new UI.Number().setLeft( indent ),
 		attackLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
@@ -1989,6 +2005,59 @@ SOROLLET.ADSRGUI = function( label ) {
 			outputMax: outputMaxInput.getValue()
 		});
 	}
+
+	var bgGradient = ctx.createLinearGradient(0, 0, 0, canvasH);
+	bgGradient.addColorStop( 0, '#006600' );
+	bgGradient.addColorStop( 1, '#000000' );
+
+	function updateGraph() {
+		ctx.fillStyle = bgGradient;
+		ctx.fillRect(0, 0, canvasW, canvasH);
+
+	
+		ctx.save();
+		ctx.translate(0, canvasH);
+		ctx.scale(1, -1);
+		
+		// TEST STROKE
+		/*ctx.strokeStyle = '#ff00ff';
+		ctx.beginPath();
+		ctx.moveTo(0, 0);
+		ctx.lineTo( 100, 100 );
+		ctx.stroke();*/
+		///
+
+		ctx.strokeStyle = '#00ff00';
+		
+		var ox = 20,
+			oy = 20,
+			w = canvasW - ox * 2, // TODO pad it
+			h = canvasH - oy * 2, // TODO pad it...
+			segW = w / 4,
+			ax = ox + attackInput.getValue() * segW,
+			ay = 1 * h,
+			dx = ax + decayInput.getValue() * segW,
+			dy = sustainInput.getValue() * h,
+			sx = w - releaseInput.getValue() * segW + ox,
+			rx = w + ox,
+			ry = oy;
+
+		ctx.lineWidth = 1;
+		ctx.beginPath();
+		ctx.moveTo( ox, oy );
+		ctx.lineTo( ax, ay );
+		ctx.lineTo( dx, dy );
+		ctx.lineTo( sx, dy );
+		ctx.lineTo( rx, ry );
+		ctx.stroke();
+
+		ctx.restore();
+	}
+
+	this.updateGraph = updateGraph;
+	
+	updateGraph();
+
 
 }
 'use strict';

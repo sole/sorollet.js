@@ -50,6 +50,7 @@ window.onload = function init() {
 			sliceWidth = canvasW / num,
 			index = 0;
 
+		ctx.lineWidth = 1;
 		ctx.strokeStyle = 'rgb(0, 255, 0)';
 		var halfH = canvasH >> 1;
 
