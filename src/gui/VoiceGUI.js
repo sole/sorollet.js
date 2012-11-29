@@ -351,7 +351,7 @@ SOROLLET.ADSRGUI = function( label ) {
 
 	canvas.width = canvasW;
 	canvas.height = canvasH;
-
+	
 	graphRow.dom.appendChild( canvas );
 	panel.add( graphRow );
 
@@ -485,27 +485,70 @@ SOROLLET.ADSRGUI = function( label ) {
 		ctx.fillStyle = bgGradient;
 		ctx.fillRect(0, 0, canvasW, canvasH);
 
-	
 		ctx.save();
 		ctx.translate(0, canvasH);
 		ctx.scale(1, -1);
 		
-		ctx.strokeStyle = '#00ff00';
-		
+				
 		var ox = 20,
 			oy = 20,
 			w = canvasW - ox * 2,
 			h = canvasH - oy * 2,
 			segW = w / 4,
 			ax = ox + attackInput.getValue() * segW,
-			ay = 1 * h,
+			ay = 1 * h + oy,
 			dx = ax + decayInput.getValue() * segW,
-			dy = sustainInput.getValue() * h,
+			dy = oy + sustainInput.getValue() * h,
 			sx = w - releaseInput.getValue() * segW + ox,
 			rx = w + ox,
 			ry = oy;
 
+		// Axis
+		ctx.strokeStyle = '#008800';
+
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		ctx.moveTo( ox, h + oy + oy * 0.5 );
+		ctx.lineTo( ox, oy );
+		ctx.lineTo( w + ox*1.5, oy );
+		ctx.stroke();
+
 		ctx.lineWidth = 1;
+		ctx.strokeStyle = '#00ff00';
+
+		// Dashed hints
+		ctx.setLineDash([1, 1, 0, 1]);
+		var hints = [];
+	
+		hints.push( [ [ ox, ay ], [ ax, ay ] ] );
+		if( ax != ox ) {
+			hints.push( [ [ ax, oy ], [ ax, ay ] ] );
+		}
+
+		if( ax != dx ) {
+			hints.push( [ [ dx, oy ], [ dx, dy ] ] );
+		}
+		if( ay != dy ) {
+			hints.push([ [ox, dy], [dx, dy] ]); 
+		}
+
+		if( sx != rx ) {
+			hints.push( [ [ sx, oy ], [ sx, dy ] ] );
+		}
+
+		hints.forEach(function(pair) {
+			var src = pair[0],
+				dst = pair[1];
+			ctx.beginPath();
+			ctx.moveTo( src[0], src[1] );
+			ctx.lineTo( dst[0], dst[1] );
+			ctx.stroke();
+		});
+
+		
+		// ADSR 'proper'
+
+		ctx.setLineDash( null );
 		ctx.beginPath();
 		ctx.moveTo( ox, oy );
 		ctx.lineTo( ax, ay );
