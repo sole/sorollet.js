@@ -14,7 +14,8 @@ FILES_GUI = [
 	'libs/UI.js',
 	'libs/StringFormat.js',
 	'gui/VoiceGUI.js',
-	'gui/KeyboardGUI.js'
+	'gui/KeyboardGUI.js',
+	'gui/KnobGUI.js'
 ]
 
 ALL_FILES = FILES_CORE + FILES_GUI

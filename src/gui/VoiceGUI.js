@@ -355,15 +355,40 @@ SOROLLET.ADSRGUI = function( label ) {
 	graphRow.dom.appendChild( canvas );
 	panel.add( graphRow );
 
+	// ???
+	
+	var controlsRow = new UI.Panel(),
+		attackInput = new SOROLLET.KnobGUI({ label: 'ATTACK' }),
+		decayInput = new SOROLLET.KnobGUI({ label: 'DECAY' }),
+		sustainInput = new SOROLLET.KnobGUI({ label: 'SUSTAIN' }),
+		releaseInput = new SOROLLET.KnobGUI({ label: 'RELEASE' }),
+		timeScaleInput = new SOROLLET.KnobGUI({ label: 'TIME SCALE' });
+	
+	panel.add( controlsRow );
+
+	//attackInput.setValue( 0 );
+	/*attackInput.onChange( function() {
+		console.log( 'attackInput', attackInput.getValue() );
+	} );*/
+
+	controlsRow.dom.appendChild( attackInput.dom );
+	controlsRow.dom.appendChild( decayInput.dom );
+	controlsRow.dom.appendChild( sustainInput.dom );
+	controlsRow.dom.appendChild( releaseInput.dom );
+	controlsRow.dom.appendChild( timeScaleInput.dom );
+	controlsRow.dom.className = 'adsr_knobs';
+	//controlsRow.add( attackInput );
+	//controlsRow.add( decayInput );
+
 	//
 
 	var attackRow = new UI.Panel(),
-		attackInput = new UI.Number().setLeft( indent ),
+		//attackInput = new UI.Number().setLeft( indent ),
 		attackLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
 	
 	panel.add(attackRow);
 	attackRow.add( new UI.Text().setValue( 'Attack' ) );
-	attackRow.add( attackInput );
+	//attackRow.add( attackInput );
 	attackRow.add( attackLength );
 
 	attackInput.min = 0.0;
@@ -373,12 +398,12 @@ SOROLLET.ADSRGUI = function( label ) {
 	//
 
 	var decayRow = new UI.Panel(),
-		decayInput = new UI.Number().setLeft( indent ),
+		//decayInput = new UI.Number().setLeft( indent ),
 		decayLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
 
 	panel.add(decayRow);
 	decayRow.add( new UI.Text().setValue( 'Decay' ) );
-	decayRow.add( decayInput );
+	//decayRow.add( decayInput );
 	decayRow.add( decayLength );
 
 	decayInput.min = 0.0;
@@ -387,12 +412,12 @@ SOROLLET.ADSRGUI = function( label ) {
 
 	//
 	
-	var sustainRow = new UI.Panel(),
-		sustainInput = new UI.Number().setLeft( indent );
+	//var sustainRow = new UI.Panel();//,
+		//sustainInput = new UI.Number().setLeft( indent );
 
-	panel.add(sustainRow);
-	sustainRow.add( new UI.Text().setValue( 'Sustain' ) );
-	sustainRow.add( sustainInput );
+	//panel.add(sustainRow);
+	//sustainRow.add( new UI.Text().setValue( 'Sustain' ) );
+	//sustainRow.add( sustainInput );
 
 	sustainInput.min = 0.0;
 	sustainInput.max = 1.0;
@@ -401,12 +426,12 @@ SOROLLET.ADSRGUI = function( label ) {
 	//
 	
 	var releaseRow = new UI.Panel(),
-		releaseInput = new UI.Number().setLeft( indent ),
+		//releaseInput = new UI.Number().setLeft( indent ),
 		releaseLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
 
 	panel.add(releaseRow);
 	releaseRow.add( new UI.Text().setValue( 'Release' ) );
-	releaseRow.add( releaseInput );
+	//releaseRow.add( releaseInput );
 	releaseRow.add( releaseLength );
 
 	releaseInput.min = 0.0;
@@ -415,12 +440,12 @@ SOROLLET.ADSRGUI = function( label ) {
 
 	//
 	
-	var timeScaleRow = new UI.Panel(),
-		timeScaleInput = new UI.Number().setLeft( indent );
+	var timeScaleRow = new UI.Panel();//,
+		//timeScaleInput = new UI.Number().setLeft( indent );
 
 	panel.add(timeScaleRow);
 	timeScaleRow.add( new UI.Text().setValue( 'Time scale' ) );
-	timeScaleRow.add( timeScaleInput );
+	//timeScaleRow.add( timeScaleInput );
 
 	timeScaleInput.min = 0.0;
 	timeScaleInput.max = 100.0;
@@ -429,8 +454,10 @@ SOROLLET.ADSRGUI = function( label ) {
 	//
 	
 	var outputRow = new UI.Panel(),
-		outputMinInput = new UI.Number().setWidth( '50px' ), //.setLeft( indent ),
-		outputMaxInput = new UI.Number().setWidth( '50px' );
+		outputMinInput = new SOROLLET.KnobGUI({ label: 'MIN' }),
+		//outputMinInput = new UI.Number().setWidth( '50px' ), //.setLeft( indent ),
+		outputMaxInput = new SOROLLET.KnobGUI({ label: 'MAX' });
+		//outputMaxInput = new UI.Number().setWidth( '50px' );
 
 	panel.add(outputRow);
 	outputRow.add( new UI.Text().setValue( 'Output range' ) );
