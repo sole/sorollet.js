@@ -1728,12 +1728,12 @@ SOROLLET.VoiceGUI.prototype = {
 			pitchEnvGUI = this.pitchEnvGUI,
 			pitchADSR = synth.pitchADSR;
 
-		ampEnvGUI.attackLength.setValue( StringFormat.toFixed( ampADSR.attackLength ) );
-		ampEnvGUI.decayLength.setValue( StringFormat.toFixed( ampADSR.decayLength ) );
-		ampEnvGUI.releaseLength.setValue( StringFormat.toFixed( ampADSR.releaseLength ) );
-		pitchEnvGUI.attackLength.setValue( StringFormat.toFixed( pitchADSR.attackLength ) );
-		pitchEnvGUI.decayLength.setValue( StringFormat.toFixed( pitchADSR.decayLength ) );
-		pitchEnvGUI.releaseLength.setValue( StringFormat.toFixed( pitchADSR.releaseLength ) );
+		ampEnvGUI.attackLength = StringFormat.toFixed( ampADSR.attackLength );
+		ampEnvGUI.decayLength = StringFormat.toFixed( ampADSR.decayLength );
+		ampEnvGUI.releaseLength = StringFormat.toFixed( ampADSR.releaseLength );
+		pitchEnvGUI.attackLength = StringFormat.toFixed( pitchADSR.attackLength );
+		pitchEnvGUI.decayLength = StringFormat.toFixed( pitchADSR.decayLength );
+		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchADSR.releaseLength );
 
 
 	},
@@ -1884,8 +1884,6 @@ SOROLLET.ADSRGUI = function( label ) {
 	graphRow.dom.appendChild( canvas );
 	panel.add( graphRow );
 
-	// ???
-	
 	var controlsRow = new UI.Panel(),
 		attackInput = new SOROLLET.KnobGUI({ label: 'ATTACK' }),
 		decayInput = new SOROLLET.KnobGUI({ label: 'DECAY' }),
@@ -1895,30 +1893,12 @@ SOROLLET.ADSRGUI = function( label ) {
 	
 	panel.add( controlsRow );
 
-	//attackInput.setValue( 0 );
-	/*attackInput.onChange( function() {
-		console.log( 'attackInput', attackInput.getValue() );
-	} );*/
-
 	controlsRow.dom.appendChild( attackInput.dom );
 	controlsRow.dom.appendChild( decayInput.dom );
 	controlsRow.dom.appendChild( sustainInput.dom );
 	controlsRow.dom.appendChild( releaseInput.dom );
 	controlsRow.dom.appendChild( timeScaleInput.dom );
 	controlsRow.dom.className = 'adsr_knobs';
-	//controlsRow.add( attackInput );
-	//controlsRow.add( decayInput );
-
-	//
-
-	var attackRow = new UI.Panel(),
-		//attackInput = new UI.Number().setLeft( indent ),
-		attackLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
-	
-	panel.add(attackRow);
-	attackRow.add( new UI.Text().setValue( 'Attack' ) );
-	//attackRow.add( attackInput );
-	attackRow.add( attackLength );
 
 	attackInput.min = 0.0;
 	attackInput.max = 1.0;
@@ -1926,56 +1906,24 @@ SOROLLET.ADSRGUI = function( label ) {
 
 	//
 
-	var decayRow = new UI.Panel(),
-		//decayInput = new UI.Number().setLeft( indent ),
-		decayLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
-
-	panel.add(decayRow);
-	decayRow.add( new UI.Text().setValue( 'Decay' ) );
-	//decayRow.add( decayInput );
-	decayRow.add( decayLength );
-
 	decayInput.min = 0.0;
 	decayInput.max = 1.0;
 	decayInput.onChange( onChange );
 
 	//
 	
-	//var sustainRow = new UI.Panel();//,
-		//sustainInput = new UI.Number().setLeft( indent );
-
-	//panel.add(sustainRow);
-	//sustainRow.add( new UI.Text().setValue( 'Sustain' ) );
-	//sustainRow.add( sustainInput );
-
 	sustainInput.min = 0.0;
 	sustainInput.max = 1.0;
 	sustainInput.onChange( onChange );
 
 	//
 	
-	var releaseRow = new UI.Panel(),
-		//releaseInput = new UI.Number().setLeft( indent ),
-		releaseLength = new UI.Text().setValue( 0 ).setFontSize( tipSize );
-
-	panel.add(releaseRow);
-	releaseRow.add( new UI.Text().setValue( 'Release' ) );
-	//releaseRow.add( releaseInput );
-	releaseRow.add( releaseLength );
-
 	releaseInput.min = 0.0;
 	releaseInput.max = 1.0;
 	releaseInput.onChange( onChange );
 
 	//
 	
-	var timeScaleRow = new UI.Panel();//,
-		//timeScaleInput = new UI.Number().setLeft( indent );
-
-	panel.add(timeScaleRow);
-	timeScaleRow.add( new UI.Text().setValue( 'Time scale' ) );
-	//timeScaleRow.add( timeScaleInput );
-
 	timeScaleInput.min = 0.0;
 	timeScaleInput.max = 100.0;
 	timeScaleInput.onChange( onChange );
@@ -1984,11 +1932,10 @@ SOROLLET.ADSRGUI = function( label ) {
 	
 	var outputRow = new UI.Panel(),
 		outputMinInput = new SOROLLET.KnobGUI({ label: 'MIN' }),
-		//outputMinInput = new UI.Number().setWidth( '50px' ), //.setLeft( indent ),
 		outputMaxInput = new SOROLLET.KnobGUI({ label: 'MAX' });
-		//outputMaxInput = new UI.Number().setWidth( '50px' );
 
 	panel.add(outputRow);
+	outputRow.setClass( 'hola' );
 	outputRow.add( new UI.Text().setValue( 'Output range' ) );
 	outputRow.add( outputMinInput );
 	outputRow.add( outputMaxInput );
@@ -2009,12 +1956,12 @@ SOROLLET.ADSRGUI = function( label ) {
 
 	this.dom = panel.dom;
 	this.attack = attackInput;
-	this.attackLength = attackLength;
+	this.attackLength = 0;
 	this.decay = decayInput;
-	this.decayLength = decayLength;
+	this.decayLength = 0;
 	this.sustain = sustainInput;
 	this.release = releaseInput;
-	this.releaseLength = releaseLength;
+	this.releaseLength = 0;
 	this.timeScale = timeScaleInput;
 	this.outputMin = outputMinInput;
 	this.outputMax = outputMaxInput;
@@ -2130,13 +2077,13 @@ SOROLLET.ADSRGUI = function( label ) {
 		ctx.textAlign = 'center';
 		ctx.font = 'normal ' + textHeight + 'px Helvetica, Arial, sans-serif';
 
-		ctx.strokeText( attackLength.dom.innerHTML, (ox + ax) / 2, xAxisY );
+		ctx.strokeText( this.attackLength, (ox + ax) / 2, xAxisY );
 
 		if( ax != dx ) {
-			ctx.strokeText( decayLength.dom.innerHTML, (ax+dx) / 2, xAxisY );
+			ctx.strokeText( this.decayLength, (ax+dx) / 2, xAxisY );
 		}
 
-		ctx.strokeText( releaseLength.dom.innerHTML, (sx+rx) / 2, xAxisY );
+		ctx.strokeText( this.releaseLength, (sx+rx) / 2, xAxisY );
 
 		ctx.textAlign = 'end';
 		ctx.strokeText( outputMinInput.getValue(), yAxisX, yAxisY );
