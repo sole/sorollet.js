@@ -1535,7 +1535,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	this.synth = null;
 	
 	var container = new UI.Panel( 'relative' );
-	container.setWidth( '250px' );
+	container.setWidth( '300px' );
 	container.setBackgroundColor( '#eee' );
 	container.setOverflow( 'auto' );
 
@@ -1735,7 +1735,6 @@ SOROLLET.VoiceGUI.prototype = {
 		pitchEnvGUI.decayLength = StringFormat.toFixed( pitchADSR.decayLength );
 		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchADSR.releaseLength );
 
-
 	},
 
 	WAVE_NAMES: {
@@ -1872,6 +1871,22 @@ SOROLLET.ADSRGUI = function( label ) {
 
 	panel.add( new UI.Text().setValue( label ) );
 
+	var subPanel = new UI.Panel().setClass('ADSR_GUI'),
+		leftDiv = document.createElement( 'div' ),
+		rightDiv = document.createElement( 'div' );
+
+	panel.add( subPanel );
+
+	leftDiv.className = 'output_range';
+	rightDiv.className = 'graph_controls';
+
+	subPanel.dom.appendChild( leftDiv );
+	subPanel.dom.appendChild( rightDiv );
+
+	// Range o [ Graph ]
+	// knobs o [       ]
+	//         o o o o o ADSR knobs
+
 	var graphRow = new UI.Panel(),
 		canvas = document.createElement( 'canvas' ),
 		ctx = canvas.getContext( '2d' ),
@@ -1881,24 +1896,36 @@ SOROLLET.ADSRGUI = function( label ) {
 	canvas.width = canvasW;
 	canvas.height = canvasH;
 	
-	graphRow.dom.appendChild( canvas );
-	panel.add( graphRow );
+	//graphRow.dom.appendChild( canvas );
+	//panel.add( graphRow );
+	
+	rightDiv.appendChild( canvas );
+	
 
 	var controlsRow = new UI.Panel(),
+		knobsDiv = document.createElement( 'div' ),
 		attackInput = new SOROLLET.KnobGUI({ label: 'ATTACK' }),
 		decayInput = new SOROLLET.KnobGUI({ label: 'DECAY' }),
 		sustainInput = new SOROLLET.KnobGUI({ label: 'SUSTAIN' }),
 		releaseInput = new SOROLLET.KnobGUI({ label: 'RELEASE' }),
 		timeScaleInput = new SOROLLET.KnobGUI({ label: 'TIME SCALE' });
 	
-	panel.add( controlsRow );
+	//panel.add( controlsRow );
 
-	controlsRow.dom.appendChild( attackInput.dom );
-	controlsRow.dom.appendChild( decayInput.dom );
-	controlsRow.dom.appendChild( sustainInput.dom );
-	controlsRow.dom.appendChild( releaseInput.dom );
-	controlsRow.dom.appendChild( timeScaleInput.dom );
-	controlsRow.dom.className = 'adsr_knobs';
+	//controlsRow.dom.appendChild( attackInput.dom );
+//	controlsRow.dom.appendChild( decayInput.dom );
+//	controlsRow.dom.appendChild( sustainInput.dom );
+//	controlsRow.dom.appendChild( releaseInput.dom );
+//	controlsRow.dom.appendChild( timeScaleInput.dom );
+//	controlsRow.dom.className = 'adsr_knobs';
+	knobsDiv.className = 'knobs';
+
+	rightDiv.appendChild( knobsDiv );
+	knobsDiv.appendChild( attackInput.dom );
+	knobsDiv.appendChild( decayInput.dom );
+	knobsDiv.appendChild( sustainInput.dom );
+	knobsDiv.appendChild( releaseInput.dom );
+	knobsDiv.appendChild( timeScaleInput.dom );
 
 	attackInput.min = 0.0;
 	attackInput.max = 1.0;
@@ -1934,11 +1961,14 @@ SOROLLET.ADSRGUI = function( label ) {
 		outputMinInput = new SOROLLET.KnobGUI({ label: 'MIN' }),
 		outputMaxInput = new SOROLLET.KnobGUI({ label: 'MAX' });
 
-	panel.add(outputRow);
-	outputRow.setClass( 'hola' );
-	outputRow.add( new UI.Text().setValue( 'Output range' ) );
-	outputRow.add( outputMinInput );
-	outputRow.add( outputMaxInput );
+	//panel.add(outputRow);
+	//outputRow.setClass( 'adsr_knobs' );
+	//outputRow.add( new UI.Text().setValue( 'Output range' ) );
+	//outputRow.add( outputMinInput );
+	//outputRow.add( outputMaxInput );
+
+	leftDiv.appendChild( outputMaxInput.dom );
+	leftDiv.appendChild( outputMinInput.dom );
 
 	var min = -100,
 		max = 100;
@@ -2067,7 +2097,6 @@ SOROLLET.ADSRGUI = function( label ) {
 		// Labels
 		// (getting out of translated/scale coord system because otherwise
 		// the text shows upside down ò_ó)
-		// XXX the dom.innerHTML thing is a big HACK
 		var textHeight = 10,
 			xAxisY = oy + h + textHeight,
 			yAxisX = ox - 3,
@@ -2236,6 +2265,7 @@ SOROLLET.KnobGUI = function( params ) {
 		labelTxt = params.label || '',
 		knobWidth = params.knobWidth || 30,
 		knobHeight = params.knobHeight || knobWidth,
+		strokeStyle = params.strokeStyle || '#000000',
 		value = 0,
 		onChangeHandler = function() { },
 		dom = document.createElement( 'div' ),
@@ -2299,10 +2329,11 @@ SOROLLET.KnobGUI = function( params ) {
 	}
 
 	function updateGraph() {
-		ctx.fillStyle = '#000000';
-		ctx.fillRect( 0, 0, knobWidth, knobHeight );
+		//ctx.fillStyle = '#000000';
+		//ctx.fillRect( 0, 0, knobWidth, knobHeight );
+		ctx.clearRect( 0, 0, knobWidth, knobHeight );
 
-		ctx.strokeStyle = '#00ff00';
+		ctx.strokeStyle = strokeStyle;//'#00ff00';
 		ctx.lineWidth = 2;
 
 		var cx = knobWidth * 0.5,

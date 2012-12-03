@@ -71,7 +71,29 @@
 				padding: 0 2em;
 			}
 
-			.adsr_knobs {
+			.section_label {
+				margin: 3px 0;
+				font-weight: bold;
+			}
+
+			.ADSR_GUI {
+				display: box;
+				display: -webkit-box;
+				display: -moz-box;
+				box-orient: horizontal;
+				-webkit-box-orient: horizontal;
+				-moz-box-orient: horizontal;
+				xborder: 1px solid red;
+			}
+				.ADSR_GUI .output_range {
+					xborder: 1px solid green;
+				}
+
+				.ADSR_GUI .graph_controls {
+					xborder: 1px solid blue;
+				}
+
+			.ADSR_GUI .knobs, .adsr_knobs {
 				display: box;
 				display: -webkit-box;
 				display: -moz-box;
@@ -80,10 +102,10 @@
 				-moz-box-orient: horizontal;
 			}
 
-			.knob { 
+			.knob {
+				cursor: pointer;
 				text-align: center;
-				xbox-model: border-box;
-				margin: 0 3px;
+				margin-right: 3px;
 				width: 40px;
 			}
 				.knob .label {
