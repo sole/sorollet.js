@@ -85,43 +85,30 @@ SOROLLET.VoiceGUI = function( signals ) {
 	
 	
 	// Envelopes
-	
+	function updateEnvelopeWithGUI( ev, env, gui ) {
+		env.setAttack( ev.attack );
+		env.setDecay( ev.decay );
+		env.setSustainLevel( ev.sustain );
+		env.setRelease( ev.release );
+		env.setOutputRange( ev.outputMin, ev.outputMax );
+		env.setTimeScale( ev.timeScale );
+
+		gui.updateGraph();
+		
+		scope.updateEnvelopeLengths();
+	}
+
 	var ampEnvGUI = new SOROLLET.ADSRGUI('VOLUME ENVELOPE');
 	container.add( ampEnvGUI );
 	ampEnvGUI.addEventListener( 'change', function( e ) {
-		var env = scope.synth.ampADSR;
-
-		env.setAttack( e.attack );
-		env.setDecay( e.decay );
-		env.setSustainLevel( e.sustain );
-		env.setRelease( e.release );
-		env.setOutputRange( e.outputMin, e.outputMax );
-		env.setTimeScale( e.timeScale );
-
-		ampEnvGUI.updateGraph();
-		
-		scope.updateEnvelopeLengths();
-		
-	});
+		updateEnvelopeWithGUI( e, scope.synth.ampADSR, ampEnvGUI );
+	}, false );
 
 	var pitchEnvGUI = new SOROLLET.ADSRGUI('PITCH ENVELOPE');
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {
-		// TODO refactor this and above functions
-		var env = scope.synth.pitchADSR;
-
-		env.setAttack( e.attack );
-		env.setDecay( e.decay );
-		env.setSustainLevel( e.sustain );
-		env.setRelease( e.release );
-		env.setOutputRange( e.outputMin, e.outputMax );
-		env.setTimeScale( e.timeScale );
-
-		pitchEnvGUI.updateGraph();
-		
-		scope.updateEnvelopeLengths();
-	});
-
+		updateEnvelopeWithGUI( e, scope.synth.pitchADSR, pitchEnvGUI );
+	}, false );
 
 
 
@@ -360,9 +347,7 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 }
 
 SOROLLET.ADSRGUI = function( label ) {
-	var panel = new UI.Panel(),
-		tipSize = '10px',
-		indent = '50px';
+	var panel = new UI.Panel();
 
 	panel.add( new UI.Text().setValue( label ).setClass( 'section_label'  ));
 
@@ -378,12 +363,26 @@ SOROLLET.ADSRGUI = function( label ) {
 	subPanel.dom.appendChild( leftDiv );
 	subPanel.dom.appendChild( rightDiv );
 
-	// Range o [ Graph ]
-	// knobs o [       ]
-	//         o o o o o ADSR knobs
+	var outputMinInput = new SOROLLET.KnobGUI({ label: 'MIN' }),
+		outputMaxInput = new SOROLLET.KnobGUI({ label: 'MAX' });
 
-	var graphRow = new UI.Panel(),
-		canvas = document.createElement( 'canvas' ),
+	leftDiv.appendChild( outputMaxInput.dom );
+	leftDiv.appendChild( outputMinInput.dom );
+
+	var outputMinValue = -100,
+		outputMaxValue = 100;
+
+	outputMinInput.min = outputMinValue;
+	outputMinInput.max = outputMaxValue;
+	outputMinInput.onChange( onChange );
+
+	outputMaxInput.min = outputMinValue;
+	outputMaxInput.max = outputMaxValue;
+	outputMaxInput.onChange( onChange );
+
+
+
+	var canvas = document.createElement( 'canvas' ),
 		ctx = canvas.getContext( '2d' ),
 		canvasW = 220,
 		canvasH = 120;
@@ -401,62 +400,26 @@ SOROLLET.ADSRGUI = function( label ) {
 		releaseInput = new SOROLLET.KnobGUI({ label: 'RELEASE' }),
 		timeScaleInput = new SOROLLET.KnobGUI({ label: 'TIME SCALE' });
 	
-	knobsDiv.className = 'knobs';
 
 	rightDiv.appendChild( knobsDiv );
+
+	knobsDiv.className = 'knobs';
 	knobsDiv.appendChild( attackInput.dom );
 	knobsDiv.appendChild( decayInput.dom );
 	knobsDiv.appendChild( sustainInput.dom );
 	knobsDiv.appendChild( releaseInput.dom );
 	knobsDiv.appendChild( timeScaleInput.dom );
 
-	attackInput.min = 0.0;
-	attackInput.max = 1.0;
-	attackInput.onChange( onChange );
+	[ attackInput, decayInput, sustainInput, releaseInput ].forEach(function( elem ) {
+		elem.min = 0.0;
+		elem.max = 1.0;
+		elem.onChange( onChange );
+	});
 
-	//
-
-	decayInput.min = 0.0;
-	decayInput.max = 1.0;
-	decayInput.onChange( onChange );
-
-	//
-	
-	sustainInput.min = 0.0;
-	sustainInput.max = 1.0;
-	sustainInput.onChange( onChange );
-
-	//
-	
-	releaseInput.min = 0.0;
-	releaseInput.max = 1.0;
-	releaseInput.onChange( onChange );
-
-	//
-	
 	timeScaleInput.min = 0.0;
 	timeScaleInput.max = 100.0;
 	timeScaleInput.onChange( onChange );
 	
-	//
-	
-	var outputRow = new UI.Panel(),
-		outputMinInput = new SOROLLET.KnobGUI({ label: 'MIN' }),
-		outputMaxInput = new SOROLLET.KnobGUI({ label: 'MAX' });
-
-	leftDiv.appendChild( outputMaxInput.dom );
-	leftDiv.appendChild( outputMinInput.dom );
-
-	var min = -100,
-		max = 100;
-
-	outputMinInput.min = min;
-	outputMinInput.max = max;
-	outputMinInput.onChange( onChange );
-	outputMaxInput.min = min;
-	outputMaxInput.max = max;
-	outputMaxInput.onChange( onChange );
-
 	//
 
 	EventTarget.call( this );
