@@ -49,7 +49,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 			.onChange( function() {
 				scope.synth.waveMixFunction = SOROLLET.VoiceGUI.prototype.WAVE_MIX_FUNCTIONS[ mixSelect.getValue() ];
 			} );
-	mixPanel.add( new UI.Text().setValue( 'OSCILLATOR MIX' ));
+	mixPanel.add( new UI.Text().setValue( 'OSCILLATOR MIX' ).setClass( 'section_label'  ));
 	mixPanel.add( mixRow );
 	mixRow.add( new UI.Text().setValue( 'Type' ) );
 	mixRow.add( mixSelect );
@@ -58,7 +58,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 
 	// Noise
 	var noiseConfigPanel = new UI.Panel();
-	noiseConfigPanel.add( new UI.Text().setValue( 'NOISE' ) );
+	noiseConfigPanel.add( new UI.Text().setValue( 'NOISE' ).setClass('section_label')   );
 
 	var noiseRow = new UI.Panel(),
 		noiseAmountInput = new UI.Number();
@@ -254,7 +254,7 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 	var labelName = 'OSCILLATOR ' + (oscillatorIndex + 1),
 		panel = new UI.Panel( 'relative' );
 
-	panel.add( new UI.Text().setValue( labelName ) );
+	panel.add( new UI.Text().setValue( labelName ).setClass( 'section_label'  ) );
 	panel.add( new UI.Break() );
 
 	var indent = '90px',
@@ -340,7 +340,7 @@ SOROLLET.ADSRGUI = function( label ) {
 		tipSize = '10px',
 		indent = '50px';
 
-	panel.add( new UI.Text().setValue( label ) );
+	panel.add( new UI.Text().setValue( label ).setClass( 'section_label'  ));
 
 	var subPanel = new UI.Panel().setClass('ADSR_GUI'),
 		leftDiv = document.createElement( 'div' ),
