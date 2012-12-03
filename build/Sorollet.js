@@ -1920,28 +1920,16 @@ SOROLLET.ADSRGUI = function( label ) {
 	canvas.width = canvasW;
 	canvas.height = canvasH;
 	
-	//graphRow.dom.appendChild( canvas );
-	//panel.add( graphRow );
-	
 	rightDiv.appendChild( canvas );
 	
 
-	var controlsRow = new UI.Panel(),
-		knobsDiv = document.createElement( 'div' ),
+	var	knobsDiv = document.createElement( 'div' ),
 		attackInput = new SOROLLET.KnobGUI({ label: 'ATTACK' }),
 		decayInput = new SOROLLET.KnobGUI({ label: 'DECAY' }),
 		sustainInput = new SOROLLET.KnobGUI({ label: 'SUSTAIN' }),
 		releaseInput = new SOROLLET.KnobGUI({ label: 'RELEASE' }),
 		timeScaleInput = new SOROLLET.KnobGUI({ label: 'TIME SCALE' });
 	
-	//panel.add( controlsRow );
-
-	//controlsRow.dom.appendChild( attackInput.dom );
-//	controlsRow.dom.appendChild( decayInput.dom );
-//	controlsRow.dom.appendChild( sustainInput.dom );
-//	controlsRow.dom.appendChild( releaseInput.dom );
-//	controlsRow.dom.appendChild( timeScaleInput.dom );
-//	controlsRow.dom.className = 'adsr_knobs';
 	knobsDiv.className = 'knobs';
 
 	rightDiv.appendChild( knobsDiv );
@@ -1984,12 +1972,6 @@ SOROLLET.ADSRGUI = function( label ) {
 	var outputRow = new UI.Panel(),
 		outputMinInput = new SOROLLET.KnobGUI({ label: 'MIN' }),
 		outputMaxInput = new SOROLLET.KnobGUI({ label: 'MAX' });
-
-	//panel.add(outputRow);
-	//outputRow.setClass( 'adsr_knobs' );
-	//outputRow.add( new UI.Text().setValue( 'Output range' ) );
-	//outputRow.add( outputMinInput );
-	//outputRow.add( outputMaxInput );
 
 	leftDiv.appendChild( outputMaxInput.dom );
 	leftDiv.appendChild( outputMinInput.dom );
@@ -2034,13 +2016,11 @@ SOROLLET.ADSRGUI = function( label ) {
 		});
 	}
 
-	var bgGradient = ctx.createLinearGradient(0, 0, 0, canvasH);
-	bgGradient.addColorStop( 0, '#006600' );
-	bgGradient.addColorStop( 1, '#000000' );
-
 	function updateGraph() {
-		ctx.fillStyle = bgGradient;
-		ctx.fillRect(0, 0, canvasW, canvasH);
+		var darkStrokeStyle = '#222222',
+			lightStrokeStyle = '#666666';
+
+		ctx.clearRect( 0, 0, canvasW, canvasH );
 
 		ctx.save();
 		ctx.translate(0, canvasH);
@@ -2063,7 +2043,7 @@ SOROLLET.ADSRGUI = function( label ) {
 			ry = oy;
 		
 		// Axis
-		ctx.strokeStyle = '#008800';
+		ctx.strokeStyle = lightStrokeStyle;
 
 		ctx.lineWidth = 2;
 		ctx.beginPath();
@@ -2073,7 +2053,7 @@ SOROLLET.ADSRGUI = function( label ) {
 		ctx.stroke();
 
 		ctx.lineWidth = 1;
-		ctx.strokeStyle = '#00ff00';
+		ctx.strokeStyle = darkStrokeStyle;
 
 		// Dashed hints
 		ctx.setLineDash([1, 1, 0, 1]);
@@ -2126,7 +2106,7 @@ SOROLLET.ADSRGUI = function( label ) {
 			yAxisX = ox - 3,
 			yAxisY = oy + h;
 
-		ctx.strokeStyle = '#00ff00';
+		ctx.strokeStyle = darkStrokeStyle;
 		ctx.textAlign = 'center';
 		ctx.font = 'normal ' + textHeight + 'px Helvetica, Arial, sans-serif';
 
