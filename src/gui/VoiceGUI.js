@@ -92,13 +92,27 @@ SOROLLET.VoiceGUI = function( signals ) {
 		scope.updateEnvelopeLengths();
 	}
 
-	var ampEnvGUI = new SOROLLET.ADSRGUI('VOLUME ENVELOPE');
+	var ampEnvGUI = new SOROLLET.ADSRGUI({
+		label: 'VOLUME ENVELOPE',
+		outMin: 0,
+		outMax: 8,
+		step: 1,
+		timeMin: 0,
+		timeMax: 32
+	});
 	container.add( ampEnvGUI );
 	ampEnvGUI.addEventListener( 'change', function( e ) {
 		updateEnvelopeWithGUI( e, scope.synth.ampADSR, ampEnvGUI );
 	}, false );
 
-	var pitchEnvGUI = new SOROLLET.ADSRGUI('PITCH ENVELOPE');
+	var pitchEnvGUI = new SOROLLET.ADSRGUI({
+		label: 'PITCH ENVELOPE',
+		outMin: -48,
+		outMax: 48,
+		step: 12,
+		timeMin: 0,
+		timeMax: 32
+	});
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {
 		updateEnvelopeWithGUI( e, scope.synth.pitchADSR, pitchEnvGUI );
@@ -148,46 +162,18 @@ SOROLLET.VoiceGUI.prototype = {
 		this.noiseAmount.setValue( synth.noiseAmount );
 		this.noiseMix.setValue( this.valueToKey( this.NOISE_MIX_FUNCTIONS, synth.noiseMixFunction ) );
 
-		// TODO refactor
-		this.ampEnvGUI.attack.setValue( synth.ampADSR.__unscaledAttackLength );
-		this.ampEnvGUI.decay.setValue( synth.ampADSR.__unscaledDecayLength );
-		this.ampEnvGUI.sustain.setValue( synth.ampADSR.sustainLevel );
-		this.ampEnvGUI.release.setValue( synth.ampADSR.__unscaledReleaseLength );
-		this.ampEnvGUI.timeScale.setValue( synth.ampADSR.timeScale );
-		
-		var minVolume = 0,
-			maxVolume = 8,
-			volumeStep = 1,
-			minPitch = -48,
-			maxPitch = 48,
-			pitchStep = 12,
-			timeMin = 0,
-			timeMax = 32,
-			timeStep = 2;
+		function updateADSRGUIWithEnvelope( gui, env ) {
+			gui.attack.setValue( env.__unscaledAttackLength );
+			gui.decay.setValue( env.__unscaledDecayLength );
+			gui.sustain.setValue( env.sustainLevel );
+			gui.release.setValue( env.__unscaledReleaseLength );
+			gui.timeScale.setValue( env.timeScale );
+			gui.outputMin.setValue( env.outputMinimumValue );
+			gui.outputMax.setValue( env.outputMaximumValue );
+		}
 
-		this.ampEnvGUI.outputMin.min = minVolume;
-		this.ampEnvGUI.outputMin.max = maxVolume;
-		this.ampEnvGUI.outputMin.step = volumeStep;
-		this.ampEnvGUI.outputMax.min = minVolume;
-		this.ampEnvGUI.outputMax.max = maxVolume;
-		this.ampEnvGUI.outputMax.step = volumeStep;
-		this.ampEnvGUI.outputMin.setValue( synth.ampADSR.outputMinimumValue );
-		this.ampEnvGUI.outputMax.setValue( synth.ampADSR.outputMaximumValue );
-
-		this.pitchEnvGUI.attack.setValue( synth.pitchADSR.__unscaledAttackLength );
-		this.pitchEnvGUI.decay.setValue( synth.pitchADSR.__unscaledDecayLength );
-		this.pitchEnvGUI.sustain.setValue( synth.pitchADSR.sustainLevel );
-		this.pitchEnvGUI.release.setValue( synth.pitchADSR.__unscaledReleaseLength );
-		this.pitchEnvGUI.timeScale.setValue( synth.pitchADSR.timeScale );
-		
-		this.pitchEnvGUI.outputMin.min = minPitch;
-		this.pitchEnvGUI.outputMin.max = maxPitch;
-		this.pitchEnvGUI.outputMin.step = pitchStep;
-		this.pitchEnvGUI.outputMax.min = minPitch;
-		this.pitchEnvGUI.outputMax.max = maxPitch;
-		this.pitchEnvGUI.outputMax.step = pitchStep;
-		this.pitchEnvGUI.outputMin.setValue( synth.pitchADSR.outputMinimumValue );
-		this.pitchEnvGUI.outputMax.setValue( synth.pitchADSR.outputMaximumValue );
+		updateADSRGUIWithEnvelope( this.ampEnvGUI, synth.ampADSR );
+		updateADSRGUIWithEnvelope( this.pitchEnvGUI, synth.pitchADSR );
 
 		this.synth = synth;
 
@@ -210,7 +196,6 @@ SOROLLET.VoiceGUI.prototype = {
 		pitchEnvGUI.attackLength = StringFormat.toFixed( pitchADSR.attackLength );
 		pitchEnvGUI.decayLength = StringFormat.toFixed( pitchADSR.decayLength );
 		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchADSR.releaseLength );
-
 	},
 
 	WAVE_NAMES: {
@@ -340,42 +325,51 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 
 }
 
-SOROLLET.ADSRGUI = function( label ) {
-	var panel = new UI.Panel();
+SOROLLET.ADSRGUI = function( params ) {
+
+	var params = params || {},
+		label = params.label || '',
+		outMin = params.outMin || 0,
+		outMax = params.outMax || 1,
+		step = params.step || 0.5,
+		timeMin = params.timeMin || 0,
+		timeMax = params.timeMax || 100,
+		//
+		panel = new UI.Panel(),
+		subPanel = new UI.Panel().setClass('ADSR_GUI'),
+		leftDiv = document.createElement( 'div' ),
+		rightDiv = document.createElement( 'div' ),
+		outputMinInput = new SOROLLET.KnobGUI({ label: 'MIN' }),
+		outputMaxInput = new SOROLLET.KnobGUI({ label: 'MAX' }),
+		knobsDiv = document.createElement( 'div' ),
+		attackInput = new SOROLLET.KnobGUI({ label: 'ATTACK' }),
+		decayInput = new SOROLLET.KnobGUI({ label: 'DECAY' }),
+		sustainInput = new SOROLLET.KnobGUI({ label: 'SUSTAIN' }),
+		releaseInput = new SOROLLET.KnobGUI({ label: 'RELEASE' }),
+		timeScaleInput = new SOROLLET.KnobGUI({ label: 'TIME SCALE' });
 
 	panel.add( new UI.Text().setValue( label ).setClass( 'section_label'  ));
-
-	var subPanel = new UI.Panel().setClass('ADSR_GUI'),
-		leftDiv = document.createElement( 'div' ),
-		rightDiv = document.createElement( 'div' );
-
+	
 	panel.add( subPanel );
-
-	leftDiv.className = 'output_range';
-	rightDiv.className = 'graph_controls';
-
 	subPanel.dom.appendChild( leftDiv );
 	subPanel.dom.appendChild( rightDiv );
-
-	var outputMinInput = new SOROLLET.KnobGUI({ label: 'MIN' }),
-		outputMaxInput = new SOROLLET.KnobGUI({ label: 'MAX' });
+	leftDiv.className = 'output_range';
+	rightDiv.className = 'graph_controls';
 
 	leftDiv.appendChild( outputMaxInput.dom );
 	leftDiv.appendChild( outputMinInput.dom );
 
-	var outputMinValue = -100,
-		outputMaxValue = 100;
-
-	outputMinInput.min = outputMinValue;
-	outputMinInput.max = outputMaxValue;
+	outputMinInput.min = outMin;
+	outputMinInput.max = outMax;
+	outputMinInput.step = step;
 	outputMinInput.onChange( onChange );
 
-	outputMaxInput.min = outputMinValue;
-	outputMaxInput.max = outputMaxValue;
+	outputMaxInput.min = outMin;
+	outputMaxInput.max = outMax;
+	outputMaxInput.step = step;
 	outputMaxInput.onChange( onChange );
 
-
-
+	// TODO refactor canvas & handling into ADSR_Graph
 	var canvas = document.createElement( 'canvas' ),
 		ctx = canvas.getContext( '2d' ),
 		canvasW = 220,
@@ -385,16 +379,6 @@ SOROLLET.ADSRGUI = function( label ) {
 	canvas.height = canvasH;
 	
 	rightDiv.appendChild( canvas );
-	
-
-	var	knobsDiv = document.createElement( 'div' ),
-		attackInput = new SOROLLET.KnobGUI({ label: 'ATTACK' }),
-		decayInput = new SOROLLET.KnobGUI({ label: 'DECAY' }),
-		sustainInput = new SOROLLET.KnobGUI({ label: 'SUSTAIN' }),
-		releaseInput = new SOROLLET.KnobGUI({ label: 'RELEASE' }),
-		timeScaleInput = new SOROLLET.KnobGUI({ label: 'TIME SCALE' });
-	
-
 	rightDiv.appendChild( knobsDiv );
 
 	knobsDiv.className = 'knobs';
@@ -410,8 +394,9 @@ SOROLLET.ADSRGUI = function( label ) {
 		elem.onChange( onChange );
 	});
 
-	timeScaleInput.min = 0.0;
-	timeScaleInput.max = 100.0;
+	timeScaleInput.min = timeMin;
+	timeScaleInput.max = timeMax;
+	timeScaleInput.step = 10;
 	timeScaleInput.onChange( onChange );
 	
 	//
@@ -454,7 +439,6 @@ SOROLLET.ADSRGUI = function( label ) {
 		ctx.translate(0, canvasH);
 		ctx.scale(1, -1);
 		
-				
 		var padW = 30,
 			padH = 20,
 			ox = padW,
