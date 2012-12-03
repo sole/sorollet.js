@@ -173,6 +173,23 @@ SOROLLET.VoiceGUI.prototype = {
 		this.ampEnvGUI.sustain.setValue( synth.ampADSR.sustainLevel );
 		this.ampEnvGUI.release.setValue( synth.ampADSR.__unscaledReleaseLength );
 		this.ampEnvGUI.timeScale.setValue( synth.ampADSR.timeScale );
+		
+		var minVolume = 0,
+			maxVolume = 8,
+			volumeStep = 1,
+			minPitch = -48,
+			maxPitch = 48,
+			pitchStep = 12,
+			timeMin = 0,
+			timeMax = 32,
+			timeStep = 2;
+
+		this.ampEnvGUI.outputMin.min = minVolume;
+		this.ampEnvGUI.outputMin.max = maxVolume;
+		this.ampEnvGUI.outputMin.step = volumeStep;
+		this.ampEnvGUI.outputMax.min = minVolume;
+		this.ampEnvGUI.outputMax.max = maxVolume;
+		this.ampEnvGUI.outputMax.step = volumeStep;
 		this.ampEnvGUI.outputMin.setValue( synth.ampADSR.outputMinimumValue );
 		this.ampEnvGUI.outputMax.setValue( synth.ampADSR.outputMaximumValue );
 
@@ -181,6 +198,13 @@ SOROLLET.VoiceGUI.prototype = {
 		this.pitchEnvGUI.sustain.setValue( synth.pitchADSR.sustainLevel );
 		this.pitchEnvGUI.release.setValue( synth.pitchADSR.__unscaledReleaseLength );
 		this.pitchEnvGUI.timeScale.setValue( synth.pitchADSR.timeScale );
+		
+		this.pitchEnvGUI.outputMin.min = minPitch;
+		this.pitchEnvGUI.outputMin.max = maxPitch;
+		this.pitchEnvGUI.outputMin.step = pitchStep;
+		this.pitchEnvGUI.outputMax.min = minPitch;
+		this.pitchEnvGUI.outputMax.max = maxPitch;
+		this.pitchEnvGUI.outputMax.step = pitchStep;
 		this.pitchEnvGUI.outputMin.setValue( synth.pitchADSR.outputMinimumValue );
 		this.pitchEnvGUI.outputMax.setValue( synth.pitchADSR.outputMaximumValue );
 
