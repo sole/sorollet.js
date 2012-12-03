@@ -1539,36 +1539,30 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.setBackgroundColor( '#eee' );
 	container.setOverflow( 'auto' );
 
-	var oscillatorPanel1 = new SOROLLET.OscillatorGUI(0);
-	container.add( oscillatorPanel1 );
-	oscillatorPanel1.addEventListener('change', function(e) {
-		
+	function updateOscillatorWithGUI( ev, index ) {
 		if(scope.synth == null) {
 			console.log('Not attached to any synth');
 			return;
 		}
 
-		scope.synth.wave1Volume = e.volume;
-		scope.synth.wave1Octave = e.octave;
-		scope.synth.wave1Phase = e.phase;
-		scope.synth.wave1Function = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
+		var prefix = 'wave' + index;
 
+		scope.synth[prefix + 'Volume'] = ev.volume;
+		scope.synth[prefix + 'Octave'] = ev.octave;
+		scope.synth[prefix + 'Phase'] = ev.phase;
+		scope.synth[prefix + 'Function'] = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ ev.waveType ];
+	}
+
+	var oscillatorPanel1 = new SOROLLET.OscillatorGUI(0);
+	container.add( oscillatorPanel1 );
+	oscillatorPanel1.addEventListener('change', function(e) {
+		updateOscillatorWithGUI( e, 1 );
 	}, false);
 
 	var oscillatorPanel2 = new SOROLLET.OscillatorGUI(1);
 	container.add( oscillatorPanel2 );
 	oscillatorPanel2.addEventListener('change', function(e) {
-		
-		if(scope.synth == null) {
-			console.log('Not attached to any synth');
-			return;
-		}
-
-		scope.synth.wave2Volume = e.volume;
-		scope.synth.wave2Octave = e.octave;
-		scope.synth.wave2Phase = e.phase;
-		scope.synth.wave2Function = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
-
+		updateOscillatorWithGUI( e, 2 );
 	}, false);
 
 	var mixPanel = new UI.Panel(),
@@ -1627,73 +1621,17 @@ SOROLLET.VoiceGUI = function( signals ) {
 		scope.updateEnvelopeLengths();
 	}
 
-		/*[ [ampEnvGUI, synth.ampADSR], [pitchEnvGUI, synth.pitchADSR] ].forEach(function( pair ) {
-		var gui = pair[0],
-			env = pair[1];
-
-		gui.addEventListener( 'change', function( e ) {
-			
-			env.setAttack( e.attack );
-			env.setDecay( e.decay );
-			env.setSustainLevel( e.sustain );
-			env.setRelease( e.release );
-			env.setOutputRange( e.outputMin, e.outputMax );
-			env.setTimeScale( e.timeScale );
-
-			gui.updateGraph();
-			
-			scope.updateEnvelopeLengths();
-
-		}, false );
-
-	  });*/
-
 	var ampEnvGUI = new SOROLLET.ADSRGUI('VOLUME ENVELOPE');
 	container.add( ampEnvGUI );
 	ampEnvGUI.addEventListener( 'change', function( e ) {
 		updateEnvelopeWithGUI( e, scope.synth.ampADSR, ampEnvGUI );
 	}, false );
 
-
-	/*ampEnvGUI.addEventListener( 'change', function( e ) {
-		var env = scope.synth.ampADSR;
-
-		env.setAttack( e.attack );
-		env.setDecay( e.decay );
-		env.setSustainLevel( e.sustain );
-		env.setRelease( e.release );
-		env.setOutputRange( e.outputMin, e.outputMax );
-		env.setTimeScale( e.timeScale );
-
-		ampEnvGUI.updateGraph();
-		
-		scope.updateEnvelopeLengths();
-		
-	});*/
-
 	var pitchEnvGUI = new SOROLLET.ADSRGUI('PITCH ENVELOPE');
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {
 		updateEnvelopeWithGUI( e, scope.synth.pitchADSR, pitchEnvGUI );
 	}, false );
-
-
-	/*pitchEnvGUI.addEventListener( 'change', function( e ) {
-		// TODO refactor this and above functions
-		var env = scope.synth.pitchADSR;
-
-		env.setAttack( e.attack );
-		env.setDecay( e.decay );
-		env.setSustainLevel( e.sustain );
-		env.setRelease( e.release );
-		env.setOutputRange( e.outputMin, e.outputMax );
-		env.setTimeScale( e.timeScale );
-
-		pitchEnvGUI.updateGraph();
-		
-		scope.updateEnvelopeLengths();
-	});*/
-
 
 
 

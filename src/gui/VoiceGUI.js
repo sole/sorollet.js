@@ -10,36 +10,30 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.setBackgroundColor( '#eee' );
 	container.setOverflow( 'auto' );
 
-	var oscillatorPanel1 = new SOROLLET.OscillatorGUI(0);
-	container.add( oscillatorPanel1 );
-	oscillatorPanel1.addEventListener('change', function(e) {
-		
+	function updateOscillatorWithGUI( ev, index ) {
 		if(scope.synth == null) {
 			console.log('Not attached to any synth');
 			return;
 		}
 
-		scope.synth.wave1Volume = e.volume;
-		scope.synth.wave1Octave = e.octave;
-		scope.synth.wave1Phase = e.phase;
-		scope.synth.wave1Function = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
+		var prefix = 'wave' + index;
 
+		scope.synth[prefix + 'Volume'] = ev.volume;
+		scope.synth[prefix + 'Octave'] = ev.octave;
+		scope.synth[prefix + 'Phase'] = ev.phase;
+		scope.synth[prefix + 'Function'] = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ ev.waveType ];
+	}
+
+	var oscillatorPanel1 = new SOROLLET.OscillatorGUI(0);
+	container.add( oscillatorPanel1 );
+	oscillatorPanel1.addEventListener('change', function(e) {
+		updateOscillatorWithGUI( e, 1 );
 	}, false);
 
 	var oscillatorPanel2 = new SOROLLET.OscillatorGUI(1);
 	container.add( oscillatorPanel2 );
 	oscillatorPanel2.addEventListener('change', function(e) {
-		
-		if(scope.synth == null) {
-			console.log('Not attached to any synth');
-			return;
-		}
-
-		scope.synth.wave2Volume = e.volume;
-		scope.synth.wave2Octave = e.octave;
-		scope.synth.wave2Phase = e.phase;
-		scope.synth.wave2Function = SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS[ e.waveType ];
-
+		updateOscillatorWithGUI( e, 2 );
 	}, false);
 
 	var mixPanel = new UI.Panel(),
