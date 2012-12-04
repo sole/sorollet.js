@@ -47,7 +47,7 @@ SOROLLET.ADSRGUI = function( params ) {
 	rightDiv.appendChild( canvas );
 	rightDiv.appendChild( knobsDiv );
 
-	knobsDiv.className = 'knobs';
+	knobsDiv.className = 'controls_row';
 	knobsDiv.appendChild( attackKnob.dom );
 	knobsDiv.appendChild( decayKnob.dom );
 	knobsDiv.appendChild( sustainKnob.dom );

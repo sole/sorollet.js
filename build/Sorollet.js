@@ -1576,7 +1576,7 @@ SOROLLET.ADSRGUI = function( params ) {
 	rightDiv.appendChild( canvas );
 	rightDiv.appendChild( knobsDiv );
 
-	knobsDiv.className = 'knobs';
+	knobsDiv.className = 'controls_row';
 	knobsDiv.appendChild( attackKnob.dom );
 	knobsDiv.appendChild( decayKnob.dom );
 	knobsDiv.appendChild( sustainKnob.dom );
@@ -2015,17 +2015,6 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 	row.add( volumeInput );
 	row.add( octaveInput );
 	row.add( phaseInput );
-
-	/*volumeInput.min = 0.0;
-	volumeInput.max = 1.0;
-		
-	octaveInput.min = 0;
-	octaveInput.max = 9;
-	octaveInput.step = 1;
-	octaveInput.precision = 0;
-	
-	phaseInput.min = - Math.PI;
-	phaseInput.max = Math.PI;*/
 	
 	//
 	
@@ -2179,9 +2168,9 @@ SOROLLET.KeyboardGUI = function( params ) {
 SOROLLET.KnobGUI = function( params ) {
 	var params = params || {},
 		labelTxt = params.label || '',
-		minValue = params.min || 0.0,
-		maxValue = params.max || 1.0,
-		stepValue = params.step || 0.1,
+		minValue = params.min !== undefined ? params.min : 0.0,
+		maxValue = params.max !== undefined ? params.max : 1.0,
+		stepValue = params.step !== undefined ? params.step : 0.1,
 		precisionValue = params.precision !== undefined ? params.precision : 2,
 		knobWidth = params.knobWidth || 30,
 		knobHeight = params.knobHeight || knobWidth,
@@ -2226,7 +2215,7 @@ SOROLLET.KnobGUI = function( params ) {
 		var number = onMouseDownValue + ( distance / ( e.shiftKey ? 10 : 100 ) ) * scope.step;
 
 		value = Math.min( scope.max, Math.max( scope.min, number ) ).toFixed( scope.precision );
-console.log( value, scope.precision );
+
 		if( onChangeHandler ) {
 			onChangeHandler();
 		}

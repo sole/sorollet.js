@@ -9,7 +9,6 @@
 		<div id="about">
 			<h1><span id="example_number">01</span><br />LISTEN, WORLD!</h1>
 			<p>This is a very early test/demo for <a href="https://github.com/sole/sorollet.js">Sorollet.js</a> &mdash;a Javascript software synthesiser by <a href="http://5013.es/">5013</a>.</p>
-			<p>Press the <em>ZSXDCFV...</em> keys to trigger sounds, and use the mouse to adjust synth parameters.</p>
 			<p id="note">Please enjoy any visual or auditive oddity. It might not last... or stay forever! Also: <strong>requires</strong> the Web Audio API.</p>
 		</div>
 		<div id="voice_container"></div>
@@ -20,7 +19,7 @@
 				padding: 0;
 			}
 			body {
-				padding: 10px;
+				padding: 2em 0;
 				font-family: Arial, sans-serif;
 				font-size: 62.5%;
 				position: relative;
@@ -34,7 +33,7 @@
 			#about {
 				position: relative;
 				float: left;
-				width: 250px;
+				width: 300px;
 				box-sizing: border-box;
 				padding: 0 2em;
 			}
@@ -84,17 +83,14 @@
 				box-orient: horizontal;
 				-webkit-box-orient: horizontal;
 				-moz-box-orient: horizontal;
-				xborder: 1px solid red;
 			}
 				.ADSR_GUI .output_range {
-					xborder: 1px solid green;
 				}
 
 				.ADSR_GUI .graph_controls {
-					xborder: 1px solid blue;
 				}
 
-			.controls_row, .ADSR_GUI .knobs, .adsr_knobs {
+			.controls_row {
 				display: box;
 				display: -webkit-box;
 				display: -moz-box;

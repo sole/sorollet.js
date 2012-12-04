@@ -37,7 +37,7 @@ window.onload = function init() {
 	canvas = document.createElement( 'canvas' );
 	ctx = canvas.getContext('2d');
 
-	var canvasW = 320, canvasH = 240;
+	var canvasW = 300, canvasH = 240;
 		canvas.width = canvasW;
 		canvas.height = canvasH;
 
@@ -109,6 +109,4 @@ window.onload = function init() {
 	canvasKeyboardContainer.appendChild( canvas );
 	canvasKeyboardContainer.appendChild( keyboardGUI.dom );
 	
-
-	//document.body.focus();
 }
