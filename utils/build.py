@@ -13,6 +13,7 @@ FILES_GUI = [
 	'libs/signals.min.js',
 	'libs/UI.js',
 	'libs/StringFormat.js',
+	'gui/ADSRGUI.js',
 	'gui/VoiceGUI.js',
 	'gui/KeyboardGUI.js',
 	'gui/KnobGUI.js'
