@@ -94,6 +94,7 @@ SOROLLET.KnobGUI = function( params ) {
 
 	this.onChange = function( newOnChangeHandler ) {
 		onChangeHandler = newOnChangeHandler;
+		return this;
 	}
 
 	this.dom = dom;
