@@ -1,6 +1,10 @@
 SOROLLET.KnobGUI = function( params ) {
 	var params = params || {},
 		labelTxt = params.label || '',
+		minValue = params.min !== undefined ? params.min : 0.0,
+		maxValue = params.max !== undefined ? params.max : 1.0,
+		stepValue = params.step !== undefined ? params.step : 0.1,
+		precisionValue = params.precision !== undefined ? params.precision : 2,
 		knobWidth = params.knobWidth || 30,
 		knobHeight = params.knobHeight || knobWidth,
 		strokeStyle = params.strokeStyle || '#000000',
@@ -12,7 +16,6 @@ SOROLLET.KnobGUI = function( params ) {
 		label = document.createElement( 'div' ),
 		scope = this;
 
-
 	dom.className = 'knob';
 
 	dom.appendChild( canvas );
@@ -23,8 +26,11 @@ SOROLLET.KnobGUI = function( params ) {
 	label.innerHTML = labelTxt;
 	dom.appendChild( label );
 
+	//
+	
 	var distance = 0,
 		onMouseDownValue = 0;
+
 	function onMouseDown( e ) {
 		e.preventDefault();
 		distance = 0;
@@ -67,11 +73,9 @@ SOROLLET.KnobGUI = function( params ) {
 	}
 
 	function updateGraph() {
-		//ctx.fillStyle = '#000000';
-		//ctx.fillRect( 0, 0, knobWidth, knobHeight );
 		ctx.clearRect( 0, 0, knobWidth, knobHeight );
 
-		ctx.strokeStyle = strokeStyle;//'#00ff00';
+		ctx.strokeStyle = strokeStyle;
 		ctx.lineWidth = 2;
 
 		var cx = knobWidth * 0.5,
@@ -99,10 +103,10 @@ SOROLLET.KnobGUI = function( params ) {
 
 	this.dom = dom;
 
-	this.min = 0;
-	this.max = 1;
-	this.step = 0.1;
-	this.precision = 2;
+	this.min = minValue;
+	this.max = maxValue;
+	this.step = stepValue;
+	this.precision = precisionValue;
 
 	return this;
 }
