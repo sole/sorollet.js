@@ -2001,61 +2001,39 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 		panel = new UI.Panel( 'relative' );
 
 	panel.add( new UI.Text().setValue( labelName ).setClass( 'section_label'  ) );
-	panel.add( new UI.Break() );
 
-	var indent = '90px',
-		labelColor = '#666';
-
-	var waveTypeRow = new UI.Panel(),
-		waveTypeSelect = new UI.Select( 'absolute' )
-		.setLeft( indent )
-		.setWidth( '150px' )
-		.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_NAMES )
-		.onChange( onChange );
-
-	waveTypeRow.add( new UI.Text().setValue( 'Wave type' ).setColor( labelColor ) );
-	waveTypeRow.add( waveTypeSelect );
-	panel.add( waveTypeRow );
-
-	var volumeRow = new UI.Panel(),
-		volumeInput = new UI.Number( 'absolute' )
-			.setLeft( indent )
+	var row = new UI.Panel(),
+		div = document.createElement('div'),
+		waveTypeSelect = new UI.Select( )
+			.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_NAMES )
+			.onChange( onChange ),
+		volumeInput = new SOROLLET.KnobGUI({ label: 'Volume' })
+			.onChange( onChange ),
+		octaveInput = new SOROLLET.KnobGUI({ label: 'Octave' })
+			.onChange( onChange ),
+		phaseInput = new SOROLLET.KnobGUI({ label: 'Phase' })
 			.onChange( onChange );
+
+
+	panel.add( row );
+	row.setClass('controls_row');
+
+	row.add( waveTypeSelect );
+	row.add( volumeInput );
+	row.add( octaveInput );
+	row.add( phaseInput );
 
 	volumeInput.min = 0.0;
 	volumeInput.max = 1.0;
-
-	volumeRow.add( new UI.Text().setValue( 'Volume' ) ).setColor( labelColor );
-	volumeRow.add( volumeInput );
-	panel.add( volumeRow );
-	
-	var octaveRow = new UI.Panel(),
-		octaveInput = new UI.Number( 'absolute' )
-			.setLeft( indent )
-			.onChange( onChange );
-
+		
 	octaveInput.min = 0;
 	octaveInput.max = 9;
 	octaveInput.step = 1;
 	octaveInput.precision = 0;
 	
-	octaveRow.add( new UI.Text().setValue( 'Octave' ) ).setColor( labelColor );
-	octaveRow.add( octaveInput );
-	panel.add( octaveRow );
-
-
-	var phaseRow = new UI.Panel(),
-		phaseInput = new UI.Number( 'absolute' )
-			.setLeft( indent )
-			.onChange( onChange );
-
 	phaseInput.min = - Math.PI;
 	phaseInput.max = Math.PI;
 	
-	phaseRow.add( new UI.Text().setValue( 'Phase' ) ).setColor( labelColor );
-	phaseRow.add( phaseInput );
-	panel.add( phaseRow );
-
 	//
 	
 	this.waveType = waveTypeSelect;
@@ -2301,6 +2279,7 @@ SOROLLET.KnobGUI = function( params ) {
 
 	this.onChange = function( newOnChangeHandler ) {
 		onChangeHandler = newOnChangeHandler;
+		return this;
 	}
 
 	this.dom = dom;
