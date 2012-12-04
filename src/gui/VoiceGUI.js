@@ -251,11 +251,11 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 		waveTypeSelect = new UI.Select( )
 			.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_NAMES )
 			.onChange( onChange ),
-		volumeInput = new SOROLLET.KnobGUI({ label: 'Volume' })
+		volumeInput = new SOROLLET.KnobGUI({ label: 'Volume', min: 0.0, max: 1.0 })
 			.onChange( onChange ),
-		octaveInput = new SOROLLET.KnobGUI({ label: 'Octave' })
+		octaveInput = new SOROLLET.KnobGUI({ label: 'Octave', min: 0, max: 9, step: 1, precision: 0 })
 			.onChange( onChange ),
-		phaseInput = new SOROLLET.KnobGUI({ label: 'Phase' })
+		phaseInput = new SOROLLET.KnobGUI({ label: 'Phase', min: -Math.PI, max: Math.PI })
 			.onChange( onChange );
 
 
@@ -266,17 +266,6 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 	row.add( volumeInput );
 	row.add( octaveInput );
 	row.add( phaseInput );
-
-	volumeInput.min = 0.0;
-	volumeInput.max = 1.0;
-		
-	octaveInput.min = 0;
-	octaveInput.max = 9;
-	octaveInput.step = 1;
-	octaveInput.precision = 0;
-	
-	phaseInput.min = - Math.PI;
-	phaseInput.max = Math.PI;
 	
 	//
 	

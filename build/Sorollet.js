@@ -1541,8 +1541,8 @@ SOROLLET.ADSRGUI = function( params ) {
 		subPanel = new UI.Panel().setClass('ADSR_GUI'),
 		leftDiv = document.createElement( 'div' ),
 		rightDiv = document.createElement( 'div' ),
-		outputMinKnob = new SOROLLET.KnobGUI({ label: 'MIN' }),
-		outputMaxKnob = new SOROLLET.KnobGUI({ label: 'MAX' }),
+		outputMinKnob = new SOROLLET.KnobGUI({ label: 'MIN', min: outMin, max: outMax, step: step }),
+		outputMaxKnob = new SOROLLET.KnobGUI({ label: 'MAX', min: outMin, max: outMax, step: step }),
 		knobsDiv = document.createElement( 'div' ),
 		attackKnob = new SOROLLET.KnobGUI({ label: 'ATTACK' }),
 		decayKnob = new SOROLLET.KnobGUI({ label: 'DECAY' }),
@@ -1561,14 +1561,7 @@ SOROLLET.ADSRGUI = function( params ) {
 	leftDiv.appendChild( outputMaxKnob.dom );
 	leftDiv.appendChild( outputMinKnob.dom );
 
-	outputMinKnob.min = outMin;
-	outputMinKnob.max = outMax;
-	outputMinKnob.step = step;
 	outputMinKnob.onChange( onChange );
-
-	outputMaxKnob.min = outMin;
-	outputMaxKnob.max = outMax;
-	outputMaxKnob.step = step;
 	outputMaxKnob.onChange( onChange );
 
 	// TODO refactor canvas & handling into ADSR_Graph
@@ -2007,11 +2000,11 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 		waveTypeSelect = new UI.Select( )
 			.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_NAMES )
 			.onChange( onChange ),
-		volumeInput = new SOROLLET.KnobGUI({ label: 'Volume' })
+		volumeInput = new SOROLLET.KnobGUI({ label: 'Volume', min: 0.0, max: 1.0 })
 			.onChange( onChange ),
-		octaveInput = new SOROLLET.KnobGUI({ label: 'Octave' })
+		octaveInput = new SOROLLET.KnobGUI({ label: 'Octave', min: 0, max: 9, step: 1, precision: 0 })
 			.onChange( onChange ),
-		phaseInput = new SOROLLET.KnobGUI({ label: 'Phase' })
+		phaseInput = new SOROLLET.KnobGUI({ label: 'Phase', min: -Math.PI, max: Math.PI })
 			.onChange( onChange );
 
 
@@ -2023,7 +2016,7 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 	row.add( octaveInput );
 	row.add( phaseInput );
 
-	volumeInput.min = 0.0;
+	/*volumeInput.min = 0.0;
 	volumeInput.max = 1.0;
 		
 	octaveInput.min = 0;
@@ -2032,7 +2025,7 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 	octaveInput.precision = 0;
 	
 	phaseInput.min = - Math.PI;
-	phaseInput.max = Math.PI;
+	phaseInput.max = Math.PI;*/
 	
 	//
 	
@@ -2186,6 +2179,10 @@ SOROLLET.KeyboardGUI = function( params ) {
 SOROLLET.KnobGUI = function( params ) {
 	var params = params || {},
 		labelTxt = params.label || '',
+		minValue = params.min || 0.0,
+		maxValue = params.max || 1.0,
+		stepValue = params.step || 0.1,
+		precisionValue = params.precision !== undefined ? params.precision : 2,
 		knobWidth = params.knobWidth || 30,
 		knobHeight = params.knobHeight || knobWidth,
 		strokeStyle = params.strokeStyle || '#000000',
@@ -2197,7 +2194,6 @@ SOROLLET.KnobGUI = function( params ) {
 		label = document.createElement( 'div' ),
 		scope = this;
 
-
 	dom.className = 'knob';
 
 	dom.appendChild( canvas );
@@ -2208,8 +2204,11 @@ SOROLLET.KnobGUI = function( params ) {
 	label.innerHTML = labelTxt;
 	dom.appendChild( label );
 
+	//
+	
 	var distance = 0,
 		onMouseDownValue = 0;
+
 	function onMouseDown( e ) {
 		e.preventDefault();
 		distance = 0;
@@ -2227,7 +2226,7 @@ SOROLLET.KnobGUI = function( params ) {
 		var number = onMouseDownValue + ( distance / ( e.shiftKey ? 10 : 100 ) ) * scope.step;
 
 		value = Math.min( scope.max, Math.max( scope.min, number ) ).toFixed( scope.precision );
-
+console.log( value, scope.precision );
 		if( onChangeHandler ) {
 			onChangeHandler();
 		}
@@ -2252,11 +2251,9 @@ SOROLLET.KnobGUI = function( params ) {
 	}
 
 	function updateGraph() {
-		//ctx.fillStyle = '#000000';
-		//ctx.fillRect( 0, 0, knobWidth, knobHeight );
 		ctx.clearRect( 0, 0, knobWidth, knobHeight );
 
-		ctx.strokeStyle = strokeStyle;//'#00ff00';
+		ctx.strokeStyle = strokeStyle;
 		ctx.lineWidth = 2;
 
 		var cx = knobWidth * 0.5,
@@ -2284,10 +2281,10 @@ SOROLLET.KnobGUI = function( params ) {
 
 	this.dom = dom;
 
-	this.min = 0;
-	this.max = 1;
-	this.step = 0.1;
-	this.precision = 2;
+	this.min = minValue;
+	this.max = maxValue;
+	this.step = stepValue;
+	this.precision = precisionValue;
 
 	return this;
 }

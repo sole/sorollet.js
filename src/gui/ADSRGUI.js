@@ -12,8 +12,8 @@ SOROLLET.ADSRGUI = function( params ) {
 		subPanel = new UI.Panel().setClass('ADSR_GUI'),
 		leftDiv = document.createElement( 'div' ),
 		rightDiv = document.createElement( 'div' ),
-		outputMinKnob = new SOROLLET.KnobGUI({ label: 'MIN' }),
-		outputMaxKnob = new SOROLLET.KnobGUI({ label: 'MAX' }),
+		outputMinKnob = new SOROLLET.KnobGUI({ label: 'MIN', min: outMin, max: outMax, step: step }),
+		outputMaxKnob = new SOROLLET.KnobGUI({ label: 'MAX', min: outMin, max: outMax, step: step }),
 		knobsDiv = document.createElement( 'div' ),
 		attackKnob = new SOROLLET.KnobGUI({ label: 'ATTACK' }),
 		decayKnob = new SOROLLET.KnobGUI({ label: 'DECAY' }),
@@ -32,14 +32,7 @@ SOROLLET.ADSRGUI = function( params ) {
 	leftDiv.appendChild( outputMaxKnob.dom );
 	leftDiv.appendChild( outputMinKnob.dom );
 
-	outputMinKnob.min = outMin;
-	outputMinKnob.max = outMax;
-	outputMinKnob.step = step;
 	outputMinKnob.onChange( onChange );
-
-	outputMaxKnob.min = outMin;
-	outputMaxKnob.max = outMax;
-	outputMaxKnob.step = step;
 	outputMaxKnob.onChange( onChange );
 
 	// TODO refactor canvas & handling into ADSR_Graph
