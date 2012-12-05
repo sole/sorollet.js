@@ -7,6 +7,8 @@ SOROLLET.ADSR = function( attackLength, decayLength, sustainLevel, releaseLength
 	this.attackEndTime = 0;
 	this.decayEndTime = 0;
 	this.releaseStartTime = 0;
+	this.releaseEndValue = 0;
+	this.releaseStartValue = 0;
 	
 	this.__unscaledAttackLength = 0;
 	this.attackLength = 0;
@@ -79,6 +81,7 @@ SOROLLET.ADSR.prototype = {
 
 	beginRelease: function( time ) {
 		this.state = this.STATE_RELEASE;
+		this.releaseStartValue = this.lastValue;
 		this.releaseStartTime = time;
 		this.releaseEndTime = time + this.releaseLength;
 
@@ -120,7 +123,7 @@ SOROLLET.ADSR.prototype = {
 				this.state = this.STATE_DONE;
 				scaledValue = this.outputMinimumValue;
 			} else {
-				scaledValue = map( time, this.releaseStartTime, this.releaseEndTime, scaledSustainLevel, this.outputMinimumValue );
+				scaledValue = map( time, this.releaseStartTime, this.releaseEndTime, this.releaseStartValue, this.outputMinimumValue );
 			}
 
 		}
