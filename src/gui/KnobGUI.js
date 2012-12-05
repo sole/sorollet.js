@@ -47,7 +47,7 @@ SOROLLET.KnobGUI = function( params ) {
 
 		var number = onMouseDownValue + ( distance / ( e.shiftKey ? 10 : 100 ) ) * scope.step;
 
-		value = Math.min( scope.max, Math.max( scope.min, number ) ).toFixed( scope.precision );
+		value = Math.min( scope.max, Math.max( scope.min, number ) ).toFixed( scope.precision ) * 1;
 
 		if( onChangeHandler ) {
 			onChangeHandler();
