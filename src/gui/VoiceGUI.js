@@ -8,6 +8,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	var container = new UI.Panel( 'relative' );
 	container.setWidth( '300px' );
 	container.setBackgroundColor( '#eee' );
+	container.setPadding( '1em' );
 	container.setOverflow( 'auto' );
 
 	function updateOscillatorWithGUI( ev, index ) {
@@ -86,7 +87,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 		env.setRelease( ev.release );
 		env.setOutputRange( ev.outputMin, ev.outputMax );
 		env.setTimeScale( ev.timeScale );
-
+		
 		gui.updateGraph();
 		
 		scope.updateEnvelopeLengths();
