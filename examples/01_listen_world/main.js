@@ -10,6 +10,11 @@ window.onload = function init() {
 
 	voiceGUI.attachTo(voice);
 
+	// DEBUG
+	//var envLastValue = document.createElement('div');
+	//document.body.appendChild( envLastValue );
+	////////
+
 	jsAudioNode.onaudioprocess = function(event) {
 		var buffer = event.outputBuffer,
 			outputBufferLeft = buffer.getChannelData(0),
@@ -25,6 +30,7 @@ window.onload = function init() {
 
 		updateGraph( voiceBuffer );
 
+		//envLastValue.innerHTML = 'Volume ' + voice.ampADSR.lastValue + '<br />' + 'Pitch ' + voice.pitchADSR.lastValue;
 	};
 
 	// Maybe this will fix the 'callback stops being called after a while' issue 
