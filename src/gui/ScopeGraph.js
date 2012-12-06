@@ -2,6 +2,10 @@ SOROLLET.ScopeGraph = function( params ) {
 	var params = params || {},
 		canvasWidth = params.width !== undefined ? params.width : 320,
 		canvasHeight = params.height !== undefined ? params.height : 240,
+		numSlices = params.numSlices !== undefined ? params.numSlices : 128,
+		inverseNumSlices = 1.0 / numSlices,
+		sliceWidth = canvasWidth / numSlices,
+		halfHeight = canvasHeight >> 1,
 		canvas = document.createElement( 'canvas' ),
 		ctx = canvas.getContext( '2d' );
 
@@ -13,23 +17,20 @@ SOROLLET.ScopeGraph = function( params ) {
 	// Data is assumed to be a two dimensional array where X ~ time, and Y ~ values
 	this.update = function( data ) {
 
+		var sliceSize = Math.round(data.length * inverseNumSlices),
+			index = 0;
+
 		ctx.fillStyle = 'rgb(0, 0, 0)';
 		ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-		var num = 128,
-			sliceSize = Math.round(data.length / num),
-			sliceWidth = canvasWidth / num,
-			index = 0;
-
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = 'rgb(0, 255, 0)';
-		var halfHeight = canvasHeight >> 1;
 
 		ctx.beginPath();
 
 		var x = 0;
 
-		for(var i = 0; i < num; i++) {
+		for(var i = 0; i < numSlices; i++) {
 			index += sliceSize ;
 
 			if(index > data.length) {
