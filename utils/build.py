@@ -16,7 +16,8 @@ FILES_GUI = [
 	'gui/ADSRGUI.js',
 	'gui/VoiceGUI.js',
 	'gui/KeyboardGUI.js',
-	'gui/KnobGUI.js'
+	'gui/KnobGUI.js',
+	'gui/ScopeGraph.js'
 ]
 
 ALL_FILES = FILES_CORE + FILES_GUI

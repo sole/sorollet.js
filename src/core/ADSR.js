@@ -84,8 +84,6 @@ SOROLLET.ADSR.prototype = {
 		this.releaseStartValue = this.lastValue;
 		this.releaseStartTime = time;
 		this.releaseEndTime = time + this.releaseLength;
-
-
 	},
 
 	update: function( time ) {
