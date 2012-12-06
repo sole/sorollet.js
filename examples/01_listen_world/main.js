@@ -6,13 +6,14 @@ window.onload = function init() {
 		voice = new SOROLLET.Voice(),
 		voiceGUI = new SOROLLET.VoiceGUI(),
 		keyPressed = false,
-		canvas, ctx;
+		canvas, ctx,
+		debug = false;
 
 	voiceGUI.attachTo(voice);
 
 	// DEBUG
-	//var envLastValue = document.createElement('div');
-	//document.body.appendChild( envLastValue );
+	var envLastValue = document.createElement('div');
+	document.body.appendChild( envLastValue );
 	////////
 
 	jsAudioNode.onaudioprocess = function(event) {
@@ -30,7 +31,9 @@ window.onload = function init() {
 
 		updateGraph( voiceBuffer );
 
-		//envLastValue.innerHTML = 'Volume ' + voice.ampADSR.lastValue + '<br />' + 'Pitch ' + voice.pitchADSR.lastValue;
+		if( debug ) {
+			envLastValue.innerHTML = 'Volume ' + voice.ampADSR.lastValue + '<br />' + 'Pitch ' + voice.pitchADSR.lastValue;
+		}
 	};
 
 	// Maybe this will fix the 'callback stops being called after a while' issue 
