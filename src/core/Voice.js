@@ -296,21 +296,71 @@ SOROLLET.Voice.prototype = {
 		return buffer;
 	},
 
+	functionToIndex: function(f, functionsList ) {
+		for( var i = 0; i < functionsList.length; i++) {
+			var o = functionsList[i];
+			if( o.func == f ) {
+				return i;
+			}
+		}
+		return -1;
+	},
+
 	getParams: function() {
 		return {
-			wave1Function: this.getWaveFunctionIndex( this.wave1Function ),
+			wave1Function: this.functionToIndex( this.wave1Function, this.waveFunctions ),
 			wave1Octave: this.wave1Octave,
 			wave1Volume: this.wave1Volume,
 			wave1Phase: this.wave1Phase,
-			wave2Function: this.getWaveFunctionIndex( this.wave2Function ),
+			wave2Function: this.functionToIndex( this.wave2Function, this.waveFunctions ),
 			wave2Octave: this.wave2Octave,
 			wave2Volume: this.wave2Volume,
 			wave2Phase: this.wave2Phase,
-			waveMixFunction: this.getWaveMixFunctionIndex( this.waveMixFunction ),
+			waveMixFunction: this.functionToIndex( this.waveMixFunction, this.waveMixFunctions ),
 			noiseAmount: this.noiseAmount,
-			noiseMixFunction: this.getNoiseMixFunctionIndex( this.noiseMixFunction ),
+			noiseMixFunction: this.functionToIndex( this.noiseMixFunction, this.noiseMixFunctions ),
 			volumeEnvelope: this.volumeEnvelope.getParams(),
 			pitchEnvelope: this.pitchEnvelope.getParams()
 		};
+	},
+
+	setParams: function( params ) {
+		this.wave1Function = this.waveFunctions[ params.wave1Function ].func;
+		this.wave1Octave = params.wave1Octave;
+		this.wave1Volume = params.wave1Volume;
+		this.wave1Phase = params.wave1Phase;
+		
+		this.wave2Function = this.waveFunctions[ params.wave2Function ].func;
+		this.wave2Octave = params.wave2Octave;
+		this.wave2Volume = params.wave2Volume;
+		this.wave2Phase = params.wave2Phase;
+
+		this.waveMixFunction = this.waveMixFunctions[ params.waveMixFunction ].func;
+		this.noiseAmount = params.noiseAmount;
+		this.noiseMixFunction = this.noiseMixFunctions[ params.noiseMixFunction ].func;
+
+		this.volumeEnvelope.setParams( params.volumeEnvelope );
+		this.pitchEnvelope.setParams( params.pitchEnvelope );
 	}
 }
+
+SOROLLET.Voice.prototype.waveFunctions = [
+	{ func: SOROLLET.Voice.prototype.getSineBuffer, name: 'sine' },
+	{ func: SOROLLET.Voice.prototype.getTriangleBuffer, name: 'triangle' },
+	{ func: SOROLLET.Voice.prototype.getSquareBuffer, name: 'square' },
+	{ func: SOROLLET.Voice.prototype.getSawtoothBuffer, name: 'sawtooth' }
+];
+
+SOROLLET.Voice.prototype.waveMixFunctions = [
+	{ func: SOROLLET.Voice.prototype.mixAdd, name: 'add' },	
+	{ func: SOROLLET.Voice.prototype.mixSubstract, name: 'substract' },
+	{ func: SOROLLET.Voice.prototype.mixMultiply, name: 'multiply' },
+	{ func: SOROLLET.Voice.prototype.mixDivide, name: 'divide' },
+];
+
+SOROLLET.Voice.prototype.noiseMixFunctions = [
+	{ func: SOROLLET.Voice.prototype.noiseAdd, name: 'add' },
+	{ func: SOROLLET.Voice.prototype.noiseMix, name: 'mix' },
+	{ func: SOROLLET.Voice.prototype.noiseMultiply, name: 'multiply' }
+];
+

@@ -129,6 +129,27 @@ SOROLLET.ADSR.prototype = {
 		this.lastValue = scaledValue;
 
 		return scaledValue;
+	},
+
+	getParams: function() {
+		return {
+			attack: this.__unscaledAttackLength,
+			decay: this.__unscaledDecayLength,
+			sustain: this.sustainLevel,
+			release: this.__unscaledReleaseLength,
+			outputMin: this.outputMinimumValue,
+			outputMax: this.outputMaximumValue,
+			timeScale: this.timeScale
+		};
+	},
+
+	setParams: function( params ) {
+		this.timeScale = params.timeScale;
+		this.setOutputRange( params.outputMin, params.outputMax );
+		this.setAttack( params.attack );
+		this.setDecay( params.decay );
+		this.setSustainLevel( params.sustain );
+		this.setRelease( params.release );
 	}
 
 };

@@ -29,12 +29,14 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.add( oscillatorPanel1 );
 	oscillatorPanel1.addEventListener('change', function(e) {
 		updateOscillatorWithGUI( e, 1 );
+		voiceGUIChanged();
 	}, false);
 
 	var oscillatorPanel2 = new SOROLLET.OscillatorGUI(1);
 	container.add( oscillatorPanel2 );
 	oscillatorPanel2.addEventListener('change', function(e) {
 		updateOscillatorWithGUI( e, 2 );
+		voiceGUIChanged();
 	}, false);
 
 	var mixPanel = new UI.Panel(),
@@ -43,6 +45,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 			.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_MIX_NAMES)
 			.onChange( function() {
 				scope.synth.waveMixFunction = SOROLLET.VoiceGUI.prototype.WAVE_MIX_FUNCTIONS[ mixSelect.getValue() ];
+				voiceGUIChanged();
 			} );
 	mixPanel.add( new UI.Text().setValue( 'OSCILLATOR MIX' ).setClass( 'section_label'  ));
 	mixPanel.add( mixRow );
@@ -63,6 +66,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	noiseAmountInput.setWidth( '40px' );
 	noiseAmountInput.onChange( function() {
 		scope.synth.noiseAmount = noiseAmountInput.getValue();
+		voiceGUIChanged();
 	});
 	noiseRow.add( noiseAmountInput );
 	noiseConfigPanel.add( noiseRow );
@@ -72,6 +76,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 			.setOptions( SOROLLET.VoiceGUI.prototype.NOISE_MIX_NAMES )
 			.onChange( function() {
 				scope.synth.noiseMixFunction = SOROLLET.VoiceGUI.prototype.NOISE_MIX_FUNCTIONS[ noiseMixType.getValue() ];
+				voiceGUIChanged();
 			});
 
 	noiseRow.add( new UI.Text().setValue( 'Mix type' ) );
@@ -104,6 +109,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.add( volumeEnvGUI );
 	volumeEnvGUI.addEventListener( 'change', function( e ) {
 		updateEnvelopeWithGUI( e, scope.synth.volumeEnvelope, volumeEnvGUI );
+		voiceGUIChanged();
 	}, false );
 
 	var pitchEnvGUI = new SOROLLET.ADSRGUI({
@@ -117,8 +123,14 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {
 		updateEnvelopeWithGUI( e, scope.synth.pitchEnvelope, pitchEnvGUI );
+		voiceGUIChanged();
 	}, false );
 
+	// Events
+	EventTarget.call( this );
+	function voiceGUIChanged() {
+		scope.dispatchEvent({ type: 'change', synthParams: scope.synth.getParams() });
+	}
 
 
 	// Making stuff 'public'
@@ -199,6 +211,7 @@ SOROLLET.VoiceGUI.prototype = {
 		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchEnvelope.releaseLength );
 	},
 
+	// TODO: refactor this, probably use the arrays in Voice.js
 	WAVE_NAMES: {
 		0: 'Sine',
 		1: 'Triangle',

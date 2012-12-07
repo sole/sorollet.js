@@ -13,8 +13,29 @@ window.onload = function init() {
 		debug = false,
 		envLastValue = document.createElement('div');
 
+	if( window.location.hash ) {
+		try {
+			var hash = window.location.hash,
+				encoded = hash.substr(1),
+				serialised = atob( encoded ),
+				unserialised = JSON.parse( serialised );
+
+			voice.setParams( unserialised );
+
+		} catch( oooh ) {
+			window.location = window.location.href.split('#')[0];
+		}
+	}
 
 	voiceGUI.attachTo(voice);
+	voiceGUI.addEventListener( 'change', function( e ) {
+
+		var serialised = JSON.stringify( e.synthParams ),
+			hash = btoa( serialised );
+		
+		window.location.hash = hash;
+
+	});
 
 	keyboardGUI.dom.tabIndex = 1;
 	keyboardGUI.dom.id = 'keyboard';

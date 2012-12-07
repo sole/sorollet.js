@@ -1,7 +1,6 @@
 // sorollet.js - http://github.com/sole/sorollet.js
 var SOROLLET = SOROLLET || { 
-        REVISION: '2',
-        NOTE_NULL: -1
+        REVISION: '2'
 };
 SOROLLET.Math = {
 
@@ -332,24 +331,74 @@ SOROLLET.Voice.prototype = {
 		return buffer;
 	},
 
+	functionToIndex: function(f, functionsList ) {
+		for( var i = 0; i < functionsList.length; i++) {
+			var o = functionsList[i];
+			if( o.func == f ) {
+				return i;
+			}
+		}
+		return -1;
+	},
+
 	getParams: function() {
 		return {
-			wave1Function: this.getWaveFunctionIndex( this.wave1Function ),
+			wave1Function: this.functionToIndex( this.wave1Function, this.waveFunctions ),
 			wave1Octave: this.wave1Octave,
 			wave1Volume: this.wave1Volume,
 			wave1Phase: this.wave1Phase,
-			wave2Function: this.getWaveFunctionIndex( this.wave2Function ),
+			wave2Function: this.functionToIndex( this.wave2Function, this.waveFunctions ),
 			wave2Octave: this.wave2Octave,
 			wave2Volume: this.wave2Volume,
 			wave2Phase: this.wave2Phase,
-			waveMixFunction: this.getWaveMixFunctionIndex( this.waveMixFunction ),
+			waveMixFunction: this.functionToIndex( this.waveMixFunction, this.waveMixFunctions ),
 			noiseAmount: this.noiseAmount,
-			noiseMixFunction: this.getNoiseMixFunctionIndex( this.noiseMixFunction ),
+			noiseMixFunction: this.functionToIndex( this.noiseMixFunction, this.noiseMixFunctions ),
 			volumeEnvelope: this.volumeEnvelope.getParams(),
 			pitchEnvelope: this.pitchEnvelope.getParams()
 		};
+	},
+
+	setParams: function( params ) {
+		this.wave1Function = this.waveFunctions[ params.wave1Function ].func;
+		this.wave1Octave = params.wave1Octave;
+		this.wave1Volume = params.wave1Volume;
+		this.wave1Phase = params.wave1Phase;
+		
+		this.wave2Function = this.waveFunctions[ params.wave2Function ].func;
+		this.wave2Octave = params.wave2Octave;
+		this.wave2Volume = params.wave2Volume;
+		this.wave2Phase = params.wave2Phase;
+
+		this.waveMixFunction = this.waveMixFunctions[ params.waveMixFunction ].func;
+		this.noiseAmount = params.noiseAmount;
+		this.noiseMixFunction = this.noiseMixFunctions[ params.noiseMixFunction ].func;
+
+		this.volumeEnvelope.setParams( params.volumeEnvelope );
+		this.pitchEnvelope.setParams( params.pitchEnvelope );
 	}
 }
+
+SOROLLET.Voice.prototype.waveFunctions = [
+	{ func: SOROLLET.Voice.prototype.getSineBuffer, name: 'sine' },
+	{ func: SOROLLET.Voice.prototype.getTriangleBuffer, name: 'triangle' },
+	{ func: SOROLLET.Voice.prototype.getSquareBuffer, name: 'square' },
+	{ func: SOROLLET.Voice.prototype.getSawtoothBuffer, name: 'sawtooth' }
+];
+
+SOROLLET.Voice.prototype.waveMixFunctions = [
+	{ func: SOROLLET.Voice.prototype.mixAdd, name: 'add' },	
+	{ func: SOROLLET.Voice.prototype.mixSubstract, name: 'substract' },
+	{ func: SOROLLET.Voice.prototype.mixMultiply, name: 'multiply' },
+	{ func: SOROLLET.Voice.prototype.mixDivide, name: 'divide' },
+];
+
+SOROLLET.Voice.prototype.noiseMixFunctions = [
+	{ func: SOROLLET.Voice.prototype.noiseAdd, name: 'add' },
+	{ func: SOROLLET.Voice.prototype.noiseMix, name: 'mix' },
+	{ func: SOROLLET.Voice.prototype.noiseMultiply, name: 'multiply' }
+];
+
 'use strict';
 SOROLLET.ADSR = function( attackLength, decayLength, sustainLevel, releaseLength, timeScale ) {
 	this.state = this.STATE_DONE;
@@ -481,6 +530,27 @@ SOROLLET.ADSR.prototype = {
 		this.lastValue = scaledValue;
 
 		return scaledValue;
+	},
+
+	getParams: function() {
+		return {
+			attack: this.__unscaledAttackLength,
+			decay: this.__unscaledDecayLength,
+			sustain: this.sustainLevel,
+			release: this.__unscaledReleaseLength,
+			outputMin: this.outputMinimumValue,
+			outputMax: this.outputMaximumValue,
+			timeScale: this.timeScale
+		};
+	},
+
+	setParams: function( params ) {
+		this.timeScale = params.timeScale;
+		this.setOutputRange( params.outputMin, params.outputMax );
+		this.setAttack( params.attack );
+		this.setDecay( params.decay );
+		this.setSustainLevel( params.sustain );
+		this.setRelease( params.release );
 	}
 
 };
@@ -1796,12 +1866,14 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.add( oscillatorPanel1 );
 	oscillatorPanel1.addEventListener('change', function(e) {
 		updateOscillatorWithGUI( e, 1 );
+		voiceGUIChanged();
 	}, false);
 
 	var oscillatorPanel2 = new SOROLLET.OscillatorGUI(1);
 	container.add( oscillatorPanel2 );
 	oscillatorPanel2.addEventListener('change', function(e) {
 		updateOscillatorWithGUI( e, 2 );
+		voiceGUIChanged();
 	}, false);
 
 	var mixPanel = new UI.Panel(),
@@ -1810,6 +1882,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 			.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_MIX_NAMES)
 			.onChange( function() {
 				scope.synth.waveMixFunction = SOROLLET.VoiceGUI.prototype.WAVE_MIX_FUNCTIONS[ mixSelect.getValue() ];
+				voiceGUIChanged();
 			} );
 	mixPanel.add( new UI.Text().setValue( 'OSCILLATOR MIX' ).setClass( 'section_label'  ));
 	mixPanel.add( mixRow );
@@ -1830,6 +1903,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	noiseAmountInput.setWidth( '40px' );
 	noiseAmountInput.onChange( function() {
 		scope.synth.noiseAmount = noiseAmountInput.getValue();
+		voiceGUIChanged();
 	});
 	noiseRow.add( noiseAmountInput );
 	noiseConfigPanel.add( noiseRow );
@@ -1839,6 +1913,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 			.setOptions( SOROLLET.VoiceGUI.prototype.NOISE_MIX_NAMES )
 			.onChange( function() {
 				scope.synth.noiseMixFunction = SOROLLET.VoiceGUI.prototype.NOISE_MIX_FUNCTIONS[ noiseMixType.getValue() ];
+				voiceGUIChanged();
 			});
 
 	noiseRow.add( new UI.Text().setValue( 'Mix type' ) );
@@ -1871,6 +1946,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.add( volumeEnvGUI );
 	volumeEnvGUI.addEventListener( 'change', function( e ) {
 		updateEnvelopeWithGUI( e, scope.synth.volumeEnvelope, volumeEnvGUI );
+		voiceGUIChanged();
 	}, false );
 
 	var pitchEnvGUI = new SOROLLET.ADSRGUI({
@@ -1884,8 +1960,14 @@ SOROLLET.VoiceGUI = function( signals ) {
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {
 		updateEnvelopeWithGUI( e, scope.synth.pitchEnvelope, pitchEnvGUI );
+		voiceGUIChanged();
 	}, false );
 
+	// Events
+	EventTarget.call( this );
+	function voiceGUIChanged() {
+		scope.dispatchEvent({ type: 'change', synthParams: scope.synth.getParams() });
+	}
 
 
 	// Making stuff 'public'
@@ -1966,6 +2048,7 @@ SOROLLET.VoiceGUI.prototype = {
 		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchEnvelope.releaseLength );
 	},
 
+	// TODO: refactor this, probably use the arrays in Voice.js
 	WAVE_NAMES: {
 		0: 'Sine',
 		1: 'Triangle',
