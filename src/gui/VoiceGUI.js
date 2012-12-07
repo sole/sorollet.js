@@ -93,7 +93,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 		scope.updateEnvelopeLengths();
 	}
 
-	var ampEnvGUI = new SOROLLET.ADSRGUI({
+	var volumeEnvGUI = new SOROLLET.ADSRGUI({
 		label: 'VOLUME ENVELOPE',
 		outMin: 0,
 		outMax: 8,
@@ -101,9 +101,9 @@ SOROLLET.VoiceGUI = function( signals ) {
 		timeMin: 0,
 		timeMax: 32
 	});
-	container.add( ampEnvGUI );
-	ampEnvGUI.addEventListener( 'change', function( e ) {
-		updateEnvelopeWithGUI( e, scope.synth.ampADSR, ampEnvGUI );
+	container.add( volumeEnvGUI );
+	volumeEnvGUI.addEventListener( 'change', function( e ) {
+		updateEnvelopeWithGUI( e, scope.synth.volumeEnvelope, volumeEnvGUI );
 	}, false );
 
 	var pitchEnvGUI = new SOROLLET.ADSRGUI({
@@ -116,7 +116,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	});
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {
-		updateEnvelopeWithGUI( e, scope.synth.pitchADSR, pitchEnvGUI );
+		updateEnvelopeWithGUI( e, scope.synth.pitchEnvelope, pitchEnvGUI );
 	}, false );
 
 
@@ -128,7 +128,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	this.waveMix = mixSelect;
 	this.noiseAmount = noiseAmountInput;
 	this.noiseMix = noiseMixType;
-	this.ampEnvGUI = ampEnvGUI;
+	this.volumeEnvGUI = volumeEnvGUI;
 	this.pitchEnvGUI = pitchEnvGUI;
 
 
@@ -173,30 +173,30 @@ SOROLLET.VoiceGUI.prototype = {
 			gui.outputMax.setValue( env.outputMaximumValue );
 		}
 
-		updateADSRGUIWithEnvelope( this.ampEnvGUI, synth.ampADSR );
-		updateADSRGUIWithEnvelope( this.pitchEnvGUI, synth.pitchADSR );
+		updateADSRGUIWithEnvelope( this.volumeEnvGUI, synth.volumeEnvelope );
+		updateADSRGUIWithEnvelope( this.pitchEnvGUI, synth.pitchEnvelope );
 
 		this.synth = synth;
 
 		this.updateEnvelopeLengths();	
 		
-		this.ampEnvGUI.updateGraph();
+		this.volumeEnvGUI.updateGraph();
 		this.pitchEnvGUI.updateGraph();
 	},
 
 	updateEnvelopeLengths: function() {
 		var synth = this.synth,
-			ampEnvGUI = this.ampEnvGUI,
-			ampADSR = synth.ampADSR,
+			volumeEnvGUI = this.volumeEnvGUI,
+			volumeEnvelope = synth.volumeEnvelope,
 			pitchEnvGUI = this.pitchEnvGUI,
-			pitchADSR = synth.pitchADSR;
+			pitchEnvelope = synth.pitchEnvelope;
 
-		ampEnvGUI.attackLength = StringFormat.toFixed( ampADSR.attackLength );
-		ampEnvGUI.decayLength = StringFormat.toFixed( ampADSR.decayLength );
-		ampEnvGUI.releaseLength = StringFormat.toFixed( ampADSR.releaseLength );
-		pitchEnvGUI.attackLength = StringFormat.toFixed( pitchADSR.attackLength );
-		pitchEnvGUI.decayLength = StringFormat.toFixed( pitchADSR.decayLength );
-		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchADSR.releaseLength );
+		volumeEnvGUI.attackLength = StringFormat.toFixed( volumeEnvelope.attackLength );
+		volumeEnvGUI.decayLength = StringFormat.toFixed( volumeEnvelope.decayLength );
+		volumeEnvGUI.releaseLength = StringFormat.toFixed( volumeEnvelope.releaseLength );
+		pitchEnvGUI.attackLength = StringFormat.toFixed( pitchEnvelope.attackLength );
+		pitchEnvGUI.decayLength = StringFormat.toFixed( pitchEnvelope.decayLength );
+		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchEnvelope.releaseLength );
 	},
 
 	WAVE_NAMES: {

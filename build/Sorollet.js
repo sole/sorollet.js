@@ -61,11 +61,11 @@ SOROLLET.Voice = function() {
 	this.noiseAmount = 0.0;
 	this.noiseMixFunction = this.noiseAdd;
 
-	this.ampADSR = new SOROLLET.ADSR(0.5, 0, 1, 1, 1);
-	this.pitchADSR = new SOROLLET.ADSR(0, 0, 1, 0, 1);
+	this.volumeEnvelope = new SOROLLET.ADSR(0.5, 0, 1, 1, 1);
+	this.pitchEnvelope = new SOROLLET.ADSR(0, 0, 1, 0, 1);
 
-	this.ampADSR.setOutputRange( 0, 1 );
-	this.pitchADSR.setOutputRange( 0, 0 );
+	this.volumeEnvelope.setOutputRange( 0, 1 );
+	this.pitchEnvelope.setOutputRange( 0, 0 );
 
 }
 
@@ -204,14 +204,14 @@ SOROLLET.Voice.prototype = {
 		this.currentVolume = volume;
 
 		var t = this.getTime();
-		this.ampADSR.beginAttack(t);
-		this.pitchADSR.beginAttack(t);
+		this.volumeEnvelope.beginAttack(t);
+		this.pitchEnvelope.beginAttack(t);
 	},
 
 	sendNoteOff: function() {
 		var t = this.getTime();
-		this.ampADSR.beginRelease(t);
-		this.pitchADSR.beginRelease(t);
+		this.volumeEnvelope.beginRelease(t);
+		this.pitchEnvelope.beginRelease(t);
 	},
 	
 	getBuffer: function(numSamples) {
@@ -249,7 +249,7 @@ SOROLLET.Voice.prototype = {
 
 		zeroBufferFn(buffer, numSamples);
 
-		if( this.ampADSR.state == SOROLLET.ADSR.STATE_DONE ) {
+		if( this.volumeEnvelope.state == SOROLLET.ADSR.STATE_DONE ) {
 			this.currentNote = null;
 			currentNote = null;
 		}
@@ -268,12 +268,12 @@ SOROLLET.Voice.prototype = {
 		// Fill the amp and pitch buffers for this run
 		
 		for (var i = 0; i < numSamples; i++) {
-			var pitchEnv = this.pitchADSR.update(bufferTime),
+			var pitchEnv = this.pitchEnvelope.update(bufferTime),
 				sampleNote = currentNote + pitchEnv;
 
 			bufferPitch1[i] = this.noteToFrequency(sampleNote, wave1Octave);
 			bufferPitch2[i] = this.noteToFrequency(sampleNote, wave2Octave);
-			bufferAmp[i] = this.ampADSR.update(bufferTime);
+			bufferAmp[i] = this.volumeEnvelope.update(bufferTime);
 			
 			bufferTime += inverseSamplingRate;
 		}
@@ -330,8 +330,25 @@ SOROLLET.Voice.prototype = {
 		this.internalSamplePosition += numSamples;
 
 		return buffer;
-	}
+	},
 
+	getParams: function() {
+		return {
+			wave1Function: this.getWaveFunctionIndex( this.wave1Function ),
+			wave1Octave: this.wave1Octave,
+			wave1Volume: this.wave1Volume,
+			wave1Phase: this.wave1Phase,
+			wave2Function: this.getWaveFunctionIndex( this.wave2Function ),
+			wave2Octave: this.wave2Octave,
+			wave2Volume: this.wave2Volume,
+			wave2Phase: this.wave2Phase,
+			waveMixFunction: this.getWaveMixFunctionIndex( this.waveMixFunction ),
+			noiseAmount: this.noiseAmount,
+			noiseMixFunction: this.getNoiseMixFunctionIndex( this.noiseMixFunction ),
+			volumeEnvelope: this.volumeEnvelope.getParams(),
+			pitchEnvelope: this.pitchEnvelope.getParams()
+		};
+	}
 }
 'use strict';
 SOROLLET.ADSR = function( attackLength, decayLength, sustainLevel, releaseLength, timeScale ) {
@@ -1843,7 +1860,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 		scope.updateEnvelopeLengths();
 	}
 
-	var ampEnvGUI = new SOROLLET.ADSRGUI({
+	var volumeEnvGUI = new SOROLLET.ADSRGUI({
 		label: 'VOLUME ENVELOPE',
 		outMin: 0,
 		outMax: 8,
@@ -1851,9 +1868,9 @@ SOROLLET.VoiceGUI = function( signals ) {
 		timeMin: 0,
 		timeMax: 32
 	});
-	container.add( ampEnvGUI );
-	ampEnvGUI.addEventListener( 'change', function( e ) {
-		updateEnvelopeWithGUI( e, scope.synth.ampADSR, ampEnvGUI );
+	container.add( volumeEnvGUI );
+	volumeEnvGUI.addEventListener( 'change', function( e ) {
+		updateEnvelopeWithGUI( e, scope.synth.volumeEnvelope, volumeEnvGUI );
 	}, false );
 
 	var pitchEnvGUI = new SOROLLET.ADSRGUI({
@@ -1866,7 +1883,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	});
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {
-		updateEnvelopeWithGUI( e, scope.synth.pitchADSR, pitchEnvGUI );
+		updateEnvelopeWithGUI( e, scope.synth.pitchEnvelope, pitchEnvGUI );
 	}, false );
 
 
@@ -1878,7 +1895,7 @@ SOROLLET.VoiceGUI = function( signals ) {
 	this.waveMix = mixSelect;
 	this.noiseAmount = noiseAmountInput;
 	this.noiseMix = noiseMixType;
-	this.ampEnvGUI = ampEnvGUI;
+	this.volumeEnvGUI = volumeEnvGUI;
 	this.pitchEnvGUI = pitchEnvGUI;
 
 
@@ -1923,30 +1940,30 @@ SOROLLET.VoiceGUI.prototype = {
 			gui.outputMax.setValue( env.outputMaximumValue );
 		}
 
-		updateADSRGUIWithEnvelope( this.ampEnvGUI, synth.ampADSR );
-		updateADSRGUIWithEnvelope( this.pitchEnvGUI, synth.pitchADSR );
+		updateADSRGUIWithEnvelope( this.volumeEnvGUI, synth.volumeEnvelope );
+		updateADSRGUIWithEnvelope( this.pitchEnvGUI, synth.pitchEnvelope );
 
 		this.synth = synth;
 
 		this.updateEnvelopeLengths();	
 		
-		this.ampEnvGUI.updateGraph();
+		this.volumeEnvGUI.updateGraph();
 		this.pitchEnvGUI.updateGraph();
 	},
 
 	updateEnvelopeLengths: function() {
 		var synth = this.synth,
-			ampEnvGUI = this.ampEnvGUI,
-			ampADSR = synth.ampADSR,
+			volumeEnvGUI = this.volumeEnvGUI,
+			volumeEnvelope = synth.volumeEnvelope,
 			pitchEnvGUI = this.pitchEnvGUI,
-			pitchADSR = synth.pitchADSR;
+			pitchEnvelope = synth.pitchEnvelope;
 
-		ampEnvGUI.attackLength = StringFormat.toFixed( ampADSR.attackLength );
-		ampEnvGUI.decayLength = StringFormat.toFixed( ampADSR.decayLength );
-		ampEnvGUI.releaseLength = StringFormat.toFixed( ampADSR.releaseLength );
-		pitchEnvGUI.attackLength = StringFormat.toFixed( pitchADSR.attackLength );
-		pitchEnvGUI.decayLength = StringFormat.toFixed( pitchADSR.decayLength );
-		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchADSR.releaseLength );
+		volumeEnvGUI.attackLength = StringFormat.toFixed( volumeEnvelope.attackLength );
+		volumeEnvGUI.decayLength = StringFormat.toFixed( volumeEnvelope.decayLength );
+		volumeEnvGUI.releaseLength = StringFormat.toFixed( volumeEnvelope.releaseLength );
+		pitchEnvGUI.attackLength = StringFormat.toFixed( pitchEnvelope.attackLength );
+		pitchEnvGUI.decayLength = StringFormat.toFixed( pitchEnvelope.decayLength );
+		pitchEnvGUI.releaseLength = StringFormat.toFixed( pitchEnvelope.releaseLength );
 	},
 
 	WAVE_NAMES: {
