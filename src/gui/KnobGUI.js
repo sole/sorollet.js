@@ -16,7 +16,7 @@ SOROLLET.KnobGUI = function( params ) {
 		label = document.createElement( 'div' ),
 		scope = this;
 
-	dom.className = 'knob';
+	dom.className = 'control';
 
 	dom.appendChild( canvas );
 	canvas.width = knobWidth;

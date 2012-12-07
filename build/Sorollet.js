@@ -2187,7 +2187,7 @@ SOROLLET.KnobGUI = function( params ) {
 		label = document.createElement( 'div' ),
 		scope = this;
 
-	dom.className = 'knob';
+	dom.className = 'control';
 
 	dom.appendChild( canvas );
 	canvas.width = knobWidth;
@@ -2286,7 +2286,7 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 
 	var params = params || {},
 		graphWidth = params.graphWidth !== undefined ? params.graphWidth : 50,
-		graphHeight = params.graphHeight !== undefined ? params.graphHeight : 25,
+		graphHeight = params.graphHeight !== undefined ? params.graphHeight : 30,
 		backgroundStyle = params.backgroundStyle !== undefined ? params.backgroundStyle : null,
 		strokeStyle = params.strokeStyle !== undefined ? params.strokeStyle : '#000000',
 		lineWidth = params.strokeWidth !== undefined ? params.lineWidth : 2,
@@ -2296,6 +2296,8 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 		label = document.createElement( 'div' ),
 		value,
 		waveFunctions = null, waveNames = null, numWaveFunctions = 0;
+
+	div.className = 'control';
 
 	canvas.width = graphWidth;
 	canvas.height = graphHeight;
@@ -2409,7 +2411,7 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 	this.setValue = setValue;
 
 	this.getValue = function( ) {
-		return v;
+		return value;
 	}
 
 	return this;
