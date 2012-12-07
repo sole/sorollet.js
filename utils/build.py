@@ -17,6 +17,7 @@ FILES_GUI = [
 	'gui/VoiceGUI.js',
 	'gui/KeyboardGUI.js',
 	'gui/KnobGUI.js',
+	'gui/WaveTypeSelectGUI.js',
 	'gui/ScopeGraph.js'
 ]
 

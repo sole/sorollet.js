@@ -249,9 +249,11 @@ SOROLLET.OscillatorGUI = function( oscillatorIndex ) {
 
 	var row = new UI.Panel(),
 		div = document.createElement('div'),
-		waveTypeSelect = new UI.Select( )
-			.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_NAMES )
-			.onChange( onChange ),
+		waveTypeSelect = new SOROLLET.WaveTypeSelectGUI( )
+			.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_NAMES, SOROLLET.VoiceGUI.prototype.WAVE_FUNCTIONS ),
+		//waveTypeSelect = new UI.Select( )
+		//	.setOptions( SOROLLET.VoiceGUI.prototype.WAVE_NAMES )
+		//	.onChange( onChange ),
 		volumeInput = new SOROLLET.KnobGUI({ label: 'Volume', min: 0.0, max: 1.0 })
 			.onChange( onChange ),
 		octaveInput = new SOROLLET.KnobGUI({ label: 'Octave', min: 0, max: 9, step: 1, precision: 0 })
