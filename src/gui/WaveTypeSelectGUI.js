@@ -12,7 +12,8 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 		ctx = canvas.getContext( '2d' ),
 		label = document.createElement( 'div' ),
 		value,
-		waveFunctions = null, waveNames = null, numWaveFunctions = 0;
+		waveFunctions = null, waveNames = null, numWaveFunctions = 0,
+		onChangeHandler = function( ) { };
 
 	div.className = 'control';
 
@@ -32,6 +33,9 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 		var x = e.offsetX,
 			w = e.srcElement.offsetWidth;
 
+		e.preventDefault();
+		e.stopPropagation();
+
 		if( x < w / 2 ) {
 			usePreviousWaveType();
 		} else {
@@ -46,10 +50,13 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 			newValue = numWaveFunctions - 1;
 		}
 		setValue( newValue );
+		onChangeHandler( newValue );
 	}
 
 	function useNextWaveType() {
-		setValue( (value + 1) % numWaveFunctions );
+		var newValue = (value + 1) % numWaveFunctions;
+		setValue( newValue );
+		onChangeHandler( newValue );
 	}
 
 	function drawGraph() {
@@ -123,12 +130,16 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 		drawGraph();
 
 		label.innerHTML = waveNames[ v ];
-
 	}
 	this.setValue = setValue;
 
 	this.getValue = function( ) {
 		return value;
+	}
+
+	this.onChange = function( newOnChangeHandler ) {
+		onChangeHandler = newOnChangeHandler;
+		return this;
 	}
 
 	return this;
