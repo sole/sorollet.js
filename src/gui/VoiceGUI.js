@@ -1,12 +1,15 @@
-SOROLLET.VoiceGUI = function( signals ) {
+SOROLLET.VoiceGUI = function( params ) {
 	'use strict';
 
 	var scope = this;
-
 	this.synth = null;
 	
-	var container = new UI.Panel( 'relative' );
-	container.setWidth( '300px' );
+	var params = params || {},
+		width = params.width !== undefined ? params.width : 300,
+		envelopeWidth = width - 80,
+		container = new UI.Panel( 'relative' );
+
+	container.setWidth( width + 'px' );
 	container.setBackgroundColor( '#eee' );
 	container.setPadding( '1em' );
 	container.setOverflow( 'auto' );
@@ -104,7 +107,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 		outMax: 8,
 		step: 1,
 		timeMin: 0,
-		timeMax: 32
+		timeMax: 32,
+		width: envelopeWidth
 	});
 	container.add( volumeEnvGUI );
 	volumeEnvGUI.addEventListener( 'change', function( e ) {
@@ -118,7 +122,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 		outMax: 48,
 		step: 12,
 		timeMin: 0,
-		timeMax: 32
+		timeMax: 32,
+		width: envelopeWidth
 	});
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {

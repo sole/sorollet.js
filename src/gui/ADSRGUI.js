@@ -7,6 +7,7 @@ SOROLLET.ADSRGUI = function( params ) {
 		step = params.step || 0.5,
 		timeMin = params.timeMin || 0,
 		timeMax = params.timeMax || 100,
+		width = params.width || 220,
 		//
 		panel = new UI.Panel(),
 		subPanel = new UI.Panel().setClass('ADSR_GUI'),
@@ -38,8 +39,8 @@ SOROLLET.ADSRGUI = function( params ) {
 	// TODO refactor canvas & handling into ADSR_Graph
 	var canvas = document.createElement( 'canvas' ),
 		ctx = canvas.getContext( '2d' ),
-		canvasW = 220,
-		canvasH = 120;
+		canvasW = width,
+		canvasH = width - 100;
 
 	canvas.width = canvasW;
 	canvas.height = canvasH;
