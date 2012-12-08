@@ -1,0 +1,42 @@
+body {
+	padding: 1em 2em;
+}
+#about {
+	float: none;
+	width: auto;
+	padding: 0;
+}
+	#about h1 {
+		xfloat: left;
+		display: inline;
+	}
+	#about p {
+		display: inline;
+	}
+
+#machine_container {
+	clear: both;
+	display: box;
+	display: flex;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -moz-flex;
+
+	flex-direction: column;
+	-webkit-flex-direction: column;
+	-moz-box-orient: vertical;
+	-moz-flex-direction: column;
+}
+
+#voices {
+	display: box;
+	display: flex;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -moz-flex;
+
+	flex-direction: row;
+	-webkit-flex-direction: row;
+	-moz-box-orient: horizontal;
+	-moz-flex-direction: row;
+}

@@ -1624,6 +1624,7 @@ SOROLLET.ADSRGUI = function( params ) {
 		step = params.step || 0.5,
 		timeMin = params.timeMin || 0,
 		timeMax = params.timeMax || 100,
+		width = params.width || 220,
 		//
 		panel = new UI.Panel(),
 		subPanel = new UI.Panel().setClass('ADSR_GUI'),
@@ -1655,8 +1656,8 @@ SOROLLET.ADSRGUI = function( params ) {
 	// TODO refactor canvas & handling into ADSR_Graph
 	var canvas = document.createElement( 'canvas' ),
 		ctx = canvas.getContext( '2d' ),
-		canvasW = 220,
-		canvasH = 120;
+		canvasW = width,
+		canvasH = width - 100;
 
 	canvas.width = canvasW;
 	canvas.height = canvasH;
@@ -1750,8 +1751,10 @@ SOROLLET.ADSRGUI = function( params ) {
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = darkStrokeStyle;
 
-		// Dashed hints
-		ctx.setLineDash([1, 1, 0, 1]);
+		// Dashed hints (if supported)
+		if( ctx.setLineDash ) {
+			ctx.setLineDash([1, 1, 0, 1]);
+		}
 		var hints = [];
 	
 		hints.push([ [ox, ay], [ax, ay] ]);
@@ -1782,7 +1785,9 @@ SOROLLET.ADSRGUI = function( params ) {
 		
 		// ADSR 'proper'
 
-		ctx.setLineDash( null );
+		if( ctx.setLineDash) {
+			ctx.setLineDash( null );
+		}
 		ctx.beginPath();
 		ctx.moveTo( ox, oy );
 		ctx.lineTo( ax, ay );
@@ -1835,15 +1840,18 @@ SOROLLET.ADSRGUI = function( params ) {
 
 
 }
-SOROLLET.VoiceGUI = function( signals ) {
+SOROLLET.VoiceGUI = function( params ) {
 	'use strict';
 
 	var scope = this;
-
 	this.synth = null;
 	
-	var container = new UI.Panel( 'relative' );
-	container.setWidth( '300px' );
+	var params = params || {},
+		width = params.width !== undefined ? params.width : 300,
+		envelopeWidth = width - 80,
+		container = new UI.Panel( 'relative' );
+
+	container.setWidth( width + 'px' );
 	container.setBackgroundColor( '#eee' );
 	container.setPadding( '1em' );
 	container.setOverflow( 'auto' );
@@ -1941,7 +1949,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 		outMax: 8,
 		step: 1,
 		timeMin: 0,
-		timeMax: 32
+		timeMax: 32,
+		width: envelopeWidth
 	});
 	container.add( volumeEnvGUI );
 	volumeEnvGUI.addEventListener( 'change', function( e ) {
@@ -1955,7 +1964,8 @@ SOROLLET.VoiceGUI = function( signals ) {
 		outMax: 48,
 		step: 12,
 		timeMin: 0,
-		timeMax: 32
+		timeMax: 32,
+		width: envelopeWidth
 	});
 	container.add( pitchEnvGUI );
 	pitchEnvGUI.addEventListener( 'change', function( e ) {
