@@ -133,8 +133,10 @@ SOROLLET.ADSRGUI = function( params ) {
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = darkStrokeStyle;
 
-		// Dashed hints
-		ctx.setLineDash([1, 1, 0, 1]);
+		// Dashed hints (if supported)
+		if( ctx.setLineDash ) {
+			ctx.setLineDash([1, 1, 0, 1]);
+		}
 		var hints = [];
 	
 		hints.push([ [ox, ay], [ax, ay] ]);
@@ -165,7 +167,9 @@ SOROLLET.ADSRGUI = function( params ) {
 		
 		// ADSR 'proper'
 
-		ctx.setLineDash( null );
+		if( ctx.setLineDash) {
+			ctx.setLineDash( null );
+		}
 		ctx.beginPath();
 		ctx.moveTo( ox, oy );
 		ctx.lineTo( ax, ay );
