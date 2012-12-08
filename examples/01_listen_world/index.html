@@ -4,6 +4,7 @@
 		<title>LISTEN, WORLD!</title>
 		<script type="text/javascript" src="../../build/Sorollet.js"></script>
 		<script type="text/javascript" src="main.js"></script>
+		<link rel="stylesheet" href="../style.css" media="all" type="text/css" />
 	</head>
 	<body>
 		<div id="about">
@@ -14,53 +15,6 @@
 		<div id="voice_container"></div>
 		<div id="canvasKeyboard_container"></div>
 		<style type="text/css">
-			* {
-				margin: 0;
-				padding: 0;
-			}
-			body {
-				padding: 2em 0;
-				font-family: Arial, sans-serif;
-				font-size: 62.5%;
-				position: relative;
-			}
-
-			a {
-				text-decoration: none;
-				color: #00f;
-			}
-			
-			#about {
-				position: relative;
-				float: left;
-				width: 300px;
-				box-sizing: border-box;
-				padding: 0 2em;
-			}
-				#about h1 {
-					font-weight: normal;
-					line-height: 1;
-					margin-bottom: 1em;
-					font-size: 4em;
-				}
-					#example_number {
-						text-align: center;
-						color: #eee;
-						font-size: 2em;
-						font-weight: bold;
-					}
-
-				#about p {
-					font-size: 2em;
-					line-height: 1.6;
-					margin-bottom: 1em;
-				}
-
-				#about p#note {
-					font-size: 1.2em;
-					font-style: italic;
-				}
-
 			
 			#voice_container {
 				float: left;
@@ -70,87 +24,16 @@
 				padding: 0 2em;
 			}
 
-			.section_label {
-				display: block;
-				margin: 3px 0;
-				font-weight: bold;
-			}
-
-			.ADSR_GUI {
-				display: box;
-				display: -webkit-box;
-				display: -moz-box;
-				box-orient: horizontal;
-				-webkit-box-orient: horizontal;
-				-moz-box-orient: horizontal;
-			}
-				.ADSR_GUI .output_range {
-				}
-
-				.ADSR_GUI .graph_controls {
-				}
-
-			.controls_row {
-				display: box;
-				display: -webkit-box;
-				display: -moz-box;
-				box-orient: horizontal;
-				-webkit-box-orient: horizontal;
-				-moz-box-orient: horizontal;
-			}
-
-			.control {
-				cursor: pointer;
-				text-align: center;
-				margin-right: 3px;
-				min-width: 40px;
-				max-width: 50px;
-			}
-				.control .label {
-					font-size: 9px;
-					text-transform: lowercase;
-				}
-
 			#canvasKeyboard_container {
 				float: left;
 				width: 300px;
 				margin-left: 2em;
 			}
 
-			/* keyboard stylin' */
 			#keyboard {
 				margin: 20px 0;
 			}
 
-			.key {
-				position: relative;
-				font-size: 10px;
-				float: left;
-				border: 1px solid #000;
-				padding: 30px 4px 2px 4px;
-				margin: 0px -1px 0px 0px;
-				cursor: pointer;
-				-moz-user-select: -moz-none;
-				-khtml-user-select: none;
-				-webkit-user-select: none;
-				-ms-user-select: none;
-				user-select: none;
-			}
-				.key.black {
-					color: #fff;
-					background-color: #000;
-					padding: 10px 2px 2px 2px;
-					margin: 0px -7px 0px -6px;
-					z-index:2;
-				}
-
-				.key:hover {
-					background: #f00;
-				}
-
-				.key:active, .key.active {
-					background: #ff0;
-				}
 		</style>
 	</body>
 </html>
