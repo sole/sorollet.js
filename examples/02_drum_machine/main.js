@@ -50,6 +50,12 @@ window.onload = function() {
 					pushButton = new SOROLLET.MultipleStatePushButton({ numberOfStates: 3 });
 
 				pushButton.setValue( (Math.random() * 3)  );
+				pushButton.addEventListener( 'change', (function( _i, _j ) {
+						return function( e ) {
+							console.log( 'changed', _i, _j, e );
+						};
+					})(i, j)
+				);
 
 				tr.appendChild( td );
 				td.appendChild( pushButton.dom );

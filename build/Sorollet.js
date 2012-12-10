@@ -2548,9 +2548,15 @@ SOROLLET.MultipleStatePushButton = function( params ) {
 	canvas.height = height;
 	canvas.dataset['control'] = this; // TODO ???
 
+	canvas.addEventListener( 'click', function() {
+		nextValue();
+	}, false );
+
+	this.dom = canvas;
+
+	EventTarget.call( this );
+
 	function updateGraph() {
-		//ctx.fillStyle = '#ff0000';
-		//ctx.fillRect( 0, 0, width, height );
 
 		ctx.clearRect(0, 0, width, height);
 		
@@ -2571,12 +2577,27 @@ SOROLLET.MultipleStatePushButton = function( params ) {
 
 	}
 
-	this.setValue = function( v ) {
+	function nextValue() {
+		var newValue = (value+1) % numberOfStates;
+		setValue( newValue );
+	}
+	
+	function setValue( v ) {
 		value = Math.round( v ) % numberOfStates;
 		updateGraph();
+
+		dispatchEvent({
+			type: 'change',
+			value: value
+		});
+	}
+	this.setValue = setValue;
+
+	this.getValue = function() {
+		return value;
 	}
 
-	this.dom = canvas;
+	var dispatchEvent = this.dispatchEvent;
 
 	return this;
 }
