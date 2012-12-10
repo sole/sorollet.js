@@ -6,6 +6,8 @@ FILES_CORE = [
 	'utils/Math.js',
 	'core/Voice.js',
 	'core/ADSR.js',
+	'player/Player.js',
+	'player/Pattern.js'
 ]
 
 FILES_GUI = [
