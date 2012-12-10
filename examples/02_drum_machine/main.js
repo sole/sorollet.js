@@ -22,6 +22,7 @@ window.onload = function() {
 
 	patternGUI = new DrumPatternGUI( numVoices, 32 );
 	sequencer.appendChild( patternGUI.dom );
+	patternGUI.highlightColumn(1);
 
 
 	// ~~~
@@ -68,6 +69,15 @@ window.onload = function() {
 		}
 
 		this.dom = div;
+
+		this.highlightColumn = function( columnNumber ) {
+			for( var i = 0; i < numVoices; i++ ) {
+				var cell = cells[i][columnNumber];
+				cell.setActive( true );
+			}
+		}
+
+
 		return this;
 	}
 }
