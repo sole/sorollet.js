@@ -25,6 +25,7 @@ window.onload = function() {
 		// TODO: settings for voice
 		gui.attachTo( voice );
 
+		player.voices.push( voice );
 		voices.push( voice );
 		voiceGUIs.push( gui );
 		voicesContainer.appendChild( gui.dom );
@@ -39,16 +40,35 @@ window.onload = function() {
 	}, false );*/
 
 	player.addEventListener( 'rowChanged', function( e ) {
-		console.log('rowChanged', e.row, e);
 		patternGUI.highlightColumn( e.row );
 	}, false );
 
 
-
-
 	patternGUI = new DrumPatternGUI( numVoices, patternLength );
 	patternGUI.setPatternData( pattern );
+	patternGUI.addEventListener( 'change', function( e ) {
+		console.log( 'change', e);
+		var currentPattern = pattern, // TMP should get using current order, etc
+			volume = patternGUI.valueToVolume( e.value ),
+			changedCell = pattern.rows[ e.row ][ e.track ];
+
+		if( volume == 0 ) {
+
+			changedCell.reset();
+
+		} else {
+			
+			changedCell.note = 48; // C-5?
+			changedCell.volume = volume;
+
+		}
+	}, false );
+
 	sequencer.appendChild( patternGUI.dom );
+
+		
+
+	// ~~~ finally...
 
 	jsAudioNode.onaudioprocess = function(event) {
 
@@ -82,7 +102,11 @@ window.onload = function() {
 		var div = document.createElement( 'div' ),
 			table = document.createElement( 'table' ),
 			tbody = document.createElement( 'tbody' ),
-			cells = [];
+			numberOfStates = 3,
+			cells = [],
+			scope = this;
+
+		EventTarget.call( this );
 
 		div.appendChild( table );
 		table.appendChild( tbody );
@@ -95,15 +119,14 @@ window.onload = function() {
 
 			for(var j = 0; j < patternLength; j++) {
 				var td = document.createElement( 'td' ),
-					pushButton = new SOROLLET.MultipleStatePushButton({ numberOfStates: 3 });
+					pushButton = new SOROLLET.MultipleStatePushButton({ numberOfStates: numberOfStates });
 
-				//pushButton.setValue( (Math.random() * 3)  ); // XXX tmp
 				pushButton.addEventListener( 'change', (function( _i, _j ) {
 						return function( e ) {
 							console.log( 'changed', _i, _j, e );
+							dispatchEvent({ type: 'change', track: _i, row: _j, value: e.value });
 						};
-					})(i, j) // TODO also trigger pattern gui changed evt
-				);
+					})(i, j), false);
 
 				tr.appendChild( td );
 				td.appendChild( pushButton.dom );
@@ -113,6 +136,10 @@ window.onload = function() {
 			}
 
 			cells.push( row );
+		}
+
+		function dispatchEvent(e) {
+			scope.dispatchEvent( e );
 		}
 
 		this.dom = div;
@@ -132,6 +159,10 @@ window.onload = function() {
 
 		this.setPatternData = function( pattern ) {
 
+		}
+
+		this.valueToVolume = function( v ) {
+			return 1.0 * v / numberOfStates;
 		}
 
 		return this;
