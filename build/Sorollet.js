@@ -557,27 +557,6 @@ SOROLLET.ADSR.prototype = {
 SOROLLET.Player = function( _samplingRate ) {
 	'use strict';
 
-	/*var samplingRate = _samplingRate,
-		inverseSamplingRate = 1.0 / _samplingRate,
-		bufferSize = _bufferSize,
-		buffer = [],
-		tmpBuffer = [],
-		timePosition = 0,
-		position = 0,
-		lastPlayedTime = 0,
-		lastRowTime = 0,
-		currentOrder = 0,
-		currentRow = 0,
-		voices = [],
-		patterns = [],
-		orderList = [],
-		eventsList = [];
-
-
-	this.bpm = 100;
-	this.linesPerBeat = 4;
-	this.ticksPerLine = 12;*/
-
 	var samplingRate = _samplingRate,
 		inverseSamplingRate = 1.0 / samplingRate,
 		secondsPerRow, secondsPerTick,
@@ -2729,7 +2708,8 @@ SOROLLET.MultipleStatePushButton = function( params ) {
 	canvas.height = height;
 	canvas.dataset['control'] = this; // TODO ???
 
-	canvas.addEventListener( 'click', function() {
+	canvas.addEventListener( 'click', function( e ) {
+		e.preventDefault();
 		nextValue();
 	}, false );
 
@@ -2784,14 +2764,18 @@ SOROLLET.MultipleStatePushButton = function( params ) {
 		setValue( newValue );
 	}
 	
-	function setValue( v ) {
+	function setValue( v, eventDispatchingAllowed ) {
+		eventDispatchingAllowed = eventDispatchingAllowed !== undefined ? eventDispatchingAllowed : false;
+
 		value = Math.round( v ) % numberOfStates;
 		updateGraph();
 
-		dispatchEvent({
-			type: 'change',
-			value: value
-		});
+		if( eventDispatchingAllowed ) {
+			dispatchEvent({
+				type: 'change',
+				value: value
+			});
+		}
 	}
 	this.setValue = setValue;
 

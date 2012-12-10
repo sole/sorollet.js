@@ -40,3 +40,8 @@ body {
 	-moz-box-orient: horizontal;
 	-moz-flex-direction: row;
 }
+
+#debug {
+	white-space: pre;
+	font-family: monospace;
+}
