@@ -20,7 +20,7 @@ window.onload = function() {
 		voicesContainer.appendChild( gui.dom );
 	}
 
-	patternGUI = new DrumPatternGUI( numVoices, 8 );
+	patternGUI = new DrumPatternGUI( numVoices, 32 );
 	sequencer.appendChild( patternGUI.dom );
 
 
@@ -47,12 +47,14 @@ window.onload = function() {
 
 			for(var j = 0; j < patternLength; j++) {
 				var td = document.createElement( 'td' ),
-					cell = document.createElement( 'input' );
+					pushButton = new SOROLLET.MultipleStatePushButton({ numberOfStates: 3 });
+
+				pushButton.setValue( (Math.random() * 3)  );
 
 				tr.appendChild( td );
-				td.appendChild( cell);
+				td.appendChild( pushButton.dom );
 
-				row.push( cell );
+				row.push( pushButton );
 				
 			}
 
