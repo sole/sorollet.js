@@ -9,7 +9,6 @@ window.onload = function() {
 		numVoices = 4,
 		patternLength = 32,
 		numPushStates = 3,
-		transportContainer = document.getElementById( 'transport_controls' ),
 		btnPlay = document.getElementById( 'btn_play' ),
 		btnStop = document.getElementById( 'btn_stop' ),
 		bpmInput = document.getElementById( 'bpm' ),
@@ -168,13 +167,24 @@ window.onload = function() {
 						cell.volume = 1;
 					}
 				}
-				
 
 			});
 		});
 		setCurrentPattern( pattern );
 	}, false );
 
+	btnClearPattern.addEventListener( 'click', function() {
+		var pattern = player.getCurrentPattern();
+		pattern.rows.forEach(function(row) {
+			row.forEach(function(cell) {
+				var v = Math.random();
+
+				cell.reset();
+
+			});
+		});
+		setCurrentPattern( pattern );
+	}, false );
 	// Setup initial data
 	
 	if( window.location.hash ) {

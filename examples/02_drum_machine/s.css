@@ -1,31 +1,71 @@
 body {
 	padding: 1em 2em;
 }
+
+.flex {
+	display: box;
+	display: flex;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -moz-flex;
+}
+
+.vertical {
+	flex-direction: column;
+	-webkit-flex-direction: column;
+	-moz-box-orient: vertical;
+	-moz-flex-direction: column;
+}
+
+.horizontal {
+	flex-direction: row;
+	-webkit-flex-direction: row;
+	-moz-box-orient: horizontal;
+	-moz-flex-direction: row;
+}
+
+
 #about {
 	float: none;
 	width: auto;
 	padding: 0;
 }
 	#about h1 {
-		xfloat: left;
 		display: inline;
 	}
 	#about p {
 		display: inline;
 	}
 
+#controls {
+	padding: 1em 0;
+	max-width: 1070px;
+}
+
+#controls button {
+	border: none;
+	border-radius: 10px;
+	background: #eee;
+	padding: 5px;
+	font-size: 10px;
+	min-width: 20px;
+	cursor: pointer;
+}
+#order_list_controls {
+	padding: 1em 0;
+}
+	#order_list_controls > div + div {
+		padding-left: 2em;
+	}
+
+#orders {
+	overflow-x: scroll;
+	overflow-y: hidden;
+	background: #eee;
+}
+
 #machine_container {
 	clear: both;
-	display: box;
-	display: flex;
-	display: -webkit-flex;
-	display: -moz-box;
-	display: -moz-flex;
-
-	flex-direction: column;
-	-webkit-flex-direction: column;
-	-moz-box-orient: vertical;
-	-moz-flex-direction: column;
 }
 
 #voices {

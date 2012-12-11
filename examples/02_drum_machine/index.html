@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<meta charset="utf8" />
+		<meta charset="utf-8" />
 		<title>Drum machine / Sorollet.js</title>
 		<script type="text/javascript" src="../../build/Sorollet.js"></script>
 		<script type="text/javascript" src="DrumPatternGUI.js"></script>
@@ -15,25 +15,28 @@
 			<p>This is a demo for <a href="https://github.com/sole/sorollet.js">Sorollet.js</a> &mdash;a Javascript software synthesiser by <a href="http://5013.es/">5013</a>.</p>
 		</div>
 
-		<div id="machine_container">
-			<div id="transport_controls">
-				<button id="btn_play" data-paused="▶" data-playing="❚❚">▶</button>
-				<button id="btn_stop">■</button>
-				<label>BPM<input type="number" id="bpm" value="125" min="10" max="250" step="1" /></label>
+		<div id="machine_container" class="flex vertical">
+			<div id="controls" class="flex vertical">
+				<div id="transport">
+					<button id="btn_play" data-paused="▶" data-playing="❚❚">▶</button>
+					<button id="btn_stop">■</button>
+					<label>BPM<input type="number" id="bpm" value="125" min="10" max="250" step="1" /></label>
+				</div>
 				<div id="order_list">
-					<div id="orders">
-						<input type="number" value="0" />
-					</div>
-					<div id="order_list_controls">
+					<div id="order_list_controls" class="flex horizontal">
 						<div>
-							<button id="btn_add_pattern">+</button>
-							<button id="btn_remove_pattern">-</button>
-							<button id="btn_add_again_pattern">=</button>
+							<button id="btn_add_pattern" title="add new pattern">+</button>
+							<button id="btn_remove_pattern" title="remove current pattern from order list">-</button>
+							<button id="btn_add_again_pattern" title="add current pattern again to the order list">=</button>
 						</div>
 						<div>
 							<button id="btn_randomise_pattern">randomise</button>
 							<button id="btn_clear_pattern">clear</button>
 						</div>
+					</div>
+
+					<div id="orders" class="flex horizontal">
+						<input type="number" value="0" />
 					</div>
 				</div>
 			</div>
