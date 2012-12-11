@@ -120,4 +120,8 @@ SOROLLET.Player = function( _samplingRate ) {
 		return secondsPerRow;
 	}
 
+	this.getCurrentPattern = function() {
+		return this.patterns[ this.currentPattern ];
+	}
+
 }
