@@ -52,7 +52,7 @@ window.onload = function() {
 	// TODO randomise - pattern, button
 	
 	player.addEventListener( 'patternChanged', function( e ) {
-		patternGUI.setPatternData( player.patterns[ e.pattern ] );
+		// TODO patternGUI.setPatternData( player.patterns[ e.pattern ] );
 	}, false );
 
 	player.addEventListener( 'rowChanged', function( e ) {
@@ -79,7 +79,8 @@ window.onload = function() {
 
 	sequencer.appendChild( patternGUI.dom );
 
-	patternGUI.setPatternData( player.patterns[ 0 ] ); // TMP should be first in order list
+	// patternGUI.setPatternData( player.patterns[ 0 ] ); // TMP should be first in order list
+	patternToGUI( player.patterns[0], patternGUI );
 
 	// ~~~ finally...
 
@@ -115,83 +116,20 @@ window.onload = function() {
 		return v * (pushNumStates - 1);
 	}
 	
-	function DrumPatternGUI( numVoices, patternLength, pushButtonNumberStates ) {
-		
-		var div = document.createElement( 'div' ),
-			table = document.createElement( 'table' ),
-			tbody = document.createElement( 'tbody' ),
-			numberOfStates = pushButtonNumberStates !== undefined ? pushButtonNumberStates : 3,
-			cells = [],
-			scope = this;
+	function patternToGUI( pattern, gui ) {
+		for( var i = 0; i < pattern.rows.length; i++ ) {
+			var row = pattern.rows[i];
+			for( var j = 0; j < row.length; j++) {
+				var cell = row[j];
 
-		EventTarget.call( this );
-
-		div.appendChild( table );
-		table.appendChild( tbody );
-
-		for( var i = 0; i < numVoices; i++) {
-			var row = [],
-				tr = document.createElement( 'tr' );
-
-			tbody.appendChild( tr );
-
-			for(var j = 0; j < patternLength; j++) {
-				var td = document.createElement( 'td' ),
-					pushButton = new SOROLLET.MultipleStatePushButton({ numberOfStates: numberOfStates });
-
-				pushButton.addEventListener( 'change', (function( _i, _j ) {
-						return function( e ) {
-							console.log( 'changed', _i, _j, e );
-							dispatchEvent({ type: 'change', track: _i, row: _j, value: e.value });
-						};
-					})(i, j), false);
-
-				tr.appendChild( td );
-				td.appendChild( pushButton.dom );
-
-				row.push( pushButton );
-				
-			}
-
-			cells.push( row );
-		}
-
-		function dispatchEvent(e) {
-			scope.dispatchEvent( e );
-		}
-
-		this.dom = div;
-
-		this.highlightColumn = function( columnNumber ) {
-			for( var j = 0; j < patternLength; j++ ) {
-				for(var i = 0; i < numVoices; i++ ) {
-					var cell = cells[i][j];
-
-					cell.setActive( j == columnNumber );
+				if( cell.note !== null ) {
+					patternGUI.setCellValue( i, j, volumeToValue( cell.volume ), false );
+				} else {
+					patternGUI.setCellValue( i, j, 0, false );
 				}
 			}
 		}
 
-		this.getPatternData = function() {
-		}
-
-		this.setPatternData = function( pattern ) {
-			for( var i = 0; i < pattern.rows.length; i++ ) {
-				var row = pattern.rows[i];
-				for( var j = 0; j < row.length; j++) {
-					var cell = row[j],
-						pushButton = cells[j][i];
-
-					if( cell.note !== null ) {
-						pushButton.setValue( volumeToValue( cell.volume ), false );
-					} else {
-						pushButton.setValue( 0, false );
-					}
-				}
-			}
-		}
-
-		return this;
 	}
 
 	function updateDebugInfo() {
