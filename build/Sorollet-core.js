@@ -676,6 +676,10 @@ SOROLLET.Player = function( _samplingRate ) {
 		return secondsPerRow;
 	}
 
+	this.getCurrentPattern = function() {
+		return this.patterns[ this.currentPattern ];
+	}
+
 }
 SOROLLET.Pattern = function( numTracks, length ) {
 	'use strict';
@@ -703,6 +707,10 @@ SOROLLET.PatternCell = function() {
 }
 
 SOROLLET.PatternCell.prototype = {
+	note: null,
+	noteOff: false,
+	volume: null,
+
 	reset: function() {
 		this.note = null;
 		this.noteOff = false;

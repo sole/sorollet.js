@@ -24,7 +24,6 @@ function DrumPatternGUI( numVoices, patternLength, pushButtonNumberStates ) {
 
 			pushButton.addEventListener( 'change', (function( _i, _j ) {
 					return function( e ) {
-						console.log( 'changed', _i, _j, e );
 						dispatchEvent({ type: 'change', track: _i, row: _j, value: e.value });
 					};
 				})(i, j), false);

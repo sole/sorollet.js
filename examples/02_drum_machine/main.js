@@ -16,7 +16,6 @@ window.onload = function() {
 		patternGUI = new DrumPatternGUI( numVoices, patternLength, numPushStates ),
 		player = new SOROLLET.Player( samplingRate ),
 		currentPattern = null;
-	
 		
 
 	for( var i = 0; i < numVoices; i++ ) {
@@ -36,7 +35,6 @@ window.onload = function() {
 	// event handling
 
 	player.addEventListener( 'patternChanged', function( e ) {
-		// TODO patternGUI.setPatternData( player.patterns[ e.pattern ] );
 		setCurrentPattern( player.patterns[ e.pattern ] );
 	}, false );
 
@@ -48,14 +46,14 @@ window.onload = function() {
 	patternGUI.addEventListener( 'change', function( e ) {
 		var volume = valueToVolume( e.value ),
 			changedCell = currentPattern.rows[ e.row ][ e.track ];
-
+		
 		if( volume == 0 ) {
 			changedCell.reset();
 		} else {
 			changedCell.note = baseNote;
 			changedCell.volume = volume;
 		}
-
+		
 		updateDebugInfo();
 
 	}, false );
