@@ -125,6 +125,29 @@ window.onload = function() {
 		player.addToOrderList( patternIndex );
 	}, false );
 
+	btnRemovePattern.addEventListener( 'click', function() {
+		// Not removing if only one order
+		// TODO: maybe the player.change listener should disable this button when appropriate
+		if( player.orderList.length < 2 ) {
+			return;
+		}
+
+		var currentOrder = player.currentOrder,
+			newOrder;
+
+		// Need to bring the player to an existing order instead of the one we're about to delete
+		if( currentOrder == 0 ) {
+			newOrder = 1;
+		} else {
+			newOrder = currentOrder - 1;
+		}
+
+		player.playOrder( newOrder );
+		player.removeFromOrderList( currentOrder );
+
+		
+	}, false );
+
 	// Setup initial data
 	
 	if( window.location.hash ) {

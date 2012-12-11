@@ -136,4 +136,19 @@ SOROLLET.Player = function( _samplingRate ) {
 		this.dispatchEvent({ type: 'change', player: this });
 	}
 
+	this.removeFromOrderList = function( orderListIndex ) {
+		this.orderList = this.orderList.splice( orderListIndex, 1 );
+		this.dispatchEvent({ type: 'change', player: this });
+	}
+
+	this.playOrder = function( orderIndex ) {
+		// TODO if the new pattern to play has less rows than the current one,
+		// make sure we don't play out of index
+		this.currentOrder = orderIndex;
+		this.currentPattern = this.orderList[ orderIndex ];
+		this.dispatchEvent({ type: 'orderChanged', order: orderIndex });
+		this.dispatchEvent({ type: 'patternChanged', pattern: this.currentPattern });
+	
+	}
+
 }
