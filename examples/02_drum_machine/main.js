@@ -81,8 +81,11 @@ window.onload = function() {
 		if( !playing ) {
 			jsAudioNode.connect( audioContext.destination );
 			playing = true;
+			this.innerHTML = this.dataset['playing'];
 		} else {
-			// TODO disconnect
+			jsAudioNode.disconnect( );
+			playing = false;
+			this.innerHTML = this.dataset['paused'];
 		}
 	}, false );
 
