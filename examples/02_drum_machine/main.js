@@ -144,9 +144,11 @@ window.onload = function() {
 
 		player.playOrder( newOrder );
 		player.removeFromOrderList( currentOrder );
-
-		
 	}, false );
+
+	btnAddAgainPattern.addEventListener( 'click', function() {
+		player.addToOrderListAfter( player.currentPattern, player.currentOrder );
+	}, false);
 
 	// Setup initial data
 	

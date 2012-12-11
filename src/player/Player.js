@@ -136,6 +136,11 @@ SOROLLET.Player = function( _samplingRate ) {
 		this.dispatchEvent({ type: 'change', player: this });
 	}
 
+	this.addToOrderListAfter = function( patternIndex, orderListIndex ) {
+		this.orderList.splice( orderListIndex, 0, patternIndex );
+		this.dispatchEvent({ type: 'change', player: this });
+	}
+
 	this.removeFromOrderList = function( orderListIndex ) {
 		this.orderList = this.orderList.splice( orderListIndex, 1 );
 		this.dispatchEvent({ type: 'change', player: this });
