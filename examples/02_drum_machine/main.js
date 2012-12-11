@@ -13,6 +13,7 @@ window.onload = function() {
 		btnPlay = document.getElementById( 'btn_play' ),
 		btnStop = document.getElementById( 'btn_stop' ),
 		bpmInput = document.getElementById( 'bpm' ),
+		ordersContainer = document.getElementById( 'orders' ),
 		sequencerContainer = document.getElementById( 'pattern_sequencer' ),
 		voicesContainer = document.getElementById( 'voices' ),
 		debugContainer = document.getElementById( 'debug' ),
@@ -63,7 +64,6 @@ window.onload = function() {
 		}
 		
 		updateDebugInfo();
-
 	}, false );
 
 	jsAudioNode.onaudioprocess = function(event) {
@@ -128,6 +128,8 @@ window.onload = function() {
 		gui.attachTo( voice );
 	}
 
+	ordersToGUI();
+
 	// ~~~ finally...
 
 	setCurrentPattern( player.patterns[0] ); // TMP should be first in order list
@@ -145,6 +147,20 @@ window.onload = function() {
 
 	function volumeToValue( v ) {
 		return v * (numPushStates - 1);
+	}
+
+	function ordersToGUI( ) {
+
+		ordersContainer.innerHTML = '';
+		for( var i = 0; i < player.orderList.length; i++ ) {
+			var input = document.createElement( 'input' );
+			input.type = 'number';
+			input.value = player.orderList[ i ];
+			input.min = 0;
+			input.max = player.orderList.length - 1;
+
+			ordersContainer.appendChild( input );
+		}
 	}
 
 	function setCurrentPattern( pattern ) {
