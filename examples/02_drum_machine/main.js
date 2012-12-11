@@ -36,7 +36,7 @@ window.onload = function() {
 	sequencerContainer.appendChild( patternGUI.dom );
 
 
-	// event handling
+	// Event handling
 
 	player.addEventListener( 'patternChanged', function( e ) {
 		setCurrentPattern( player.patterns[ e.pattern ] );
@@ -87,6 +87,13 @@ window.onload = function() {
 			playing = false;
 			this.innerHTML = this.dataset['paused'];
 		}
+	}, false );
+
+	btn_stop.addEventListener( 'click', function() {
+		jsAudioNode.disconnect();
+		playing = false;
+		btn_play.innerHTML = btn_play.dataset['paused'];
+		// TODO: rewind pattern & order
 	}, false );
 
 	// Setup initial data
