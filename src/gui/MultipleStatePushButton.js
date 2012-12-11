@@ -73,7 +73,7 @@ SOROLLET.MultipleStatePushButton = function( params ) {
 	}
 	
 	function setValue( v, eventDispatchingAllowed ) {
-		eventDispatchingAllowed = eventDispatchingAllowed !== undefined ? eventDispatchingAllowed : false;
+		eventDispatchingAllowed = eventDispatchingAllowed !== undefined ? eventDispatchingAllowed : true;
 
 		value = Math.round( v ) % numberOfStates;
 		updateGraph();
