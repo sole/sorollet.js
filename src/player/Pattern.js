@@ -24,6 +24,10 @@ SOROLLET.PatternCell = function() {
 }
 
 SOROLLET.PatternCell.prototype = {
+	note: null,
+	noteOff: false,
+	volume: null,
+
 	reset: function() {
 		this.note = null;
 		this.noteOff = false;
