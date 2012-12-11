@@ -9,13 +9,17 @@ window.onload = function() {
 		numVoices = 4,
 		patternLength = 32,
 		numPushStates = 3,
-		sequencerContainer = document.getElementById( 'sequencer' ),
+		transportContainer = document.getElementById( 'transport_controls' ),
+		btnPlay = document.getElementById( 'btn_play' ),
+		btnStop = document.getElementById( 'btn_stop' ),
+		sequencerContainer = document.getElementById( 'pattern_sequencer' ),
 		voicesContainer = document.getElementById( 'voices' ),
 		debugContainer = document.getElementById( 'debug' ),
 		voiceGUIs = [],
 		patternGUI = new DrumPatternGUI( numVoices, patternLength, numPushStates ),
 		player = new SOROLLET.Player( samplingRate ),
-		currentPattern = null;
+		currentPattern = null,
+		playing = false;
 		
 
 	for( var i = 0; i < numVoices; i++ ) {
@@ -58,6 +62,29 @@ window.onload = function() {
 
 	}, false );
 
+	jsAudioNode.onaudioprocess = function(event) {
+
+		var buffer = event.outputBuffer,
+			outputBufferLeft = buffer.getChannelData(0),
+			outputBufferRight = buffer.getChannelData(1),
+			numSamples = outputBufferLeft.length,
+			sorolletBuffer = player.getBuffer(numSamples);
+
+		for(var i = 0; i < numSamples; i++) {
+			outputBufferLeft[i] = sorolletBuffer[i];
+			outputBufferRight[i] = sorolletBuffer[i];
+		}
+
+	};
+
+	btn_play.addEventListener( 'click', function() {
+		if( !playing ) {
+			jsAudioNode.connect( audioContext.destination );
+			playing = true;
+		} else {
+			// TODO disconnect
+		}
+	}, false );
 
 	// Setup initial data
 	
@@ -80,28 +107,14 @@ window.onload = function() {
 
 	setCurrentPattern( player.patterns[0] ); // TMP should be first in order list
 
-	jsAudioNode.onaudioprocess = function(event) {
-
-		var buffer = event.outputBuffer,
-			outputBufferLeft = buffer.getChannelData(0),
-			outputBufferRight = buffer.getChannelData(1),
-			numSamples = outputBufferLeft.length,
-			sorolletBuffer = player.getBuffer(numSamples);
-
-		for(var i = 0; i < numSamples; i++) {
-			outputBufferLeft[i] = sorolletBuffer[i];
-			outputBufferRight[i] = sorolletBuffer[i];
-		}
-
-	};
 
 	updateDebugInfo();
 
 
 	// work around http://code.google.com/p/chromium/issues/detail?id=82795
-	setTimeout(function() {
+	/*setTimeout(function() {
 		jsAudioNode.connect( audioContext.destination );
-	}, 500);
+	}, 500);*/
 
 
 
