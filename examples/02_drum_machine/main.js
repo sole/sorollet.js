@@ -7,19 +7,17 @@ window.onload = function() {
 		samplingRate = audioContext.sampleRate,
 		baseNote = 48, // C-5?
 		numVoices = 4,
+		patternLength = 32,
+ 		numPushStates = 3,
 		voices = [],
 		voiceGUIs = [],
-		patternGUI,
-		pushNumStates = 3,
+		patternGUI = new DrumPatternGUI( numVoices, patternLength, numPushStates ),
 		sequencerContainer = document.getElementById( 'sequencer' ),
 		voicesContainer = document.getElementById( 'voices' ),
 		debugContainer = document.getElementById( 'debug' ),
-		patternLength = 32,
-		pattern = new SOROLLET.Pattern( numVoices, patternLength ),
-		player = new SOROLLET.Player( samplingRate );
+		player = new SOROLLET.Player( samplingRate ),
+		currentPattern = null;
 
-	player.setBPM( 130 );
-		
 	for( var i = 0; i < numVoices; i++ ) {
 		var voice = new SOROLLET.Voice(),
 			voiceGui = new SOROLLET.VoiceGUI({ width: 250 });
@@ -32,13 +30,18 @@ window.onload = function() {
 		voicesContainer.appendChild( voiceGui.dom );
 	}
 
-	//
+	sequencer.appendChild( patternGUI.dom );
+
+
+	// Setup initial data
 	
 	if( window.location.hash ) {
 		// TODO settings from window.hash
 	} else {
 		setDefaultParams( voices, player );
 	}
+
+	// & load data into GUIs
 
 	for( var i = 0; i < numVoices; i++ ) {
 		var voice = voices[i],
@@ -53,6 +56,7 @@ window.onload = function() {
 	
 	player.addEventListener( 'patternChanged', function( e ) {
 		// TODO patternGUI.setPatternData( player.patterns[ e.pattern ] );
+		setCurrentPattern( player.patterns[ e.pattern ] );
 	}, false );
 
 	player.addEventListener( 'rowChanged', function( e ) {
@@ -60,11 +64,11 @@ window.onload = function() {
 	}, false );
 
 
-	patternGUI = new DrumPatternGUI( numVoices, patternLength, pushNumStates );
+	//patternGUI = new DrumPatternGUI( numVoices, patternLength, numPushStates );
 	patternGUI.addEventListener( 'change', function( e ) {
-		var currentPattern = pattern, // TMP should get using current order, etc
-			volume = valueToVolume( e.value ),
-			changedCell = pattern.rows[ e.row ][ e.track ];
+		//var currentPattern = pattern, // TMP should get using current order, etc
+		var	volume = valueToVolume( e.value ),
+			changedCell = currentPattern.rows[ e.row ][ e.track ];
 
 		if( volume == 0 ) {
 			changedCell.reset();
@@ -77,10 +81,10 @@ window.onload = function() {
 
 	}, false );
 
-	sequencer.appendChild( patternGUI.dom );
-
+	
 	// patternGUI.setPatternData( player.patterns[ 0 ] ); // TMP should be first in order list
-	patternToGUI( player.patterns[0], patternGUI );
+	// patternToGUI( player.patterns[0], patternGUI );
+	setCurrentPattern( player.patterns[0] );
 
 	// ~~~ finally...
 
@@ -109,11 +113,16 @@ window.onload = function() {
 	// ~~~
 	
 	function valueToVolume( v ) {
-		return 1.0 * v / (pushNumStates - 1);
+		return 1.0 * v / (numPushStates - 1);
 	}
 
 	function volumeToValue( v ) {
-		return v * (pushNumStates - 1);
+		return v * (numPushStates - 1);
+	}
+
+	function setCurrentPattern( pattern ) {
+		currentPattern = pattern;
+		patternToGUI( pattern, patternGUI );
 	}
 	
 	function patternToGUI( pattern, gui ) {
