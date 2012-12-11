@@ -667,7 +667,7 @@ SOROLLET.Player = function( _samplingRate ) {
 
 	}
 
-	this.setBPM = function(value){
+	this.setBPM = function( value ){
 		this.bpm = value;
 		updateRowTiming();
 		this.dispatchEvent({ type: 'bpmChanged', bpm: value });
@@ -679,6 +679,17 @@ SOROLLET.Player = function( _samplingRate ) {
 
 	this.getCurrentPattern = function() {
 		return this.patterns[ this.currentPattern ];
+	}
+
+	this.addPattern = function( pattern ) {
+		this.patterns.push( pattern );
+		this.dispatchEvent({ type: 'change', player: this });
+		return this.patterns.length - 1;
+	}
+
+	this.addToOrderList = function( patternIndex ) {
+		this.orderList.push( patternIndex );
+		this.dispatchEvent({ type: 'change', player: this });
 	}
 
 }

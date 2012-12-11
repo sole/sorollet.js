@@ -125,4 +125,15 @@ SOROLLET.Player = function( _samplingRate ) {
 		return this.patterns[ this.currentPattern ];
 	}
 
+	this.addPattern = function( pattern ) {
+		this.patterns.push( pattern );
+		this.dispatchEvent({ type: 'change', player: this });
+		return this.patterns.length - 1;
+	}
+
+	this.addToOrderList = function( patternIndex ) {
+		this.orderList.push( patternIndex );
+		this.dispatchEvent({ type: 'change', player: this });
+	}
+
 }

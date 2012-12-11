@@ -13,6 +13,9 @@ window.onload = function() {
 		btnPlay = document.getElementById( 'btn_play' ),
 		btnStop = document.getElementById( 'btn_stop' ),
 		bpmInput = document.getElementById( 'bpm' ),
+		btnAddPattern = document.getElementById( 'btn_add_pattern'),
+		btnRemovePattern = document.getElementById( 'btn_remove_pattern'),
+		btnAddAgainPattern = document.getElementById( 'btn_add_again_pattern'),
 		ordersContainer = document.getElementById( 'orders' ),
 		sequencerContainer = document.getElementById( 'pattern_sequencer' ),
 		voicesContainer = document.getElementById( 'voices' ),
@@ -39,6 +42,11 @@ window.onload = function() {
 
 
 	// Event handling
+
+	player.addEventListener( 'change', function( e ) {
+		ordersToGUI();
+		updateDebugInfo();
+	}, false );
 
 	player.addEventListener( 'patternChanged', function( e ) {
 		setCurrentPattern( player.patterns[ e.pattern ] );
@@ -110,6 +118,12 @@ window.onload = function() {
 
 	bpmInput.addEventListener( 'keyup', onBpmChange, false );
 	bpmInput.addEventListener( 'change', onBpmChange, false );
+
+	btnAddPattern.addEventListener( 'click', function() {
+		var pattern = new SOROLLET.Pattern( numVoices, patternLength ),
+			patternIndex = player.addPattern( pattern );
+		player.addToOrderList( patternIndex );
+	}, false );
 
 	// Setup initial data
 	
