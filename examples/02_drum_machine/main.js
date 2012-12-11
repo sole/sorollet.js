@@ -16,6 +16,8 @@ window.onload = function() {
 		btnAddPattern = document.getElementById( 'btn_add_pattern'),
 		btnRemovePattern = document.getElementById( 'btn_remove_pattern'),
 		btnAddAgainPattern = document.getElementById( 'btn_add_again_pattern'),
+		btnRandomisePattern = document.getElementById( 'btn_randomise_pattern'),
+		btnClearPattern = document.getElementById( 'btn_clear_pattern'),
 		ordersContainer = document.getElementById( 'orders' ),
 		sequencerContainer = document.getElementById( 'pattern_sequencer' ),
 		voicesContainer = document.getElementById( 'voices' ),
@@ -148,7 +150,30 @@ window.onload = function() {
 
 	btnAddAgainPattern.addEventListener( 'click', function() {
 		player.addToOrderListAfter( player.currentPattern, player.currentOrder );
-	}, false);
+	}, false );
+
+	btnRandomisePattern.addEventListener( 'click', function() {
+		var pattern = player.getCurrentPattern();
+		pattern.rows.forEach(function(row) {
+			row.forEach(function(cell) {
+				var v = Math.random();
+
+				cell.reset();
+
+				if( v > 0.6 ) {
+					cell.note = baseNote;
+					cell.volume = 0.5;
+
+					if( v > 0.8 ) {
+						cell.volume = 1;
+					}
+				}
+				
+
+			});
+		});
+		setCurrentPattern( pattern );
+	}, false );
 
 	// Setup initial data
 	
@@ -197,6 +222,8 @@ window.onload = function() {
 			input.value = player.orderList[ i ];
 			input.min = 0;
 			input.max = player.orderList.length - 1;
+
+			// TODO: update order list when these inputs change values
 
 			ordersContainer.appendChild( input );
 		}
