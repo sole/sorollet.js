@@ -12,6 +12,7 @@ window.onload = function() {
 		transportContainer = document.getElementById( 'transport_controls' ),
 		btnPlay = document.getElementById( 'btn_play' ),
 		btnStop = document.getElementById( 'btn_stop' ),
+		bpmInput = document.getElementById( 'bpm' ),
 		sequencerContainer = document.getElementById( 'pattern_sequencer' ),
 		voicesContainer = document.getElementById( 'voices' ),
 		debugContainer = document.getElementById( 'debug' ),
@@ -95,6 +96,19 @@ window.onload = function() {
 		btn_play.innerHTML = btn_play.dataset['paused'];
 		// TODO: rewind pattern & order
 	}, false );
+
+	function onBpmChange( e ) {
+
+		var value = SOROLLET.Math.clip( bpmInput.value >> 0, bpmInput.min, bpmInput.max );
+
+		bpmInput.value = value;
+
+		player.setBPM( value )
+
+	}
+
+	bpmInput.addEventListener( 'keyup', onBpmChange, false );
+	bpmInput.addEventListener( 'change', onBpmChange, false );
 
 	// Setup initial data
 	
