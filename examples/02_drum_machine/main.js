@@ -47,6 +47,9 @@ window.onload = function() {
 		patternGUI.highlightColumn( e.row );
 	}, false );
 
+	player.addEventListener( 'bpmChanged', function( e ) {
+		bpmInput.value = e.bpm;
+	}, false );
 
 	patternGUI.addEventListener( 'change', function( e ) {
 		var volume = valueToVolume( e.value ),
@@ -98,13 +101,11 @@ window.onload = function() {
 	}, false );
 
 	function onBpmChange( e ) {
-
 		var value = SOROLLET.Math.clip( bpmInput.value >> 0, bpmInput.min, bpmInput.max );
 
 		bpmInput.value = value;
-
-		player.setBPM( value )
-
+		player.setBPM( value );
+		updateDebugInfo();
 	}
 
 	bpmInput.addEventListener( 'keyup', onBpmChange, false );
@@ -133,12 +134,6 @@ window.onload = function() {
 
 
 	updateDebugInfo();
-
-
-	// work around http://code.google.com/p/chromium/issues/detail?id=82795
-	/*setTimeout(function() {
-		jsAudioNode.connect( audioContext.destination );
-	}, 500);*/
 
 
 
@@ -174,14 +169,15 @@ window.onload = function() {
 
 	function updateDebugInfo() {
 		var settings = {
-			voiceParams: []
+			bpm: player.bpm,
+			voiceParams: [],
+			patterns: []
 		};
 
 		player.voices.forEach(function( v ) {
 			settings.voiceParams.push( v.getParams() );
 		});
 
-		settings.patterns = [];
 		player.patterns.forEach(function( p ) {
 			settings.patterns.push( compressPattern( p ) );
 		});
@@ -225,7 +221,8 @@ window.onload = function() {
 	}
 
 	function setDefaultParams( player ) {
-	 var defaultValues = {
+		var defaultValues = {
+			"bpm": 100,
 			"voiceParams": [
 				{
 					"wave1Function": 2,
@@ -545,6 +542,7 @@ window.onload = function() {
 			v.setParams( params );
 		}
 
+		player.setBPM( defaultValues.bpm );
 		player.patterns = [];
 		player.orderList = [];
 

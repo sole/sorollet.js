@@ -670,6 +670,7 @@ SOROLLET.Player = function( _samplingRate ) {
 	this.setBPM = function(value){
 		this.bpm = value;
 		updateRowTiming();
+		this.dispatchEvent({ type: 'bpmChanged', bpm: value });
 	}
 
 	this.getSecondsPerRow = function() {
