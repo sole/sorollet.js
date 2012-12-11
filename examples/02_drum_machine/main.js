@@ -8,15 +8,16 @@ window.onload = function() {
 		baseNote = 48, // C-5?
 		numVoices = 4,
 		patternLength = 32,
- 		numPushStates = 3,
-		voices = [],
-		voiceGUIs = [],
-		patternGUI = new DrumPatternGUI( numVoices, patternLength, numPushStates ),
+		numPushStates = 3,
 		sequencerContainer = document.getElementById( 'sequencer' ),
 		voicesContainer = document.getElementById( 'voices' ),
 		debugContainer = document.getElementById( 'debug' ),
+		voiceGUIs = [],
+		patternGUI = new DrumPatternGUI( numVoices, patternLength, numPushStates ),
 		player = new SOROLLET.Player( samplingRate ),
 		currentPattern = null;
+	
+		
 
 	for( var i = 0; i < numVoices; i++ ) {
 		var voice = new SOROLLET.Voice(),
@@ -25,35 +26,15 @@ window.onload = function() {
 		voiceGui.addEventListener( 'change', updateDebugInfo, false );
 
 		player.voices.push( voice );
-		voices.push( voice );
 		voiceGUIs.push( voiceGui );
 		voicesContainer.appendChild( voiceGui.dom );
 	}
 
-	sequencer.appendChild( patternGUI.dom );
+	sequencerContainer.appendChild( patternGUI.dom );
 
 
-	// Setup initial data
-	
-	if( window.location.hash ) {
-		// TODO settings from window.hash
-	} else {
-		setDefaultParams( voices, player );
-	}
+	// event handling
 
-	// & load data into GUIs
-
-	for( var i = 0; i < numVoices; i++ ) {
-		var voice = voices[i],
-			gui = voiceGUIs[i];
-
-		gui.attachTo( voice );
-	}
-
-	updateDebugInfo();
-
-	// TODO randomise - pattern, button
-	
 	player.addEventListener( 'patternChanged', function( e ) {
 		// TODO patternGUI.setPatternData( player.patterns[ e.pattern ] );
 		setCurrentPattern( player.patterns[ e.pattern ] );
@@ -64,10 +45,8 @@ window.onload = function() {
 	}, false );
 
 
-	//patternGUI = new DrumPatternGUI( numVoices, patternLength, numPushStates );
 	patternGUI.addEventListener( 'change', function( e ) {
-		//var currentPattern = pattern, // TMP should get using current order, etc
-		var	volume = valueToVolume( e.value ),
+		var volume = valueToVolume( e.value ),
 			changedCell = currentPattern.rows[ e.row ][ e.track ];
 
 		if( volume == 0 ) {
@@ -81,12 +60,27 @@ window.onload = function() {
 
 	}, false );
 
+
+	// Setup initial data
 	
-	// patternGUI.setPatternData( player.patterns[ 0 ] ); // TMP should be first in order list
-	// patternToGUI( player.patterns[0], patternGUI );
-	setCurrentPattern( player.patterns[0] );
+	if( window.location.hash ) {
+		// TODO settings from window.hash
+	} else {
+		setDefaultParams( player );
+	}
+
+	// & load data into GUIs
+
+	for( var i = 0; i < numVoices; i++ ) {
+		var voice = player.voices[i],
+			gui = voiceGUIs[i];
+
+		gui.attachTo( voice );
+	}
 
 	// ~~~ finally...
+
+	setCurrentPattern( player.patterns[0] ); // TMP should be first in order list
 
 	jsAudioNode.onaudioprocess = function(event) {
 
@@ -102,6 +96,9 @@ window.onload = function() {
 		}
 
 	};
+
+	updateDebugInfo();
+
 
 	// work around http://code.google.com/p/chromium/issues/detail?id=82795
 	setTimeout(function() {
@@ -138,7 +135,6 @@ window.onload = function() {
 				}
 			}
 		}
-
 	}
 
 	function updateDebugInfo() {
@@ -146,7 +142,7 @@ window.onload = function() {
 			voiceParams: []
 		};
 
-		voices.forEach(function( v ) {
+		player.voices.forEach(function( v ) {
 			settings.voiceParams.push( v.getParams() );
 		});
 
@@ -193,7 +189,7 @@ window.onload = function() {
 		return newPat;
 	}
 
-	function setDefaultParams( voices, player ) {
+	function setDefaultParams( player ) {
 	 var defaultValues = {
 			"voiceParams": [
 				{
@@ -508,7 +504,7 @@ window.onload = function() {
 		};
 		
 		for( var i = 0; i < defaultValues.voiceParams.length; i++ ) {
-			var v = voices[i],
+			var v = player.voices[i],
 				params = defaultValues.voiceParams[i];
 
 			v.setParams( params );
