@@ -212,7 +212,7 @@ window.onload = function() {
 
 	// ~~~ finally...
 
-	setCurrentPattern( player.patterns[0] ); // TODO should be first in order list
+	setCurrentPattern( player.patterns[ player.orderList[0] ] );
 
 
 	saveData();
@@ -298,7 +298,8 @@ window.onload = function() {
 		var settings = {
 			bpm: player.bpm,
 			voiceParams: [],
-			patterns: []
+			patterns: [],
+			orderList: []
 		};
 
 		player.voices.forEach(function( v ) {
@@ -307,6 +308,10 @@ window.onload = function() {
 
 		player.patterns.forEach(function( p ) {
 			settings.patterns.push( compressPattern( p ) );
+		});
+
+		player.orderList.forEach(function( o ) {
+			settings.orderList.push( o );
 		});
 
 		var json = JSON.stringify( settings, null, "\t" ),
@@ -662,34 +667,37 @@ window.onload = function() {
 						1
 					]
 				]
-			]
+			],
+			"orderList": [ 0 ]
 		};
 
 		return defaultValues;
 	}
 
-	function loadSong( player, defaultValues ) {
+	function loadSong( player, values ) {
 		
-		for( var i = 0; i < defaultValues.voiceParams.length; i++ ) {
+		for( var i = 0; i < values.voiceParams.length; i++ ) {
 			var v = player.voices[i],
-				params = defaultValues.voiceParams[i];
+				params = values.voiceParams[i];
 
 			v.setParams( params );
 		}
 
-		player.setBPM( defaultValues.bpm );
+		player.setBPM( values.bpm );
 		player.patterns = [];
 		player.orderList = [];
 
-		for( var i = 0; i < defaultValues.patterns.length; i++ ) {
-			var compressedPattern = defaultValues.patterns[i],
+		for( var i = 0; i < values.patterns.length; i++ ) {
+			var compressedPattern = values.patterns[i],
 				uncompressed = uncompressPattern( compressedPattern, numVoices, patternLength );
 
 			player.patterns.push( uncompressed );
-
-			// XXX hack to fill the order list for now
-			player.orderList.push( i );
 		}
+
+		for( var i = 0; i < values.orderList.length; i++ ) {
+			player.orderList.push( values.orderList[ i ] );
+		}
+
 	}
 
 	function loadDefaultSong() {
