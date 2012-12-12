@@ -66,6 +66,7 @@ body {
 }
 	#orders input {
 		border: 2px solid #eee;
+		-webkit-user-select: none;
 	}
 
 	#orders .selected {
