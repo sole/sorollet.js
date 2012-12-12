@@ -317,7 +317,6 @@ window.onload = function() {
 		var json = JSON.stringify( settings, null, "\t" ),
 			base64ised = btoa( JSON.stringify( settings) ); // no pretty print this time so it's smaller
 
-		console.log( base64ised, base64ised.length );
 		debugContainer.innerHTML = json;
 
 		window.location.hash = base64ised;
