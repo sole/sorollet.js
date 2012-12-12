@@ -12,6 +12,7 @@ window.onload = function() {
 		btnPlay = document.getElementById( 'btn_play' ),
 		btnStop = document.getElementById( 'btn_stop' ),
 		bpmInput = document.getElementById( 'bpm' ),
+		btnZap = document.getElementById( 'btn_zap' ),
 		btnAddPattern = document.getElementById( 'btn_add_pattern'),
 		btnRemovePattern = document.getElementById( 'btn_remove_pattern'),
 		btnAddAgainPattern = document.getElementById( 'btn_add_again_pattern'),
@@ -123,6 +124,12 @@ window.onload = function() {
 
 	bpmInput.addEventListener( 'keyup', onBpmChange, false );
 	bpmInput.addEventListener( 'change', onBpmChange, false );
+
+	/*btnZap.addEventListener( 'click', function() {
+		if( window.confirm('Do you really, seriously, absolutely want to delete the song?') ) {
+			deleteSong();
+		}
+	}, false );*/
 
 	btnAddPattern.addEventListener( 'click', function() {
 		var pattern = new SOROLLET.Pattern( numVoices, patternLength ),
@@ -687,6 +694,10 @@ window.onload = function() {
 		};
 
 		return defaultValues;
+	}
+
+	function deleteSong() {
+		// TODO implement
 	}
 
 	function loadSong( player, values ) {

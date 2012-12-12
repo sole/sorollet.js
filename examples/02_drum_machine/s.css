@@ -38,9 +38,13 @@ body {
 	}
 
 #controls {
-	padding: 1em 0;
+	margin: 1em 0;
 	max-width: 1070px;
 }
+	
+	#controls > * {
+		margin: 0.5em 0;
+	}
 
 	#controls button {
 		border: none;
@@ -52,8 +56,17 @@ body {
 		cursor: pointer;
 	}
 
+	#controls #btn_zap {
+		margin-left: 5em;
+	}
+
+	#controls button#btn_zap:hover {
+		background: #f22;
+		color: #fff;
+	}
+
 #order_list_controls {
-	padding: 1em 0;
+	margin: 0.5em 0;
 }
 	#order_list_controls > div + div {
 		padding-left: 2em;
@@ -75,6 +88,10 @@ body {
 
 #machine_container {
 	clear: both;
+}
+
+#pattern_sequencer {
+	margin-bottom: 1em;
 }
 
 #voices {
