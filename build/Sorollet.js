@@ -698,7 +698,7 @@ SOROLLET.Player = function( _samplingRate ) {
 	}
 
 	this.removeFromOrderList = function( orderListIndex ) {
-		this.orderList = this.orderList.splice( orderListIndex, 1 );
+		this.orderList.splice( orderListIndex, 1 );
 		this.dispatchEvent({ type: 'change', player: this });
 	}
 
