@@ -13,6 +13,8 @@ window.onload = function() {
 		btnStop = document.getElementById( 'btn_stop' ),
 		bpmInput = document.getElementById( 'bpm' ),
 		btnZap = document.getElementById( 'btn_zap' ),
+		btnWav = document.getElementById( 'btn_wav' ),
+		wavAudioContainer = document.getElementById( 'wav_audio_container' ),
 		btnAddPattern = document.getElementById( 'btn_add_pattern'),
 		btnRemovePattern = document.getElementById( 'btn_remove_pattern'),
 		btnAddAgainPattern = document.getElementById( 'btn_add_again_pattern'),
@@ -111,7 +113,7 @@ window.onload = function() {
 		jsAudioNode.disconnect();
 		playing = false;
 		btn_play.innerHTML = btn_play.dataset['paused'];
-		// TODO: rewind pattern & order
+		player.playOrder( 0 );
 	}, false );
 
 	function onBpmChange( e ) {
@@ -130,6 +132,10 @@ window.onload = function() {
 			deleteSong();
 		}
 	}, false );*/
+
+	btnWav.addEventListener( 'click', function() {
+		saveWAV();
+	}, false );
 
 	btnAddPattern.addEventListener( 'click', function() {
 		var pattern = new SOROLLET.Pattern( numVoices, patternLength ),
@@ -741,4 +747,127 @@ window.onload = function() {
 			loadDefaultSong();
 		}
 	}
+
+	function saveWAV() {
+		var buttons = [ btn_wav, btn_play, btn_stop ],
+			previousText = btn_wav.innerHTML,
+			audioData = [],
+			bufferSize = 8192,
+			timeoutDelay = 15,
+			audio,
+			source;
+
+		btn_wav.disabled = true;
+		btn_wav.innerHTML = 'Saving...';
+
+		// disconnect player
+		btn_stop.click();
+
+		// disable buttons
+		buttons.forEach(function( b ) {
+			b.disabled = true;
+		});
+		
+		player.repeat = false;
+		player.finished = false;
+		
+		var runs = 0;
+		renderPass();
+
+		function renderPass() {
+			if( player.finished ) {
+				onFinishedRendering();
+			} else {
+				var outBuffer = player.getBuffer( bufferSize );
+
+				audioData = audioData.concat( outBuffer );
+
+				btn_wav.innerHTML = "Rendering... (" + StringFormat.toFixed( player.currentOrder * 100.0 / player.orderList.length ) + "%)";
+
+				setTimeout( renderPass, timeoutDelay );
+			}
+		}
+
+		function onFinishedRendering() {
+			
+			btn_wav.innerHTML = 'Generating WAV';
+			wavAudioContainer.innerHTML = '';
+			audio = document.createElement( 'audio' );
+			source = document.createElement( 'source' );
+
+			audio.controls = true;
+
+			source.type = 'audio/wav';
+			audio.appendChild( source );
+
+			dataToSource( audioData, samplingRate, source, onWAVProgress, onWAVCompleted );
+
+		}
+
+		function onWAVProgress( message ) {
+			btn_wav.innerHTML = 'Saving WAV: ' + message;
+		}
+
+		function onWAVCompleted( base64Source ) {
+
+			wavAudioContainer.appendChild( audio );
+
+			source.src = base64Source;
+
+			// re enable buttons
+			buttons.forEach(function( b ) {
+				b.disabled = false;
+			});
+	
+		}
+
+		function dataToSource( data, sampleRate, sourceElement, onProgress, onComplete ) {
+			var n = data.length,
+				integer = 0,
+				header = "RIFF<##>WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00<##><##>\x01\x00\x08\x00data<##>";
+
+			function insertLong(value) {
+				var bytes = "";
+				for( var i = 0; i < 4; i++ ) {
+						bytes += String.fromCharCode(value % 256);
+						value = value >> 8;
+				}
+				header = header.replace('<##>', bytes);
+			}
+			
+			onProgress( 'Writing header' );
+
+			insertLong(36 + n);
+			insertLong(sampleRate);
+			insertLong(sampleRate);
+			insertLong(n);
+
+			var position = 0,
+				processLength = bufferLength;
+
+			process();
+
+			function process() {
+				for( var i = 0; i < processLength; i++ ) {
+
+					header += String.fromCharCode(Math.round(Math.min(1, Math.max(-1, data[position])) * 126 + 128));
+					position++;
+					onProgress( 'converting ' + StringFormat.toFixed( position * 100.0 / n ) + '%' );
+
+					if( position >= n ) {
+						break;
+					}
+				}
+
+				if( position < n ) {
+					setTimeout( process, timeoutDelay );
+				} else {
+					onProgress( 'done' );
+					onComplete( 'data:audio/wav;base64,' + btoa(header) );
+				}
+			}
+		}
+	}
+
+	
 }

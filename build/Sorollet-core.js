@@ -571,7 +571,8 @@ SOROLLET.Player = function( _samplingRate ) {
 	this.currentRow = 0;
 	this.currentOrder = 0;
 	this.currentPattern = 0;
-	this.repeat = false;
+	this.repeat = true;
+	this.finished = false;
 
 	this.voices = [];
 	this.patterns = [];
@@ -589,9 +590,15 @@ SOROLLET.Player = function( _samplingRate ) {
 
 
 	this.getBuffer = function(numSamples) {
-		
+	
+		outBuffer = [];
+
 		for(var i = 0; i < numSamples; i++) {
 			outBuffer[i] = 0;
+		}
+
+		if( this.finished ) {
+			return outBuffer;
 		}
 
 		var samplesPerRow = (secondsPerRow * samplingRate + 0.5) >> 0,
@@ -616,7 +623,17 @@ SOROLLET.Player = function( _samplingRate ) {
 			if(row >= pattern.rows.length) {
 				// Next order! as we have finished with the current pattern
 				// TODO this always loops - this.repeats is not honored
-				order = ++order % this.orderList.length;
+				var nextOrder = order + 1;
+
+				if( !this.repeat && nextOrder >= this.orderList.length ) {
+					this.dispatchEvent({ type: 'finished' });
+					this.finished = true;
+					return outBuffer;
+				} else {
+					order = nextOrder % this.orderList.length;
+				}
+
+				//order = ++order % this.orderList.length;
 
 				this.dispatchEvent({ type: 'orderChanged', order: order });
 

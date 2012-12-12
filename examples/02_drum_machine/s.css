@@ -65,6 +65,10 @@ body {
 		color: #fff;
 	}
 
+	#wav_audio_container {
+		display: inline;
+	}
+
 #order_list_controls {
 	margin: 0.5em 0;
 }
