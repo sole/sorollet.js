@@ -195,8 +195,11 @@ window.onload = function() {
 	
 	if( window.location.hash ) {
 		// TODO settings from window.hash
+		loadSongFromHash();
+
 	} else {
-		setDefaultParams( player );
+		// setDefaultParams( player, getDefaultSong() );
+		loadDefaultSong();
 	}
 
 	// & load data into GUIs
@@ -350,7 +353,8 @@ window.onload = function() {
 		return newPat;
 	}
 
-	function setDefaultParams( player ) {
+	function getDefaultSong() {
+
 		var defaultValues = {
 			"bpm": 100,
 			"voiceParams": [
@@ -664,6 +668,11 @@ window.onload = function() {
 				]
 			]
 		};
+
+		return defaultValues;
+	}
+
+	function setDefaultParams( player, defaultValues ) {
 		
 		for( var i = 0; i < defaultValues.voiceParams.length; i++ ) {
 			var v = player.voices[i],
@@ -684,6 +693,22 @@ window.onload = function() {
 
 			// XXX hack to fill the order list for now
 			player.orderList.push( i );
+		}
+	}
+
+	function loadDefaultSong() {
+		setDefaultParams( player, getDefaultSong() );
+	}
+
+	function loadSongFromHash() {
+		try {
+			var hash = window.location.hash,
+				encoded = hash.substr(1),
+				serialised = atob( encoded ),
+				unserialised = JSON.parse( serialised );
+				setDefaultParams( player, unserialised );
+		} catch( ohno ) {
+			loadDefaultSong();
 		}
 	}
 }
