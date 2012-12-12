@@ -42,15 +42,16 @@ body {
 	max-width: 1070px;
 }
 
-#controls button {
-	border: none;
-	border-radius: 10px;
-	background: #eee;
-	padding: 5px;
-	font-size: 10px;
-	min-width: 20px;
-	cursor: pointer;
-}
+	#controls button {
+		border: none;
+		border-radius: 10px;
+		background: #eee;
+		padding: 5px;
+		font-size: 10px;
+		min-width: 20px;
+		cursor: pointer;
+	}
+
 #order_list_controls {
 	padding: 1em 0;
 }
@@ -63,6 +64,13 @@ body {
 	overflow-y: hidden;
 	background: #eee;
 }
+	#orders input {
+		border: 2px solid #eee;
+	}
+
+	#orders .selected {
+		border: 2px dotted orange;
+	}
 
 #machine_container {
 	clear: both;

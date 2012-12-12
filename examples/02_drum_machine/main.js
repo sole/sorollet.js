@@ -49,6 +49,10 @@ window.onload = function() {
 		updateDebugInfo();
 	}, false );
 
+	player.addEventListener( 'orderChanged', function( e ) {
+		setCurrentOrderInGUI( e.order );
+	}, false );
+
 	player.addEventListener( 'patternChanged', function( e ) {
 		setCurrentPattern( player.patterns[ e.pattern ] );
 	}, false );
@@ -237,6 +241,18 @@ window.onload = function() {
 
 			ordersContainer.appendChild( input );
 		}
+
+		setCurrentOrderInGUI( player.currentOrder );
+	}
+
+	function setCurrentOrderInGUI( orderIndex ) {
+		var currentlySelected = ordersContainer.querySelector( '.selected' ),
+			orderNodes = ordersContainer.querySelectorAll( 'input' );
+		
+		if( currentlySelected !== null) {
+			currentlySelected.className = '';
+		}
+		orderNodes[ orderIndex ].className = 'selected';
 	}
 
 	function setCurrentPattern( pattern ) {
