@@ -236,7 +236,7 @@ window.onload = function() {
 			input.type = 'number';
 			input.value = player.orderList[ i ];
 			input.min = 0;
-			input.max = player.orderList.length - 1;
+			input.max = player.patterns.length;
 
 			input.addEventListener( 'change', function( e ) {
 				var siblings = this.parentNode.childNodes,
