@@ -141,10 +141,10 @@ window.onload = function() {
 			newOrder;
 
 		// Need to bring the player to an existing order instead of the one we're about to delete
-		if( currentOrder == 0 ) {
-			newOrder = 1;
-		} else {
+		if( currentOrder != 0 ) {
 			newOrder = currentOrder - 1;
+		} else {
+			newOrder = currentOrder;
 		}
 
 		player.playOrder( newOrder );
@@ -267,7 +267,7 @@ window.onload = function() {
 	function setCurrentOrderInGUI( orderIndex ) {
 		var currentlySelected = ordersContainer.querySelector( '.selected' ),
 			orderNodes = ordersContainer.querySelectorAll( 'input' );
-		
+
 		if( currentlySelected !== null) {
 			currentlySelected.className = '';
 		}
