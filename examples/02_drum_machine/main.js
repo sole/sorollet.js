@@ -194,11 +194,8 @@ window.onload = function() {
 	// --- Setup initial data ---
 	
 	if( window.location.hash ) {
-		// TODO settings from window.hash
 		loadSongFromHash();
-
 	} else {
-		// setDefaultParams( player, getDefaultSong() );
 		loadDefaultSong();
 	}
 
@@ -215,11 +212,10 @@ window.onload = function() {
 
 	// ~~~ finally...
 
-	setCurrentPattern( player.patterns[0] ); // TMP should be first in order list
+	setCurrentPattern( player.patterns[0] ); // TODO should be first in order list
 
 
 	saveData();
-
 
 
 	// ~~~
@@ -672,7 +668,7 @@ window.onload = function() {
 		return defaultValues;
 	}
 
-	function setDefaultParams( player, defaultValues ) {
+	function loadSong( player, defaultValues ) {
 		
 		for( var i = 0; i < defaultValues.voiceParams.length; i++ ) {
 			var v = player.voices[i],
@@ -697,7 +693,7 @@ window.onload = function() {
 	}
 
 	function loadDefaultSong() {
-		setDefaultParams( player, getDefaultSong() );
+		loadSong( player, getDefaultSong() );
 	}
 
 	function loadSongFromHash() {
@@ -706,7 +702,7 @@ window.onload = function() {
 				encoded = hash.substr(1),
 				serialised = atob( encoded ),
 				unserialised = JSON.parse( serialised );
-				setDefaultParams( player, unserialised );
+				loadSong( player, unserialised );
 		} catch( ohno ) {
 			loadDefaultSong();
 		}
