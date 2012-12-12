@@ -709,7 +709,22 @@ SOROLLET.Player = function( _samplingRate ) {
 		this.currentPattern = this.orderList[ orderIndex ];
 		this.dispatchEvent({ type: 'orderChanged', order: orderIndex });
 		this.dispatchEvent({ type: 'patternChanged', pattern: this.currentPattern });
-	
+	}
+
+	this.setOrderValueAt = function( orderIndex, value ) {
+		if( this.orderList.length <= orderIndex ) {
+			console.error( 'Sorollet.Player.setOrderValueAt: trying to set value for non-existing order', orderIndex);
+			return;
+		} else if( this.patterns.length <= value ) {
+			console.error( 'Sorollet.Player.setOrderValueAt: trying to set value for non-existing pattern', orderIndex);
+
+		}
+
+		this.orderList[ orderIndex ] = value;
+		this.currentPattern = this.orderList[ orderIndex ];
+
+		this.dispatchEvent({ type: 'change', player: this });
+
 	}
 
 }

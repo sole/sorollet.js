@@ -189,7 +189,9 @@ window.onload = function() {
 		});
 		setCurrentPattern( pattern );
 	}, false );
-	// Setup initial data
+
+
+	// --- Setup initial data ---
 	
 	if( window.location.hash ) {
 		// TODO settings from window.hash
@@ -237,7 +239,25 @@ window.onload = function() {
 			input.min = 0;
 			input.max = player.orderList.length - 1;
 
-			// TODO: update order list when these inputs change values
+			input.addEventListener( 'change', function( e ) {
+				var siblings = this.parentNode.childNodes,
+					position,
+					newPatternIndex = this.value | 0;
+
+				for( var i = 0; i < siblings.length; i++ ) {
+					position = i;
+					if( this == siblings[i] ) {
+						break;
+					}
+				}
+
+				player.setOrderValueAt( position, newPatternIndex );
+
+				// ensure player gui is updated
+				if( player.currentOrder == position ) {
+					setCurrentPattern( player.patterns[ newPatternIndex ] );
+				}
+			}, false );
 
 			ordersContainer.appendChild( input );
 		}
