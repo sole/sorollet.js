@@ -32,7 +32,7 @@ window.onload = function() {
 		var voice = new SOROLLET.Voice(),
 			voiceGui = new SOROLLET.VoiceGUI({ width: 250 });
 
-		voiceGui.addEventListener( 'change', updateDebugInfo, false );
+		voiceGui.addEventListener( 'change', saveData, false );
 
 		player.voices.push( voice );
 		voiceGUIs.push( voiceGui );
@@ -46,7 +46,7 @@ window.onload = function() {
 
 	player.addEventListener( 'change', function( e ) {
 		ordersToGUI();
-		updateDebugInfo();
+		saveData();
 	}, false );
 
 	player.addEventListener( 'orderChanged', function( e ) {
@@ -76,7 +76,7 @@ window.onload = function() {
 			changedCell.volume = volume;
 		}
 		
-		updateDebugInfo();
+		saveData();
 	}, false );
 
 	jsAudioNode.onaudioprocess = function(event) {
@@ -118,7 +118,7 @@ window.onload = function() {
 
 		bpmInput.value = value;
 		player.setBPM( value );
-		updateDebugInfo();
+		saveData();
 	}
 
 	bpmInput.addEventListener( 'keyup', onBpmChange, false );
@@ -215,7 +215,7 @@ window.onload = function() {
 	setCurrentPattern( player.patterns[0] ); // TMP should be first in order list
 
 
-	updateDebugInfo();
+	saveData();
 
 
 
@@ -295,7 +295,7 @@ window.onload = function() {
 		}
 	}
 
-	function updateDebugInfo() {
+	function saveData() {
 		var settings = {
 			bpm: player.bpm,
 			voiceParams: [],
@@ -315,6 +315,8 @@ window.onload = function() {
 
 		console.log( base64ised, base64ised.length );
 		debugContainer.innerHTML = json;
+
+		window.location.hash = base64ised;
 	}
 
 	// A very case specific way to store/retrieve pattern data
