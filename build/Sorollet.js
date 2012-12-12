@@ -577,6 +577,8 @@ SOROLLET.Player = function( _samplingRate ) {
 	this.voices = [];
 	this.patterns = [];
 	this.orderList = [];
+	this.eventsList = [];
+	this.nextEventPosition = 0; // TODO position->index?
 	
 	EventTarget.call( this );
 
@@ -588,8 +590,7 @@ SOROLLET.Player = function( _samplingRate ) {
 		secondsPerTick = secondsPerRow / scope.ticksPerLine;
 	}
 
-
-	this.getBuffer = function(numSamples) {
+	this.getBuffer = function( numSamples ) {
 	
 		outBuffer = [];
 
@@ -684,6 +685,140 @@ SOROLLET.Player = function( _samplingRate ) {
 
 	}
 
+	this.buildEventsList = function() {
+		var t = 0,
+			orderIndex = 0,
+			patternIndex,
+			pattern,
+			samples = 0,
+			samplesPerRow,
+			trackCount = this.voices.length, // TODO it doesn't need to be a 1:1 correspondence
+			lastTrackInstrument = new Array( trackCount ),
+			lastTrackNote = new Array( trackCount );
+
+		for (var i = 0; i < trackCount; i++) {
+			lastTrackInstrument[i] = null;
+			lastTrackNote[i] = null;
+		}
+
+		this.eventsList = [];
+		this.nextEventPosition = 0;
+
+		samplesPerRow = (secondsPerRow * samplingRate + 0.5) >> 0; // Note: this should change if speed commands are implemented
+
+		while ( orderIndex < this.orderList.length ) {
+
+			patternIndex = this.orderList[ orderIndex ];
+
+			var ev = new SOROLLET.PlayerEvent();
+			ev.timestamp = t;
+			ev.timestampSamples = samples;
+			ev.type = ev.TYPE_PATTERN_CHANGE;
+			ev.pattern = patternIndex;
+			this.eventsList.push( ev );
+
+			pattern = this.patterns[ patternIndex ];
+
+			for( var i = 0; i < pattern.rows.length; i++ ) {
+				var ev = new SOROLLET.PlayerEvent();
+				ev.timestamp = t;
+				ev.timestampSamples = samples;
+				ev.type = ev.TYPE_ROW_CHANGE;
+				ev.row = i;
+				
+				this.eventsList.push( ev );
+
+				for (var j = 0; j < trackCount; j++) {
+					var cell = pattern.getCell(i, j);
+
+					// ~~ NOTE ON ~~ //
+					if( cell.note !== null && cell.noteOff !== true /* TODO && pCell->getInstrument() != INSTRUMENT_NULL*/ ) {
+						// TODO instrument = pCell->getInstrument();
+
+						var ev = new SOROLLET.PlayerEvent();
+						ev.timestamp = t;
+						ev.timestampSamples = samples;
+						ev.type = ev.TYPE_NOTE_ON;
+						ev.note = cell.note
+						// TODO ev.instrument = instrument;
+						ev.volume = cell.volume;
+					
+						this.eventsList.push( ev );
+
+						// TODO buildArpeggios(pCell, t, samples, mfSecondsPerRow, samplesPerRow, instrument, note, fVolume);
+
+						// TODO Store this for later, so that if we get a new volume event we know to which instrument it applies
+						// lastTrackInstrument[j] = instrument;
+						// lastTrackNote[j] = note;
+					}
+					// ~~ NEW VOLUME ~~ //
+					/* TODO else if (
+							(NOTE_NULL == pCell->getNote() || NOTE_OFF == pCell->getNote()) &&
+							INSTRUMENT_NULL == pCell->getInstrument() &&
+							VOLUME_NULL != pCell->getVolume())
+					{
+						if (lastTrackInstrument[j] != INSTRUMENT_NULL)
+						{
+							event = new SorolletPlayerEvent();
+							event->timestamp = t;
+							event->timestampSamples = samples;
+							event->type = SOROLLET_EVENT_VOLUME;
+							event->instrument = lastTrackInstrument[j];
+							event->volume = fVolume;
+
+							addEvent(event);
+
+							if (lastTrackNote[j] != NOTE_NULL)
+							{
+								buildArpeggios(pCell, t, samples, mfSecondsPerRow, samplesPerRow, instrument, lastTrackNote[j], fVolume);
+							}
+						}
+					}*/
+					// ~~ NOTE OFF ~~ //
+					else if( cell.noteOff === true ) {
+						// TODO if (lastTrackInstrument[j] != INSTRUMENT_NULL) {
+							var ev = new SOROLLET.PlayerEvent();
+							ev.timestamp = t;
+							ev.timestampSamples = samples;
+							ev.type = ev.TYPE_NOTE_OFF;
+							// TODO ev.instrument = lastTrackInstrument[j];
+
+							this.eventsList.push( ev );
+						// }
+					}
+					/* TODO else if (pCell->getNote() != NOTE_OFF && lastTrackNote[j] != NOTE_NULL && lastTrackInstrument[j] != INSTRUMENT_NULL)
+					{
+						buildArpeggios(pCell, t, samples, mfSecondsPerRow, samplesPerRow, lastTrackInstrument[j], lastTrackNote[j], 1.0f);
+					}*/
+				}
+
+				t += secondsPerRow;
+				samples += samplesPerRow;
+			}
+
+			orderIndex++;
+		}
+
+		// End of the song --there can only be one of these events!!!
+		var ev = new SOROLLET.PlayerEvent();
+		ev.timestamp = t;
+		ev.timestampSamples = samples;
+		ev.type = ev.TYPE_SONG_END;
+		this.eventsList.push( ev );
+
+		this.currentRow = 0;
+		this.currentOrder = 0;
+		this.currentPattern = this.orderList[0];
+
+	}
+
+	this.getOfflineBuffer = function( numSamples ) {
+
+		/*
+
+		 */ 
+	}
+
 	this.setBPM = function( value ){
 		this.bpm = value;
 		updateRowTiming();
@@ -745,6 +880,26 @@ SOROLLET.Player = function( _samplingRate ) {
 	}
 
 }
+
+SOROLLET.PlayerEvent = function() {
+	this.timestamp = 0;
+	this.timestampSamples = 0;
+	this.type = null;
+	this.instrument = null;
+	this.volume = 0;
+};
+
+SOROLLET.PlayerEvent.prototype = {
+	TYPE_NULL: 0,
+	TYPE_NOTE_OFF: 1,
+	TYPE_NOTE_ON: 2,
+	TYPE_VOLUME: 3,
+	TYPE_EFFECT: 4,
+	TYPE_ROW_CHANGE: 5,
+	TYPE_PATTERN_CHANGE: 6,
+	TYPE_ORDER_POSITION_CHANGE: 7,
+	TYPE_SONG_END: 8
+};
 SOROLLET.Pattern = function( numTracks, length ) {
 	'use strict';
 
@@ -761,6 +916,10 @@ SOROLLET.Pattern = function( numTracks, length ) {
 		}
 
 		this.rows.push( row );
+	}
+
+	this.getCell = function( i, j ) {
+		return this.rows[i][j];
 	}
 }
 

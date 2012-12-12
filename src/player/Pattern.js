@@ -15,6 +15,10 @@ SOROLLET.Pattern = function( numTracks, length ) {
 
 		this.rows.push( row );
 	}
+
+	this.getCell = function( i, j ) {
+		return this.rows[i][j];
+	}
 }
 
 SOROLLET.PatternCell = function() {

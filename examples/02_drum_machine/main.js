@@ -770,6 +770,10 @@ window.onload = function() {
 		
 		player.repeat = false;
 		player.finished = false;
+		player.buildEventsList();
+
+		console.log( player.eventsList );
+		return;
 		
 		var runs = 0;
 		renderPass();
@@ -778,7 +782,7 @@ window.onload = function() {
 			if( player.finished ) {
 				onFinishedRendering();
 			} else {
-				var outBuffer = player.getBuffer( bufferSize );
+				var outBuffer = player.getOfflineBuffer( bufferSize );
 
 				audioData = audioData.concat( outBuffer );
 
