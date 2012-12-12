@@ -230,6 +230,20 @@ window.onload = function() {
 
 	function ordersToGUI( ) {
 
+		function getNodePosition( node ) {
+			var siblings = node.parentNode.childNodes,
+				position = -1;
+
+				for( var i = 0; i < siblings.length; i++ ) {
+					position = i;
+					if( node == siblings[i] ) {
+						break;
+					}
+				}
+
+			return position;
+		}
+
 		ordersContainer.innerHTML = '';
 		for( var i = 0; i < player.orderList.length; i++ ) {
 			var input = document.createElement( 'input' );
@@ -239,16 +253,9 @@ window.onload = function() {
 			input.max = player.patterns.length;
 
 			input.addEventListener( 'change', function( e ) {
-				var siblings = this.parentNode.childNodes,
-					position,
-					newPatternIndex = this.value | 0;
 
-				for( var i = 0; i < siblings.length; i++ ) {
-					position = i;
-					if( this == siblings[i] ) {
-						break;
-					}
-				}
+				var position = getNodePosition( this ),
+					newPatternIndex = this.value | 0;
 
 				player.setOrderValueAt( position, newPatternIndex );
 
@@ -256,6 +263,15 @@ window.onload = function() {
 				if( player.currentOrder == position ) {
 					setCurrentPattern( player.patterns[ newPatternIndex ] );
 				}
+			}, false );
+
+			input.addEventListener( 'dblclick', function( e ) {
+				e.preventDefault();
+				e.stopPropagation();
+
+				player.playOrder( getNodePosition( this ) );
+
+				return false;
 			}, false );
 
 			ordersContainer.appendChild( input );
