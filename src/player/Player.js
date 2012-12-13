@@ -65,12 +65,11 @@ SOROLLET.Player = function( _samplingRate ) {
 
 	this.updateNextEventToOrderRow = function( order, row ) {
 		var p = 0;
-	console.log('updateNextEventToOrderRow', order, row);	
+		
 		for(var i = 0; i < this.eventsList.length; i++) {
 			var ev = this.eventsList[i];
 			p = i;
 			if( ev.TYPE_ROW_CHANGE == ev.type && ev.row == row && ev.order == order ) {
-				console.log('found event at', i, ev.timestamp, ev.timestampSamples);
 				break;
 			}
 
@@ -288,6 +287,9 @@ SOROLLET.Player = function( _samplingRate ) {
 				// this.finished = true;
 				if( this.repeat ) {
 					this.playOrder( 0, 0 );
+					this.position = 0;
+					this.timePosition = 0;
+					this.nextEventPosition = 0;
 				} else {
 					this.finished = true;
 				}

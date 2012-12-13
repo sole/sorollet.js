@@ -358,8 +358,6 @@ window.onload = function() {
 
 		window.location.hash = base64ised;
 
-		console.log('num events', player.eventsList.length, 'next pos', player.nextEventPosition);
-
 		var currentRow = player.currentRow,
 			currentOrder = player.currentOrder;
 
