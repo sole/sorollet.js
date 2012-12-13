@@ -63,7 +63,13 @@ SOROLLET.Player = function( _samplingRate ) {
 			row = this.currentRow;
 		}
 
+		changeToRow( row );
+		
 		this.updateNextEventToOrderRow( orderIndex, row );
+		//loopStart = 0; // ?
+		var prevPosition = this.position;
+		this.position = this.eventsList[ this.nextEventPosition ].timestampSamples + loopStart; //0; // ?
+		console.log('jumpToOrder', 'next position ev', this.nextEventPosition, 'new Pos', this.position, 'prev', prevPosition );
 	}
 
 
@@ -254,7 +260,6 @@ SOROLLET.Player = function( _samplingRate ) {
 				console.log('was finished but we loop. remaining samples=', remainingSamples, 'loop start=', loopStart);
 				this.jumpToOrder( 0, 0 );
 				this.finished = false;
-				//this.loopStart = this.position; //TODO maybe set it when end event happened to avoid padding with silence
 			}
 
 			if( this.nextEventPosition == this.eventsList.length ) {

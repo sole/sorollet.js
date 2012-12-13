@@ -599,7 +599,7 @@ SOROLLET.Player = function( _samplingRate ) {
 
 	this.stop = function() {
 		this.position = 0;
-		this.loopStart = 0;
+		loopStart = 0;
 		//this.nextEventPosition = 0;
 		this.jumpToOrder( 0, 0 );
 	}
@@ -619,7 +619,13 @@ SOROLLET.Player = function( _samplingRate ) {
 			row = this.currentRow;
 		}
 
+		changeToRow( row );
+		
 		this.updateNextEventToOrderRow( orderIndex, row );
+		//loopStart = 0; // ?
+		var prevPosition = this.position;
+		this.position = this.eventsList[ this.nextEventPosition ].timestampSamples + loopStart; //0; // ?
+		console.log('jumpToOrder', 'next position ev', this.nextEventPosition, 'new Pos', this.position, 'prev', prevPosition );
 	}
 
 
@@ -807,10 +813,9 @@ SOROLLET.Player = function( _samplingRate ) {
 		do {
 
 			if( this.finished && this.repeat ) {
-				console.log('was finished but we loop. remaining samples=', remainingSamples, 'loop start=', this.loopStart);
+				console.log('was finished but we loop. remaining samples=', remainingSamples, 'loop start=', loopStart);
 				this.jumpToOrder( 0, 0 );
 				this.finished = false;
-				this.loopStart = this.position; //TODO maybe set it when end event happened to avoid padding with silence
 			}
 
 			if( this.nextEventPosition == this.eventsList.length ) {
@@ -818,14 +823,14 @@ SOROLLET.Player = function( _samplingRate ) {
 			}
 
 			currentEvent = this.eventsList[ this.nextEventPosition ];
-			currentEventStart = this.loopStart + currentEvent.timestampSamples;
+			currentEventStart = loopStart + currentEvent.timestampSamples;
 
 			if( currentEventStart >= bufferEndSamples ) {
 				break;
 			}
 
 			intervalSamples = currentEventStart - segmentStartSamples;
-			console.log('intervalSamples', intervalSamples);
+			console.log('ev start', currentEventStart, 'intervalSamples', intervalSamples);
 
 			// Get buffer UNTIL the event
 			if (intervalSamples > 0) {
@@ -833,7 +838,7 @@ SOROLLET.Player = function( _samplingRate ) {
 				processBuffer(outBuffer, intervalSamples, bufferPosition );
 				
 				remainingSamples -= intervalSamples;
-				segmentStartSamples = currentEventStart; //this.loopStart + currentEvent.timestampSamples;
+				segmentStartSamples = currentEventStart;
 				this.position += intervalSamples;
 				bufferPosition += intervalSamples;
 			}
@@ -867,18 +872,8 @@ SOROLLET.Player = function( _samplingRate ) {
 
 			} else if( currentEvent.TYPE_SONG_END == currentEvent.type ) {
 				
-				console.log('SONG END');
-				/*if( this.repeat ) {
-					console.log('going to repeat');
-					this.jumpToOrder( 0, 0 );
-					//this.position = 0;
-					//this.timePosition = 0;
-					// this.startPlayingTime = this.getTime();
-					//this.nextEventPosition = 0;
-				} else {
-					console.log('not looping, finished');
-					this.finished = true;
-				}*/
+				console.log('SONG END', loopStart, currentEventStart);
+				loopStart = currentEventStart; //this.position;
 				this.finished = true;
 			}
 
