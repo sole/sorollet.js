@@ -820,6 +820,9 @@ window.onload = function() {
 			buttons.forEach(function( b ) {
 				b.disabled = false;
 			});
+
+			player.finished = false;
+			player.repeat = true;
 	
 		}
 
