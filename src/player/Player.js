@@ -42,9 +42,28 @@ SOROLLET.Player = function( _samplingRate ) {
 
 	this.stop = function() {
 		this.position = 0;
-		this.nextEventPosition = 0;
-		this.playOrder( 0, 0 );
+		//this.nextEventPosition = 0;
+		this.jumpToOrder( 0, 0 );
 	}
+
+	this.jumpToOrder = function( orderIndex, row ) {
+		// TODO if the new pattern to play has less rows than the current one,
+		// make sure we don't play out of index
+		changeToOrder( orderIndex );
+
+		/*if( row !== undefined ) {
+			changeToRow( row );
+		} else {
+			row = 0;
+		}*/
+
+		if( row === undefined ) {
+			row = this.currentRow;
+		}
+
+		this.updateNextEventToOrderRow( orderIndex, row );
+	}
+
 
 	this.updateNextEventPosition = function() {
 		var p = 0;
@@ -72,9 +91,8 @@ SOROLLET.Player = function( _samplingRate ) {
 			if( ev.TYPE_ROW_CHANGE == ev.type && ev.row == row && ev.order == order ) {
 				break;
 			}
-
-			
 		}
+		console.log('update next to', order, row, p);
 		this.nextEventPosition = p;
 	}
 
@@ -95,7 +113,6 @@ SOROLLET.Player = function( _samplingRate ) {
 		}
 
 		this.eventsList = [];
-		this.nextEventPosition = 0;
 
 		samplesPerRow = (secondsPerRow * samplingRate + 0.5) >> 0; // Note: this should change if speed commands are implemented
 
@@ -227,7 +244,14 @@ SOROLLET.Player = function( _samplingRate ) {
 			outBuffer[i] = 0;
 		}
 
+
 		do {
+
+			if( this.finished && this.repeat ) {
+				console.log('was finished but we loop. remaining samples=', remainingSamples);
+				this.jumpToOrder( 0, 0 );
+				this.finished = false;
+			}
 
 			if( this.nextEventPosition == this.eventsList.length ) {
 				return outBuffer;
@@ -280,16 +304,20 @@ SOROLLET.Player = function( _samplingRate ) {
 				voice.sendNoteOff();
 
 			} else if( currentEvent.TYPE_SONG_END == currentEvent.type ) {
-				// this.finished = true;
-				if( this.repeat ) {
-					this.playOrder( 0, 0 );
+				
+				console.log('SONG END');
+				/*if( this.repeat ) {
+					console.log('going to repeat');
+					this.jumpToOrder( 0, 0 );
 					//this.position = 0;
 					//this.timePosition = 0;
 					// this.startPlayingTime = this.getTime();
-					this.nextEventPosition = 0;
+					//this.nextEventPosition = 0;
 				} else {
+					console.log('not looping, finished');
 					this.finished = true;
-				}
+				}*/
+				this.finished = true;
 			}
 
 			this.nextEventPosition++;
@@ -363,7 +391,6 @@ SOROLLET.Player = function( _samplingRate ) {
 		
 		scope.currentRow = value;
 		scope.dispatchEvent({ type: 'rowChanged', row: value, previousRow: previousValue, pattern: scope.currentPattern, order: scope.currentOrder });
-		console.log( 'changeRow', value, scope.currentRow );
 	}
 
 	function changeToPattern( value ) {
@@ -415,22 +442,6 @@ SOROLLET.Player = function( _samplingRate ) {
 	this.removeFromOrderList = function( orderListIndex ) {
 		this.orderList.splice( orderListIndex, 1 );
 		this.dispatchEvent({ type: 'change', player: this });
-	}
-
-	this.playOrder = function( orderIndex, row ) {
-		// TODO if the new pattern to play has less rows than the current one,
-		// make sure we don't play out of index
-		/*this.currentOrder = orderIndex;
-		this.currentPattern = this.orderList[ orderIndex ];
-		this.dispatchEvent({ type: 'orderChanged', order: orderIndex });
-		this.dispatchEvent({ type: 'patternChanged', pattern: this.currentPattern });*/
-		changeToOrder( orderIndex );
-
-		if( row !== undefined ) {
-			//this.currentRow = row;
-			//this.dispatchEvent({ type: 'rowChanged', row: row });
-			changeToRow( row );
-		}
 	}
 
 	this.setOrderValueAt = function( orderIndex, value ) {

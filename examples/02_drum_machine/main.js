@@ -115,7 +115,6 @@ window.onload = function() {
 		jsAudioNode.disconnect();
 		playing = false;
 		btn_play.innerHTML = btn_play.dataset['paused'];
-		//player.playOrder( 0 );
 		player.stop();
 	}, false );
 
@@ -163,7 +162,7 @@ window.onload = function() {
 			newOrder = currentOrder;
 		}
 
-		player.playOrder( newOrder );
+		player.jumpToOrder( newOrder );
 		player.removeFromOrderList( currentOrder );
 	}, false );
 
@@ -290,7 +289,9 @@ window.onload = function() {
 				e.preventDefault();
 				e.stopPropagation();
 
-				player.playOrder( getNodePosition( this ) );
+				var orderIndex = getNodePosition( this );
+				player.jumpToOrder( orderIndex );
+				player.updateNextEventToOrderRow( orderIndex, 0 );
 
 				return false;
 			}, false );
