@@ -88,7 +88,8 @@ window.onload = function() {
 			outputBufferLeft = buffer.getChannelData(0),
 			outputBufferRight = buffer.getChannelData(1),
 			numSamples = outputBufferLeft.length,
-			sorolletBuffer = player.getBuffer(numSamples);
+			// sorolletBuffer = player.getBuffer(numSamples);
+			sorolletBuffer = player.getOfflineBuffer(numSamples);
 
 		for(var i = 0; i < numSamples; i++) {
 			outputBufferLeft[i] = sorolletBuffer[i];
@@ -100,6 +101,7 @@ window.onload = function() {
 	btn_play.addEventListener( 'click', function() {
 		if( !playing ) {
 			jsAudioNode.connect( audioContext.destination );
+			player.play();
 			playing = true;
 			this.innerHTML = this.dataset['playing'];
 		} else {
@@ -113,7 +115,8 @@ window.onload = function() {
 		jsAudioNode.disconnect();
 		playing = false;
 		btn_play.innerHTML = btn_play.dataset['paused'];
-		player.playOrder( 0 );
+		//player.playOrder( 0 );
+		player.stop();
 	}, false );
 
 	function onBpmChange( e ) {
@@ -770,7 +773,8 @@ window.onload = function() {
 		
 		player.repeat = false;
 		player.finished = false;
-		player.buildEventsList();
+		player.stop();
+		player.play();
 
 		var runs = 0;
 		renderPass();
@@ -821,6 +825,7 @@ window.onload = function() {
 				b.disabled = false;
 			});
 
+			player.stop();
 			player.finished = false;
 			player.repeat = true;
 	

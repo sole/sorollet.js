@@ -586,10 +586,20 @@ SOROLLET.Player = function( _samplingRate ) {
 
 	updateRowTiming();
 
-
 	function updateRowTiming() {
 		secondsPerRow = 60.0 / (scope.linesPerBeat * scope.bpm);
 		secondsPerTick = secondsPerRow / scope.ticksPerLine;
+	}
+
+	this.play = function() {
+		// having an updated event list is ESSENTIAL to playing!
+		this.buildEventsList();
+	}
+
+	this.stop = function() {
+		this.position = 0;
+		this.nextEventPosition = 0;
+		this.playOrder( 0, 0 );
 	}
 
 	this.getBuffer = function( numSamples ) {
@@ -709,6 +719,13 @@ SOROLLET.Player = function( _samplingRate ) {
 		samplesPerRow = (secondsPerRow * samplingRate + 0.5) >> 0; // Note: this should change if speed commands are implemented
 
 		while ( orderIndex < this.orderList.length ) {
+
+			var orderEv = new SOROLLET.PlayerEvent();
+			orderEv.timestamp = t;
+			orderEv.timestampSamples = samples;
+			orderEv.type = orderEv.TYPE_ORDER_POSITION_CHANGE;
+			orderEv.order = orderIndex;
+			this.eventsList.push( orderEv );
 
 			patternIndex = this.orderList[ orderIndex ];
 
@@ -858,13 +875,18 @@ SOROLLET.Player = function( _samplingRate ) {
 			}
 
 			// Apply the event
-			if( currentEvent.TYPE_PATTERN_CHANGE == currentEvent.type ) {
-
-				this.currentPattern = currentEvent.pattern;
-
+			if( currentEvent.TYPE_ORDER_POSITION_CHANGE == currentEvent.type ) {
+				changeToOrder( currentEvent.order );
+			/*} else if( currentEvent.TYPE_PATTERN_CHANGE == currentEvent.type ) {
+				//this.currentPattern = currentEvent.pattern;
+				changeToPattern( currentEvent.pattern );
+			*/
 			} else if( currentEvent.TYPE_ROW_CHANGE == currentEvent.type ) {
 
-				this.currentRow = currentEvent.row;
+				//this.dispatchEvent({ type: 'rowChanged', order: this.currentOrder, pattern: this.currentPattern, row: currentEvent.row, previousRow: this.currentRow });
+				changeToRow( currentEvent.row );
+
+				//this.currentRow = currentEvent.row;
 
 			} else if( currentEvent.TYPE_NOTE_ON == currentEvent.type) {
 
@@ -879,9 +901,13 @@ SOROLLET.Player = function( _samplingRate ) {
 				var voice = this.voices[ currentEvent.instrument ];
 				voice.sendNoteOff();
 
-			} else if( currentEvent.TYPE_SONG_END ) {
-				this.finished = true;
-
+			} else if( currentEvent.TYPE_SONG_END == currentEvent.type ) {
+				// this.finished = true;
+				if( this.repeat ) {
+					this.playOrder( 0, 0 );
+				} else {
+					this.finished = true;
+				}
 			}
 
 			this.nextEventPosition++;
@@ -950,6 +976,29 @@ SOROLLET.Player = function( _samplingRate ) {
 		}
 	}
 
+	function changeToRow( value ) {
+		var previousValue = scope.currentRow;
+		
+		scope.currentRow = value;
+		scope.dispatchEvent({ type: 'rowChanged', row: value, previousRow: previousValue, pattern: scope.currentPattern, order: scope.currentOrder });
+	}
+
+	function changeToPattern( value ) {
+		var previousValue = scope.currentPattern;
+		
+		scope.currentPattern = value;
+		scope.dispatchEvent({ type: 'patternChanged', pattern: value, previousPattern: previousValue, order: scope.currentOrder, row: scope.currentRow });
+	}
+	
+	function changeToOrder( value ) {
+		var previousValue = scope.currentOrder;
+		
+		scope.currentOrder = value;
+		scope.dispatchEvent({ type: 'orderChanged', order: value, previousOrder: previousValue, pattern: scope.currentPattern, row: scope.currentRow });
+
+		changeToPattern( scope.orderList[ value ] );
+	}
+
 	this.setBPM = function( value ){
 		this.bpm = value;
 		updateRowTiming();
@@ -985,13 +1034,20 @@ SOROLLET.Player = function( _samplingRate ) {
 		this.dispatchEvent({ type: 'change', player: this });
 	}
 
-	this.playOrder = function( orderIndex ) {
+	this.playOrder = function( orderIndex, row ) {
 		// TODO if the new pattern to play has less rows than the current one,
 		// make sure we don't play out of index
-		this.currentOrder = orderIndex;
+		/*this.currentOrder = orderIndex;
 		this.currentPattern = this.orderList[ orderIndex ];
 		this.dispatchEvent({ type: 'orderChanged', order: orderIndex });
-		this.dispatchEvent({ type: 'patternChanged', pattern: this.currentPattern });
+		this.dispatchEvent({ type: 'patternChanged', pattern: this.currentPattern });*/
+		changeToOrder( orderIndex );
+
+		if( row !== undefined ) {
+			//this.currentRow = row;
+			//this.dispatchEvent({ type: 'rowChanged', row: row });
+			changeToRow( row );
+		}
 	}
 
 	this.setOrderValueAt = function( orderIndex, value ) {
