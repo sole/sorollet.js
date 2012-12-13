@@ -62,21 +62,5 @@ function DrumPatternGUI( numVoices, patternLength, pushButtonNumberStates ) {
 		cells[j][i].setValue( value, dispatchEvents );
 	}
 
-	this.setPatternData = function( pattern ) {
-		for( var i = 0; i < pattern.rows.length; i++ ) {
-			var row = pattern.rows[i];
-			for( var j = 0; j < row.length; j++) {
-				var cell = row[j],
-					pushButton = cells[j][i];
-
-				if( cell.note !== null ) {
-					pushButton.setValue( volumeToValue( cell.volume ), false );
-				} else {
-					pushButton.setValue( 0, false );
-				}
-			}
-		}
-	}
-
 	return this;
 }

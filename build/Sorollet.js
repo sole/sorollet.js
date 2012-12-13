@@ -764,10 +764,6 @@ SOROLLET.Player = function( _samplingRate ) {
 		ev.type = ev.TYPE_SONG_END;
 		this.eventsList.push( ev );
 
-		//this.currentRow = 0;
-		//this.currentOrder = 0;
-		//this.currentPattern = this.orderList[0];
-
 	}
 
 	this.getBuffer = function( numSamples ) {
@@ -843,8 +839,9 @@ SOROLLET.Player = function( _samplingRate ) {
 				// this.finished = true;
 				if( this.repeat ) {
 					this.playOrder( 0, 0 );
-					this.position = 0;
-					this.timePosition = 0;
+					//this.position = 0;
+					//this.timePosition = 0;
+					// this.startPlayingTime = this.getTime();
 					this.nextEventPosition = 0;
 				} else {
 					this.finished = true;
