@@ -15,11 +15,12 @@ window.onload = function() {
 		btnZap = document.getElementById( 'btn_zap' ),
 		btnWav = document.getElementById( 'btn_wav' ),
 		wavAudioContainer = document.getElementById( 'wav_audio_container' ),
-		btnAddPattern = document.getElementById( 'btn_add_pattern'),
-		btnRemovePattern = document.getElementById( 'btn_remove_pattern'),
-		btnAddAgainPattern = document.getElementById( 'btn_add_again_pattern'),
-		btnRandomisePattern = document.getElementById( 'btn_randomise_pattern'),
-		btnClearPattern = document.getElementById( 'btn_clear_pattern'),
+		btnAddPattern = document.getElementById( 'btn_add_pattern' ),
+		btnRemovePattern = document.getElementById( 'btn_remove_pattern' ),
+		btnAddAgainPattern = document.getElementById( 'btn_add_again_pattern' ),
+		btnDuplicatePattern = document.getElementById( 'btn_duplicate_pattern' ),
+		btnRandomisePattern = document.getElementById( 'btn_randomise_pattern' ),
+		btnClearPattern = document.getElementById( 'btn_clear_pattern' ),
 		ordersContainer = document.getElementById( 'orders' ),
 		sequencerContainer = document.getElementById( 'pattern_sequencer' ),
 		voicesContainer = document.getElementById( 'voices' ),
@@ -167,6 +168,33 @@ window.onload = function() {
 
 	btnAddAgainPattern.addEventListener( 'click', function() {
 		player.addToOrderListAfter( player.currentPattern, player.currentOrder );
+	}, false );
+
+	btnDuplicatePattern.addEventListener( 'click', function() {
+		var pattern = new SOROLLET.Pattern( numVoices, patternLength ),
+			srcPattern = player.getCurrentPattern();
+		if( srcPattern == undefined ) {
+			srcPattern = player.patterns[ 0 ];
+		}
+
+		if( srcPattern == undefined ) {
+			return;
+		}
+
+		for( var i = 0; i < srcPattern.rows.length; i++ ) {
+			var row = srcPattern.rows[ i ];
+			for( var j = 0; j < row.length; j++ ) {
+				var srcCell = srcPattern.rows[i][j],
+					dstCell = pattern.rows[i][j];
+
+				dstCell.note = srcCell.note;
+				dstCell.volume = srcCell.volume;
+			}
+		}
+
+		var patternIndex = player.addPattern( pattern );
+		player.addToOrderList( patternIndex );
+		
 	}, false );
 
 	btnRandomisePattern.addEventListener( 'click', function() {
