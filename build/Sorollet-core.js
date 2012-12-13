@@ -599,6 +599,7 @@ SOROLLET.Player = function( _samplingRate ) {
 
 	this.stop = function() {
 		this.position = 0;
+		this.loopStart = 0;
 		//this.nextEventPosition = 0;
 		this.jumpToOrder( 0, 0 );
 	}
@@ -793,6 +794,7 @@ SOROLLET.Player = function( _samplingRate ) {
 			// XXX KILL segmentStartTime = this.timePosition,
 			segmentStartSamples = this.position,
 			currentEvent,
+			currentEventStart,
 			intervalSamples,
 			bufferPosition = 0;
 
@@ -808,7 +810,7 @@ SOROLLET.Player = function( _samplingRate ) {
 				console.log('was finished but we loop. remaining samples=', remainingSamples, 'loop start=', this.loopStart);
 				this.jumpToOrder( 0, 0 );
 				this.finished = false;
-				this.loopStart = this.position;
+				this.loopStart = this.position; //TODO maybe set it when end event happened to avoid padding with silence
 			}
 
 			if( this.nextEventPosition == this.eventsList.length ) {
@@ -816,12 +818,13 @@ SOROLLET.Player = function( _samplingRate ) {
 			}
 
 			currentEvent = this.eventsList[ this.nextEventPosition ];
+			currentEventStart = this.loopStart + currentEvent.timestampSamples;
 
-			if( this.loopStart + currentEvent.timestampSamples >= bufferEndSamples ) {
+			if( currentEventStart >= bufferEndSamples ) {
 				break;
 			}
 
-			intervalSamples = this.loopStart + currentEvent.timestampSamples - segmentStartSamples;
+			intervalSamples = currentEventStart - segmentStartSamples;
 			console.log('intervalSamples', intervalSamples);
 
 			// Get buffer UNTIL the event
@@ -830,7 +833,7 @@ SOROLLET.Player = function( _samplingRate ) {
 				processBuffer(outBuffer, intervalSamples, bufferPosition );
 				
 				remainingSamples -= intervalSamples;
-				segmentStartSamples = this.loopStart + currentEvent.timestampSamples;
+				segmentStartSamples = currentEventStart; //this.loopStart + currentEvent.timestampSamples;
 				this.position += intervalSamples;
 				bufferPosition += intervalSamples;
 			}
