@@ -5,7 +5,8 @@ function DrumPatternGUI( numVoices, patternLength, pushButtonNumberStates ) {
 		tbody = document.createElement( 'tbody' ),
 		numberOfStates = pushButtonNumberStates !== undefined ? pushButtonNumberStates : 3,
 		cells = [],
-		scope = this;
+		scope = this,
+		blockWidth = 4; // TODO make this a parameter
 
 	EventTarget.call( this );
 
@@ -20,7 +21,10 @@ function DrumPatternGUI( numVoices, patternLength, pushButtonNumberStates ) {
 
 		for(var j = 0; j < patternLength; j++) {
 			var td = document.createElement( 'td' ),
-				pushButton = new SOROLLET.MultipleStatePushButton({ numberOfStates: numberOfStates });
+				blockNumber = (j / blockWidth) | 0,
+				pushButton = new SOROLLET.MultipleStatePushButton({ numberOfStates: numberOfStates, inactiveFillStyle: blockNumber % 2 == 0 ? '#dddddd' : '#eeeeee'  });
+
+;
 
 			pushButton.addEventListener( 'change', (function( _i, _j ) {
 					return function( e ) {
