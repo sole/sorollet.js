@@ -22,7 +22,9 @@ SOROLLET.Player = function( _samplingRate ) {
 	this.patterns = [];
 	this.orderList = [];
 	this.eventsList = [];
-	this.nextEventPosition = 0; // TODO position->index?
+	this.nextEventPosition = 0; // TODO position->index? or position ~~~ samples?
+	this.timePosition = 0;
+	this.position = 0;
 	
 	EventTarget.call( this );
 
@@ -185,6 +187,7 @@ SOROLLET.Player = function( _samplingRate ) {
 						ev.type = ev.TYPE_NOTE_ON;
 						ev.note = cell.note
 						// TODO ev.instrument = instrument;
+						ev.instrument = j; // TODO tmp (see above)
 						ev.volume = cell.volume;
 					
 						this.eventsList.push( ev );
@@ -257,10 +260,138 @@ SOROLLET.Player = function( _samplingRate ) {
 	}
 
 	this.getOfflineBuffer = function( numSamples ) {
+		
+		var outBuffer = [],
+			remainingSamples = numSamples,
+			bufferEndTime = this.timePosition + numSamples * inverseSamplingRate,
+			bufferEndSamples = this.position + numSamples,
+			segmentStartTime = this.timePosition,
+			segmentStartSamples = this.position,
+			currentEvent,
+			intervalSamples,
+			bufferPosition = 0;
 
-		/*
+			
+		for( var i = 0; i < numSamples; i++ ) {
+			outBuffer[i] = 0;
+		}
 
-		 */ 
+		do {
+
+			if( this.nextEventPosition == this.eventsList.length ) {
+				return outBuffer;
+			}
+
+			currentEvent = this.eventsList[ this.nextEventPosition ];
+
+			if( currentEvent.timestampSamples >= bufferEndSamples ) {
+				break;
+			}
+
+			intervalSamples = currentEvent.timestampSamples - segmentStartSamples;
+
+			// Get buffer UNTIL the event
+			if (intervalSamples > 0) {
+	
+				processBuffer(outBuffer, intervalSamples, bufferPosition );
+				
+				remainingSamples -= intervalSamples;
+				segmentStartSamples = currentEvent.timestampSamples;
+				this.position += intervalSamples;
+				bufferPosition += intervalSamples;
+			}
+
+			// Apply the event
+			if( currentEvent.TYPE_PATTERN_CHANGE == currentEvent.type ) {
+
+				this.currentPattern = currentEvent.pattern;
+
+			} else if( currentEvent.TYPE_ROW_CHANGE == currentEvent.type ) {
+
+				this.currentRow = currentEvent.row;
+
+			} else if( currentEvent.TYPE_NOTE_ON == currentEvent.type) {
+
+				var voice = this.voices[ currentEvent.instrument ];
+				voice.sendNoteOn( currentEvent.note, currentEvent.volume );
+
+			/*} TODO else if( currentEvent.TYPE_EVENT_VOLUME == currentEvent.type ) {
+				var voice = this.voices[ currentEvent.instrument ];
+				voice.sendCurrentNoteVolume( currentEvent.volume );*/
+			} else if( currentEvent.TYPE_NOTE_OFF == currentEvent.type ) {
+
+				var voice = this.voices[ currentEvent.instrument ];
+				voice.sendNoteOff();
+
+			} else if( currentEvent.TYPE_SONG_END ) {
+				this.finished = true;
+
+			}
+
+			this.nextEventPosition++;
+
+		} while ( this.nextEventPosition < this.eventsList.length && remainingSamples > 0 );
+
+		if(remainingSamples > 0) {
+			processBuffer( outBuffer, remainingSamples, bufferPosition );
+		}
+
+		this.position += remainingSamples;
+		this.timePosition += numSamples * inverseSamplingRate;
+
+		return outBuffer;
+
+	}
+
+	function processBuffer( buffer, numSamples, startPosition ) {
+
+		var tmpBuffer = [],
+			endPosition = startPosition + numSamples;
+
+		// Process envelopes, if applicable
+		/* TODO SorolletPattern* pPattern = &mPatterns[miCurrentPattern];
+		for (i = 0; i < miTrackCount; i++)
+		{
+			if (pPattern->trackHasEnvelopes(i) && mTracksAutomationDevices[i].isActive())
+			{
+				SorolletDeviceAutomation* deviceAutomation = &(mTracksAutomationDevices[i]);
+				SorolletEnvelope** vEnvelopes = pPattern->getTrackEnvelopes(i);
+				int numEnvelopes = pPattern->getTrackEnvelopesNumber(i);
+
+				for (j = 0; j < numEnvelopes; j++)
+				{
+					SorolletEnvelope* pEnvelope = vEnvelopes[j];
+
+					int instrumentIndex = deviceAutomation->getInstrumentIndex();
+					int automationParameterIndex = pEnvelope->getAutomationParameterIndex();
+					int instrumentParameterIndex = deviceAutomation->getParameterMappings()[automationParameterIndex];
+					float value = pEnvelope->getValueAtRow(miCurrentRow);
+
+					mVoices[i].setVSTParameter(instrumentParameterIndex, value);
+				}
+			}
+		}*/
+
+		// ~~~~
+
+		for( var i = startPosition; i < endPosition; i++ ) {
+			buffer[ i ] = 0;
+		}
+
+		for (var i = 0; i < scope.voices.length; i++) {
+			
+			var voice = scope.voices[i];
+
+			tmpBuffer = voice.getBuffer( numSamples );
+
+			for (var j = 0; j < numSamples; j++) {
+				buffer[ j + startPosition ] += tmpBuffer[ j ];
+			}
+		}
+
+		for (var i = startPosition; i < endPosition; i++) {
+			buffer[i] = SOROLLET.Math.clip( buffer[i], -1.0, 1.0 );
+		}
 	}
 
 	this.setBPM = function( value ){

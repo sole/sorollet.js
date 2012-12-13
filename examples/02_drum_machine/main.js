@@ -752,8 +752,8 @@ window.onload = function() {
 		var buttons = [ btn_wav, btn_play, btn_stop ],
 			previousText = btn_wav.innerHTML,
 			audioData = [],
-			bufferSize = 8192,
-			timeoutDelay = 15,
+			bufferSize = 8192 * 4,
+			timeoutDelay = 10,
 			audio,
 			source;
 
@@ -772,9 +772,6 @@ window.onload = function() {
 		player.finished = false;
 		player.buildEventsList();
 
-		console.log( player.eventsList );
-		return;
-		
 		var runs = 0;
 		renderPass();
 
@@ -786,7 +783,7 @@ window.onload = function() {
 
 				audioData = audioData.concat( outBuffer );
 
-				btn_wav.innerHTML = "Rendering... (" + StringFormat.toFixed( player.currentOrder * 100.0 / player.orderList.length ) + "%)";
+				btn_wav.innerHTML = "Rendering... (" + StringFormat.toFixed( player.nextEventPosition * 100.0 / player.eventsList.length ) + "%)";
 
 				setTimeout( renderPass, timeoutDelay );
 			}
@@ -800,6 +797,7 @@ window.onload = function() {
 			source = document.createElement( 'source' );
 
 			audio.controls = true;
+			audio.loop = true;
 
 			source.type = 'audio/wav';
 			audio.appendChild( source );
