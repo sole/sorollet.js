@@ -270,7 +270,7 @@ window.onload = function() {
 			input.type = 'number';
 			input.value = player.orderList[ i ];
 			input.min = 0;
-			input.max = player.patterns.length;
+			input.max = player.patterns.length - 1;
 
 			input.addEventListener( 'change', function( e ) {
 
