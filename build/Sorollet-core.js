@@ -560,8 +560,9 @@ SOROLLET.Player = function( _samplingRate ) {
 	var samplingRate = _samplingRate,
 		inverseSamplingRate = 1.0 / samplingRate,
 		secondsPerRow, secondsPerTick,
-		lastPlayedTime = 0,
-		lastRowTime = 0,
+		lastPlayedTime = 0, // XXX KILL
+		lastRowTime = 0, // XXX KILL
+		loopStart = 0,
 		outBuffer = [],
 		scope = this;
 
@@ -787,9 +788,9 @@ SOROLLET.Player = function( _samplingRate ) {
 		
 		var outBuffer = [],
 			remainingSamples = numSamples,
-			bufferEndTime = this.timePosition + numSamples * inverseSamplingRate,
+			// XXX KILL bufferEndTime = this.timePosition + numSamples * inverseSamplingRate,
 			bufferEndSamples = this.position + numSamples,
-			segmentStartTime = this.timePosition,
+			// XXX KILL segmentStartTime = this.timePosition,
 			segmentStartSamples = this.position,
 			currentEvent,
 			intervalSamples,
@@ -804,9 +805,10 @@ SOROLLET.Player = function( _samplingRate ) {
 		do {
 
 			if( this.finished && this.repeat ) {
-				console.log('was finished but we loop. remaining samples=', remainingSamples);
+				console.log('was finished but we loop. remaining samples=', remainingSamples, 'loop start=', this.loopStart);
 				this.jumpToOrder( 0, 0 );
 				this.finished = false;
+				this.loopStart = this.position;
 			}
 
 			if( this.nextEventPosition == this.eventsList.length ) {
@@ -815,11 +817,12 @@ SOROLLET.Player = function( _samplingRate ) {
 
 			currentEvent = this.eventsList[ this.nextEventPosition ];
 
-			if( currentEvent.timestampSamples >= bufferEndSamples ) {
+			if( this.loopStart + currentEvent.timestampSamples >= bufferEndSamples ) {
 				break;
 			}
 
-			intervalSamples = currentEvent.timestampSamples - segmentStartSamples;
+			intervalSamples = this.loopStart + currentEvent.timestampSamples - segmentStartSamples;
+			console.log('intervalSamples', intervalSamples);
 
 			// Get buffer UNTIL the event
 			if (intervalSamples > 0) {
@@ -827,7 +830,7 @@ SOROLLET.Player = function( _samplingRate ) {
 				processBuffer(outBuffer, intervalSamples, bufferPosition );
 				
 				remainingSamples -= intervalSamples;
-				segmentStartSamples = currentEvent.timestampSamples;
+				segmentStartSamples = this.loopStart + currentEvent.timestampSamples;
 				this.position += intervalSamples;
 				bufferPosition += intervalSamples;
 			}
