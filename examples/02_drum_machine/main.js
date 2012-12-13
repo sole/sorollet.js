@@ -62,7 +62,6 @@ window.onload = function() {
 
 	player.addEventListener( 'rowChanged', function( e ) {
 		patternGUI.highlightColumn( e.row );
-		console.log( 'rowchanged main', player.currentRow );
 	}, false );
 
 	player.addEventListener( 'bpmChanged', function( e ) {

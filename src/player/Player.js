@@ -53,12 +53,6 @@ SOROLLET.Player = function( _samplingRate ) {
 		// make sure we don't play out of index
 		changeToOrder( orderIndex );
 
-		/*if( row !== undefined ) {
-			changeToRow( row );
-		} else {
-			row = 0;
-		}*/
-
 		if( row === undefined ) {
 			row = this.currentRow;
 		}
@@ -66,10 +60,8 @@ SOROLLET.Player = function( _samplingRate ) {
 		changeToRow( row );
 		
 		this.updateNextEventToOrderRow( orderIndex, row );
-		//loopStart = 0; // ?
 		var prevPosition = this.position;
-		this.position = this.eventsList[ this.nextEventPosition ].timestampSamples + loopStart; //0; // ?
-		console.log('jumpToOrder', 'next position ev', this.nextEventPosition, 'new Pos', this.position, 'prev', prevPosition );
+		this.position = this.eventsList[ this.nextEventPosition ].timestampSamples + loopStart;
 	}
 
 
@@ -100,7 +92,6 @@ SOROLLET.Player = function( _samplingRate ) {
 				break;
 			}
 		}
-		console.log('update next to', order, row, p);
 		this.nextEventPosition = p;
 	}
 
@@ -239,9 +230,7 @@ SOROLLET.Player = function( _samplingRate ) {
 		
 		var outBuffer = [],
 			remainingSamples = numSamples,
-			// XXX KILL bufferEndTime = this.timePosition + numSamples * inverseSamplingRate,
 			bufferEndSamples = this.position + numSamples,
-			// XXX KILL segmentStartTime = this.timePosition,
 			segmentStartSamples = this.position,
 			currentEvent,
 			currentEventStart,
@@ -257,7 +246,6 @@ SOROLLET.Player = function( _samplingRate ) {
 		do {
 
 			if( this.finished && this.repeat ) {
-				console.log('was finished but we loop. remaining samples=', remainingSamples, 'loop start=', loopStart);
 				this.jumpToOrder( 0, 0 );
 				this.finished = false;
 			}
@@ -274,7 +262,6 @@ SOROLLET.Player = function( _samplingRate ) {
 			}
 
 			intervalSamples = currentEventStart - segmentStartSamples;
-			console.log('ev start', currentEventStart, 'intervalSamples', intervalSamples);
 
 			// Get buffer UNTIL the event
 			if (intervalSamples > 0) {
@@ -296,10 +283,7 @@ SOROLLET.Player = function( _samplingRate ) {
 			*/
 			} else if( currentEvent.TYPE_ROW_CHANGE == currentEvent.type ) {
 
-				//this.dispatchEvent({ type: 'rowChanged', order: this.currentOrder, pattern: this.currentPattern, row: currentEvent.row, previousRow: this.currentRow });
 				changeToRow( currentEvent.row );
-
-				//this.currentRow = currentEvent.row;
 
 			} else if( currentEvent.TYPE_NOTE_ON == currentEvent.type) {
 
@@ -316,8 +300,7 @@ SOROLLET.Player = function( _samplingRate ) {
 
 			} else if( currentEvent.TYPE_SONG_END == currentEvent.type ) {
 				
-				console.log('SONG END', loopStart, currentEventStart);
-				loopStart = currentEventStart; //this.position;
+				loopStart = currentEventStart;
 				this.finished = true;
 			}
 
