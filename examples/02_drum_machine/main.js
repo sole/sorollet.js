@@ -62,6 +62,7 @@ window.onload = function() {
 
 	player.addEventListener( 'rowChanged', function( e ) {
 		patternGUI.highlightColumn( e.row );
+		console.log( 'rowchanged main', player.currentRow );
 	}, false );
 
 	player.addEventListener( 'bpmChanged', function( e ) {
@@ -88,8 +89,7 @@ window.onload = function() {
 			outputBufferLeft = buffer.getChannelData(0),
 			outputBufferRight = buffer.getChannelData(1),
 			numSamples = outputBufferLeft.length,
-			// sorolletBuffer = player.getBuffer(numSamples);
-			sorolletBuffer = player.getOfflineBuffer(numSamples);
+			sorolletBuffer = player.getBuffer(numSamples);
 
 		for(var i = 0; i < numSamples; i++) {
 			outputBufferLeft[i] = sorolletBuffer[i];
@@ -124,7 +124,7 @@ window.onload = function() {
 
 		bpmInput.value = value;
 		player.setBPM( value );
-		saveData();
+		saveData( true );
 	}
 
 	bpmInput.addEventListener( 'keyup', onBpmChange, false );
@@ -191,6 +191,9 @@ window.onload = function() {
 			});
 		});
 		setCurrentPattern( pattern );
+
+		saveData();
+
 	}, false );
 
 	btnClearPattern.addEventListener( 'click', function() {
@@ -204,6 +207,8 @@ window.onload = function() {
 			});
 		});
 		setCurrentPattern( pattern );
+
+		saveData();
 	}, false );
 
 
@@ -326,7 +331,7 @@ window.onload = function() {
 		}
 	}
 
-	function saveData() {
+	function saveData( bpmChange ) {
 		var settings = {
 			bpm: player.bpm,
 			voiceParams: [],
@@ -352,6 +357,20 @@ window.onload = function() {
 		debugContainer.innerHTML = json;
 
 		window.location.hash = base64ised;
+
+		console.log('num events', player.eventsList.length, 'next pos', player.nextEventPosition);
+
+		var currentRow = player.currentRow,
+			currentOrder = player.currentOrder;
+
+		player.buildEventsList();
+
+		if( bpmChange !== undefined && bpmChange == true ) {
+			player.updateNextEventToOrderRow( currentOrder, currentRow );
+		} else {
+			player.updateNextEventPosition();
+		}
+	
 	}
 
 	// A very case specific way to store/retrieve pattern data
@@ -783,7 +802,7 @@ window.onload = function() {
 			if( player.finished ) {
 				onFinishedRendering();
 			} else {
-				var outBuffer = player.getOfflineBuffer( bufferSize );
+				var outBuffer = player.getBuffer( bufferSize );
 
 				audioData = audioData.concat( outBuffer );
 

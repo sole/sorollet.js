@@ -602,99 +602,37 @@ SOROLLET.Player = function( _samplingRate ) {
 		this.playOrder( 0, 0 );
 	}
 
-	this.getBuffer = function( numSamples ) {
-	
-		outBuffer = [];
+	this.updateNextEventPosition = function() {
+		var p = 0;
 
-		for(var i = 0; i < numSamples; i++) {
-			outBuffer[i] = 0;
-		}
-
-		if( this.finished ) {
-			return outBuffer;
-		}
-
-		var samplesPerRow = (secondsPerRow * samplingRate + 0.5) >> 0,
-			now = Date.now() / 1000,
-			deltaTime = now - lastPlayedTime,
-			deltaRowTime = now - lastRowTime,
-			previousPattern = this.currentPattern,
-			previousRow = this.currentRow;
+		for(var i = 0; i < this.eventsList.length; i++ ) {
 		
-		lastPlayedTime = now;
+			var ev = this.eventsList[i];
 
-		if(deltaRowTime >= secondsPerRow) {
-			// New row!
-			var row = this.currentRow + 1,
-				pattern = this.patterns[this.currentPattern],
-				order = this.currentOrder;
-
-			if(row == pattern.rows.length) {
-				this.dispatchEvent({ type: 'patternFinished', order: order });
+			if( ev.timestampSamples >= this.position ) {
+				break;
 			}
 
-			if(row >= pattern.rows.length) {
-				// Next order! as we have finished with the current pattern
-				// TODO this always loops - this.repeats is not honored
-				var nextOrder = order + 1;
+			p = i;
+		}
 
-				if( !this.repeat && nextOrder >= this.orderList.length ) {
-					this.dispatchEvent({ type: 'finished' });
-					this.finished = true;
-					return outBuffer;
-				} else {
-					order = nextOrder % this.orderList.length;
-				}
+		this.nextEventPosition = p;
+	}
 
-				//order = ++order % this.orderList.length;
-
-				this.dispatchEvent({ type: 'orderChanged', order: order });
-
-				row = 0;
-				var patternNumber = this.orderList[order];
-				pattern = this.patterns[patternNumber];
-				this.currentPattern = patternNumber;
-				this.dispatchEvent({ type: 'patternChanged', pattern: patternNumber });
+	this.updateNextEventToOrderRow = function( order, row ) {
+		var p = 0;
+	console.log('updateNextEventToOrderRow', order, row);	
+		for(var i = 0; i < this.eventsList.length; i++) {
+			var ev = this.eventsList[i];
+			p = i;
+			if( ev.TYPE_ROW_CHANGE == ev.type && ev.row == row && ev.order == order ) {
+				console.log('found event at', i, ev.timestamp, ev.timestampSamples);
+				break;
 			}
-		
-			this.dispatchEvent({ type: 'rowChanged', order: order, pattern: this.currentPattern, row: row, previousPattern: previousPattern, previousRow: previousRow });
 
-			this.currentRow = row;
-			this.currentOrder = order;
-
-			// Fire all notes & etc in this row
 			
-			for(var i = 0, currentRow = pattern.rows[row]; i < currentRow.length; i++) {
-				var cell = currentRow[i],
-					voice = this.voices[i];
-
-				// one track <-> one voice
-				if(cell.noteOff) {
-					
-					voice.sendNoteOff();
-				
-				} else if( cell.note !== null ) {
-
-					voice.sendNoteOn(cell.note, cell.volume);
-					this.dispatchEvent({ type: 'noteOn', row: row, track: i, note: cell.note });
-
-				}
-			}
-
-			lastRowTime = now;
 		}
-
-
-		for(var j = 0; j < this.voices.length; j++) {
-			var tmpBuffer = this.voices[j].getBuffer(numSamples);
-
-			for(var i = 0; i < numSamples; i++) {
-				outBuffer[i] += tmpBuffer[i];
-			}
-		}
-
-		return outBuffer;
-
+		this.nextEventPosition = p;
 	}
 
 	this.buildEventsList = function() {
@@ -744,6 +682,7 @@ SOROLLET.Player = function( _samplingRate ) {
 				ev.timestampSamples = samples;
 				ev.type = ev.TYPE_ROW_CHANGE;
 				ev.row = i;
+				ev.order = orderIndex;
 				
 				this.eventsList.push( ev );
 
@@ -826,13 +765,13 @@ SOROLLET.Player = function( _samplingRate ) {
 		ev.type = ev.TYPE_SONG_END;
 		this.eventsList.push( ev );
 
-		this.currentRow = 0;
-		this.currentOrder = 0;
-		this.currentPattern = this.orderList[0];
+		//this.currentRow = 0;
+		//this.currentOrder = 0;
+		//this.currentPattern = this.orderList[0];
 
 	}
 
-	this.getOfflineBuffer = function( numSamples ) {
+	this.getBuffer = function( numSamples ) {
 		
 		var outBuffer = [],
 			remainingSamples = numSamples,
@@ -981,6 +920,7 @@ SOROLLET.Player = function( _samplingRate ) {
 		
 		scope.currentRow = value;
 		scope.dispatchEvent({ type: 'rowChanged', row: value, previousRow: previousValue, pattern: scope.currentPattern, order: scope.currentOrder });
+		console.log( 'changeRow', value, scope.currentRow );
 	}
 
 	function changeToPattern( value ) {
