@@ -302,6 +302,8 @@ SOROLLET.Player = function( _samplingRate ) {
 				
 				loopStart = currentEventStart;
 				this.finished = true;
+
+				changeToEnd();
 			}
 
 			this.nextEventPosition++;
@@ -368,6 +370,10 @@ SOROLLET.Player = function( _samplingRate ) {
 		for (var i = startPosition; i < endPosition; i++) {
 			buffer[i] = SOROLLET.Math.clip( buffer[i], -1.0, 1.0 );
 		}
+	}
+
+	function changeToEnd() {
+		scope.dispatchEvent({ type: 'songEnded' });
 	}
 
 	function changeToRow( value ) {
