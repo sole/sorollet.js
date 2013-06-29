@@ -228,7 +228,7 @@ SOROLLET.VoiceGUI.prototype = {
 		0: SOROLLET.Voice.prototype.getSineBuffer,
 		1: SOROLLET.Voice.prototype.getTriangleBuffer,
 		2: SOROLLET.Voice.prototype.getSquareBuffer,
-		3: SOROLLET.Voice.prototype.getSawtoothBuffer,
+		3: SOROLLET.Voice.prototype.getSawtoothBuffer
 	},
 
 	WAVE_MIX_NAMES: {

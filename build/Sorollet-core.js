@@ -66,7 +66,7 @@ SOROLLET.Voice = function() {
 	this.volumeEnvelope.setOutputRange( 0, 1 );
 	this.pitchEnvelope.setOutputRange( 0, 0 );
 
-}
+};
 
 SOROLLET.Voice.prototype = {
 
@@ -377,7 +377,7 @@ SOROLLET.Voice.prototype = {
 		this.volumeEnvelope.setParams( params.volumeEnvelope );
 		this.pitchEnvelope.setParams( params.pitchEnvelope );
 	}
-}
+};
 
 SOROLLET.Voice.prototype.waveFunctions = [
 	{ func: SOROLLET.Voice.prototype.getSineBuffer, name: 'sine' },
@@ -390,7 +390,7 @@ SOROLLET.Voice.prototype.waveMixFunctions = [
 	{ func: SOROLLET.Voice.prototype.mixAdd, name: 'add' },	
 	{ func: SOROLLET.Voice.prototype.mixSubstract, name: 'substract' },
 	{ func: SOROLLET.Voice.prototype.mixMultiply, name: 'multiply' },
-	{ func: SOROLLET.Voice.prototype.mixDivide, name: 'divide' },
+	{ func: SOROLLET.Voice.prototype.mixDivide, name: 'divide' }
 ];
 
 SOROLLET.Voice.prototype.noiseMixFunctions = [

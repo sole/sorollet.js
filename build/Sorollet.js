@@ -66,7 +66,7 @@ SOROLLET.Voice = function() {
 	this.volumeEnvelope.setOutputRange( 0, 1 );
 	this.pitchEnvelope.setOutputRange( 0, 0 );
 
-}
+};
 
 SOROLLET.Voice.prototype = {
 
@@ -377,7 +377,7 @@ SOROLLET.Voice.prototype = {
 		this.volumeEnvelope.setParams( params.volumeEnvelope );
 		this.pitchEnvelope.setParams( params.pitchEnvelope );
 	}
-}
+};
 
 SOROLLET.Voice.prototype.waveFunctions = [
 	{ func: SOROLLET.Voice.prototype.getSineBuffer, name: 'sine' },
@@ -390,7 +390,7 @@ SOROLLET.Voice.prototype.waveMixFunctions = [
 	{ func: SOROLLET.Voice.prototype.mixAdd, name: 'add' },	
 	{ func: SOROLLET.Voice.prototype.mixSubstract, name: 'substract' },
 	{ func: SOROLLET.Voice.prototype.mixMultiply, name: 'multiply' },
-	{ func: SOROLLET.Voice.prototype.mixDivide, name: 'divide' },
+	{ func: SOROLLET.Voice.prototype.mixDivide, name: 'divide' }
 ];
 
 SOROLLET.Voice.prototype.noiseMixFunctions = [
@@ -1551,9 +1551,9 @@ UI.Select = function ( position ) {
 
 UI.Select.prototype = Object.create( UI.Element.prototype );
 
-UI.Select.prototype.setMultiple = function ( boolean ) {
+UI.Select.prototype.setMultiple = function ( bool ) {
 
-	this.dom.multiple = boolean;
+	this.dom.multiple = bool;
 
 	return this;
 
@@ -2583,7 +2583,7 @@ SOROLLET.VoiceGUI.prototype = {
 		0: SOROLLET.Voice.prototype.getSineBuffer,
 		1: SOROLLET.Voice.prototype.getTriangleBuffer,
 		2: SOROLLET.Voice.prototype.getSquareBuffer,
-		3: SOROLLET.Voice.prototype.getSawtoothBuffer,
+		3: SOROLLET.Voice.prototype.getSawtoothBuffer
 	},
 
 	WAVE_MIX_NAMES: {

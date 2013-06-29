@@ -423,9 +423,9 @@ UI.Select = function ( position ) {
 
 UI.Select.prototype = Object.create( UI.Element.prototype );
 
-UI.Select.prototype.setMultiple = function ( boolean ) {
+UI.Select.prototype.setMultiple = function ( bool ) {
 
-	this.dom.multiple = boolean;
+	this.dom.multiple = bool;
 
 	return this;
 
