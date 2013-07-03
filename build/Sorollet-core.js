@@ -554,11 +554,10 @@ SOROLLET.ADSR.prototype = {
 	}
 
 };
-SOROLLET.Player = function( _samplingRate ) {
+SOROLLET.Player = function( samplingRate ) {
 	'use strict';
 
-	var samplingRate = _samplingRate,
-		inverseSamplingRate = 1.0 / samplingRate,
+	var inverseSamplingRate = 1.0 / samplingRate,
 		secondsPerRow, secondsPerTick,
 		lastPlayedTime = 0, // XXX KILL
 		lastRowTime = 0, // XXX KILL
@@ -566,6 +565,7 @@ SOROLLET.Player = function( _samplingRate ) {
 		outBuffer = [],
 		scope = this;
 
+	
 	this.bpm = 100;
 	this.linesPerBeat = 4;
 	this.ticksPerLine = 12;
@@ -583,6 +583,18 @@ SOROLLET.Player = function( _samplingRate ) {
 	this.timePosition = 0;
 	this.position = 0;
 	
+	// Make samplingRate use setters and getters since we're using the value inside the closure but
+	// it might be changed and also accessed from outside, and all the values have to be consistent!
+	Object.defineProperties(this, {
+		samplingRate: {
+			get: function() { return samplingRate; },
+			set: function(v) {
+				samplingRate = v;
+				inverseSamplingRate = 1.0 / samplingRate;
+			}
+		}
+	});
+
 	EventTarget.call( this );
 
 	updateRowTiming();
@@ -595,14 +607,14 @@ SOROLLET.Player = function( _samplingRate ) {
 	this.play = function() {
 		// having an updated event list is ESSENTIAL to playing!
 		this.buildEventsList();
-	}
+	};
 
 	this.stop = function() {
 		this.position = 0;
 		loopStart = 0;
 		//this.nextEventPosition = 0;
 		this.jumpToOrder( 0, 0 );
-	}
+	};
 
 	this.jumpToOrder = function( orderIndex, row ) {
 		// TODO if the new pattern to play has less rows than the current one,
@@ -618,7 +630,7 @@ SOROLLET.Player = function( _samplingRate ) {
 		this.updateNextEventToOrderRow( orderIndex, row );
 		var prevPosition = this.position;
 		this.position = this.eventsList[ this.nextEventPosition ].timestampSamples + loopStart;
-	}
+	};
 
 
 	this.updateNextEventPosition = function() {
@@ -636,7 +648,7 @@ SOROLLET.Player = function( _samplingRate ) {
 		}
 
 		this.nextEventPosition = p;
-	}
+	};
 
 	this.updateNextEventToOrderRow = function( order, row ) {
 		var p = 0;
@@ -649,7 +661,7 @@ SOROLLET.Player = function( _samplingRate ) {
 			}
 		}
 		this.nextEventPosition = p;
-	}
+	};
 
 	this.buildEventsList = function() {
 		var t = 0,
@@ -780,7 +792,7 @@ SOROLLET.Player = function( _samplingRate ) {
 		ev.type = ev.TYPE_SONG_END;
 		this.eventsList.push( ev );
 
-	}
+	};
 
 	this.getBuffer = function( numSamples ) {
 		
@@ -875,7 +887,7 @@ SOROLLET.Player = function( _samplingRate ) {
 
 		return outBuffer;
 
-	}
+	};
 
 	function processBuffer( buffer, numSamples, startPosition ) {
 
@@ -959,36 +971,36 @@ SOROLLET.Player = function( _samplingRate ) {
 		this.bpm = value;
 		updateRowTiming();
 		this.dispatchEvent({ type: 'bpmChanged', bpm: value });
-	}
+	};
 
 	this.getSecondsPerRow = function() {
 		return secondsPerRow;
-	}
+	};
 
 	this.getCurrentPattern = function() {
 		return this.patterns[ this.currentPattern ];
-	}
+	};
 
 	this.addPattern = function( pattern ) {
 		this.patterns.push( pattern );
 		this.dispatchEvent({ type: 'change', player: this });
 		return this.patterns.length - 1;
-	}
+	};
 
 	this.addToOrderList = function( patternIndex ) {
 		this.orderList.push( patternIndex );
 		this.dispatchEvent({ type: 'change', player: this });
-	}
+	};
 
 	this.addToOrderListAfter = function( patternIndex, orderListIndex ) {
 		this.orderList.splice( orderListIndex, 0, patternIndex );
 		this.dispatchEvent({ type: 'change', player: this });
-	}
+	};
 
 	this.removeFromOrderList = function( orderListIndex ) {
 		this.orderList.splice( orderListIndex, 1 );
 		this.dispatchEvent({ type: 'change', player: this });
-	}
+	};
 
 	this.setOrderValueAt = function( orderIndex, value ) {
 		if( this.orderList.length <= orderIndex ) {
@@ -1004,9 +1016,9 @@ SOROLLET.Player = function( _samplingRate ) {
 
 		this.dispatchEvent({ type: 'change', player: this });
 
-	}
+	};
 
-}
+};
 
 SOROLLET.PlayerEvent = function() {
 	this.timestamp = 0;
