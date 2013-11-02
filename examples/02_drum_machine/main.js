@@ -1,9 +1,9 @@
 window.onload = function() {
 	'use strict';
 
-	var audioContext = new webkitAudioContext(),
-		bufferLength = 4096,
-		jsAudioNode = audioContext.createJavaScriptNode( bufferLength ),
+	var audioContext = new AudioContext(),
+		bufferLength = 2048,
+		jsAudioNode = audioContext.createScriptProcessor( bufferLength ),
 		samplingRate = audioContext.sampleRate,
 		baseNote = 48, // C-5?
 		numVoices = 4,
