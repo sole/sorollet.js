@@ -73,7 +73,7 @@ window.onload = function() {
 		var volume = valueToVolume( e.value ),
 			changedCell = currentPattern.rows[ e.row ][ e.track ];
 		
-		if( volume == 0 ) {
+		if( volume === 0 ) {
 			changedCell.reset();
 		} else {
 			changedCell.note = baseNote;
@@ -103,18 +103,18 @@ window.onload = function() {
 			jsAudioNode.connect( audioContext.destination );
 			player.play();
 			playing = true;
-			this.innerHTML = this.dataset['playing'];
+			this.innerHTML = this.dataset.playing;
 		} else {
 			jsAudioNode.disconnect( );
 			playing = false;
-			this.innerHTML = this.dataset['paused'];
+			this.innerHTML = this.dataset.paused;
 		}
 	}, false );
 
 	btn_stop.addEventListener( 'click', function() {
 		jsAudioNode.disconnect();
 		playing = false;
-		btn_play.innerHTML = btn_play.dataset['paused'];
+		btn_play.innerHTML = btn_play.dataset.paused;
 		player.stop();
 	}, false );
 
@@ -156,7 +156,7 @@ window.onload = function() {
 			newOrder;
 
 		// Need to bring the player to an existing order instead of the one we're about to delete
-		if( currentOrder != 0 ) {
+		if( currentOrder !== 0 ) {
 			newOrder = currentOrder - 1;
 		} else {
 			newOrder = currentOrder;
@@ -173,11 +173,11 @@ window.onload = function() {
 	btnDuplicatePattern.addEventListener( 'click', function() {
 		var pattern = new SOROLLET.Pattern( numVoices, patternLength ),
 			srcPattern = player.getCurrentPattern();
-		if( srcPattern == undefined ) {
+		if( srcPattern === undefined ) {
 			srcPattern = player.patterns[ 0 ];
 		}
 
-		if( srcPattern == undefined ) {
+		if( srcPattern === undefined ) {
 			return;
 		}
 
@@ -248,12 +248,10 @@ window.onload = function() {
 
 	// & load data into GUIs
 
-	for( var i = 0; i < numVoices; i++ ) {
-		var voice = player.voices[i],
-			gui = voiceGUIs[i];
-
+	player.voices.forEach(function(voice, index) {
+		var gui = voiceGUIs[index];
 		gui.attachTo( voice );
-	}
+	});
 
 	ordersToGUI();
 
@@ -292,6 +290,31 @@ window.onload = function() {
 		}
 
 		ordersContainer.innerHTML = '';
+
+		function onOrderInputChanged(e) {
+			var input = e.target,
+				position = getNodePosition( input ),
+				newPatternIndex = parseInt(input.value, 10);
+
+			player.setOrderValueAt( position, newPatternIndex );
+
+			// ensure player gui is updated
+			if( player.currentOrder === position ) {
+				setCurrentPattern( player.patterns[ newPatternIndex ] );
+			}
+		}
+
+		function onOrderDoubleClicked(e) {
+			e.preventDefault();
+			e.stopPropagation();
+
+			var orderIndex = getNodePosition( e.target );
+			player.jumpToOrder( orderIndex );
+			player.updateNextEventToOrderRow( orderIndex, 0 );
+
+			return false;
+		}
+
 		for( var i = 0; i < player.orderList.length; i++ ) {
 			var input = document.createElement( 'input' );
 			input.type = 'number';
@@ -299,29 +322,8 @@ window.onload = function() {
 			input.min = 0;
 			input.max = player.patterns.length - 1;
 
-			input.addEventListener( 'change', function( e ) {
-
-				var position = getNodePosition( this ),
-					newPatternIndex = this.value | 0;
-
-				player.setOrderValueAt( position, newPatternIndex );
-
-				// ensure player gui is updated
-				if( player.currentOrder == position ) {
-					setCurrentPattern( player.patterns[ newPatternIndex ] );
-				}
-			}, false );
-
-			input.addEventListener( 'dblclick', function( e ) {
-				e.preventDefault();
-				e.stopPropagation();
-
-				var orderIndex = getNodePosition( this );
-				player.jumpToOrder( orderIndex );
-				player.updateNextEventToOrderRow( orderIndex, 0 );
-
-				return false;
-			}, false );
+			input.addEventListener('change', onOrderInputChanged, false);
+			input.addEventListener('dblclick', onOrderDoubleClicked, false);
 
 			ordersContainer.appendChild( input );
 		}
@@ -391,7 +393,7 @@ window.onload = function() {
 
 		player.buildEventsList();
 
-		if( bpmChange !== undefined && bpmChange == true ) {
+		if( bpmChange !== undefined && bpmChange === true ) {
 			player.updateNextEventToOrderRow( currentOrder, currentRow );
 		} else {
 			player.updateNextEventPosition();
@@ -755,8 +757,10 @@ window.onload = function() {
 	}
 
 	function loadSong( player, values ) {
+
+		var i;
 		
-		for( var i = 0; i < values.voiceParams.length; i++ ) {
+		for( i = 0; i < values.voiceParams.length; i++ ) {
 			var v = player.voices[i],
 				params = values.voiceParams[i];
 
@@ -767,14 +771,14 @@ window.onload = function() {
 		player.patterns = [];
 		player.orderList = [];
 
-		for( var i = 0; i < values.patterns.length; i++ ) {
+		for( i = 0; i < values.patterns.length; i++ ) {
 			var compressedPattern = values.patterns[i],
 				uncompressed = uncompressPattern( compressedPattern, numVoices, patternLength );
 
 			player.patterns.push( uncompressed );
 		}
 
-		for( var i = 0; i < values.orderList.length; i++ ) {
+		for( i = 0; i < values.orderList.length; i++ ) {
 			player.orderList.push( values.orderList[ i ] );
 		}
 
@@ -925,4 +929,4 @@ window.onload = function() {
 	}
 
 	
-}
+};
