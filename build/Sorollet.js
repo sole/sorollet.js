@@ -2948,8 +2948,9 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 	canvas.addEventListener('click', onCanvasClick, false);
 
 	function onCanvasClick( e ) {
+		
 		var x = e.offsetX,
-			w = e.srcElement.offsetWidth;
+			w = canvas.offsetWidth;
 
 		e.preventDefault();
 		e.stopPropagation();
