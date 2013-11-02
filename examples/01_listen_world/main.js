@@ -2,7 +2,7 @@ window.onload = function init() {
 	'use strict';
 
 	var audioContext = new AudioContext(),
-		jsAudioNode = audioContext.createScriptProcessor(4096),
+		jsAudioNode = audioContext.createScriptProcessor(2048),
 		voice = new SOROLLET.Voice(),
 		voiceGUI = new SOROLLET.VoiceGUI(),
 		keyPressed = false,
@@ -88,4 +88,4 @@ window.onload = function init() {
 
 	
 	
-}
+};

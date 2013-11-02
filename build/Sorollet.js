@@ -2919,8 +2919,9 @@ SOROLLET.KnobGUI = function( params ) {
 SOROLLET.WaveTypeSelectGUI = function( params ) {
 	'use strict';
 
-	var params = params || {},
-		graphWidth = params.graphWidth !== undefined ? params.graphWidth : 50,
+	params = params || {};
+
+	var graphWidth = params.graphWidth !== undefined ? params.graphWidth : 50,
 		graphHeight = params.graphHeight !== undefined ? params.graphHeight : 30,
 		backgroundStyle = params.backgroundStyle !== undefined ? params.backgroundStyle : null,
 		strokeStyle = params.strokeStyle !== undefined ? params.strokeStyle : '#000000',
@@ -3013,9 +3014,9 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 		ctx.beginPath();
 
 		for( var i = 0; i <= graphWidth; i++) {
-			y = plotBuffer[i] * graphHeightRange * .5 + graphHeight * 0.5;
+			y = plotBuffer[i] * graphHeightRange * 0.5 + graphHeight * 0.5;
 
-			if( x == 0 ) {
+			if( x === 0 ) {
 				ctx.moveTo( x, y );
 			}
 
@@ -3040,7 +3041,7 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 			numWaveFunctions++;
 		}
 		return this;
-	}
+	};
 
 
 	function setValue( v ) {
@@ -3054,15 +3055,15 @@ SOROLLET.WaveTypeSelectGUI = function( params ) {
 
 	this.getValue = function( ) {
 		return value;
-	}
+	};
 
 	this.onChange = function( newOnChangeHandler ) {
 		onChangeHandler = newOnChangeHandler;
 		return this;
-	}
+	};
 
 	return this;
-}
+};
 SOROLLET.MultipleStatePushButton = function( params ) {
 	'use strict';
 	var params = params || {},
