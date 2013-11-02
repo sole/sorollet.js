@@ -1,8 +1,8 @@
 window.onload = function init() {
 	'use strict';
 
-	var audioContext = new webkitAudioContext(),
-		jsAudioNode = audioContext.createJavaScriptNode(4096),
+	var audioContext = new AudioContext(),
+		jsAudioNode = audioContext.createScriptProcessor(4096),
 		voice = new SOROLLET.Voice(),
 		voiceGUI = new SOROLLET.VoiceGUI(),
 		keyPressed = false,

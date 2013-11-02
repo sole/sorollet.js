@@ -2142,8 +2142,9 @@ var StringFormat = {
 }
 SOROLLET.ADSRGUI = function( params ) {
 
-	var params = params || {},
-		label = params.label || '',
+	params = params || {};
+
+	var label = params.label || '',
 		outMin = params.outMin || 0,
 		outMax = params.outMax || 1,
 		step = params.step || 0.5,
@@ -2310,9 +2311,10 @@ SOROLLET.ADSRGUI = function( params ) {
 		
 		// ADSR 'proper'
 
-		if( ctx.setLineDash) {
-			ctx.setLineDash( null );
+		if( ctx.setLineDash ) {
+			ctx.setLineDash( [] );
 		}
+
 		ctx.beginPath();
 		ctx.moveTo( ox, oy );
 		ctx.lineTo( ax, ay );
@@ -2364,7 +2366,7 @@ SOROLLET.ADSRGUI = function( params ) {
 	updateGraph();
 
 
-}
+};
 SOROLLET.VoiceGUI = function( params ) {
 	'use strict';
 
