@@ -16,12 +16,18 @@ There are two examples in the ````examples```` folder.
 
 ### Listen, world
 
-Or open [this page](http://5013.es/toys/sorollet/examples/01_listen_world) in your Web Audio API capable browser.
+[![Listen, world](./assets/01_listen_world.png)](http://5013.es/toys/sorollet/examples/01_listen_world)
+
+For testing the output and configuration of a synth instance. Includes an on-screen keyboard, and an "oscilloscope view" for greater fun.
+
+In case it wasn't obvious, it's a pun on the classic "Hello, world" programming example.
 
 * [Online](http://5013.es/toys/sorollet/examples/01_listen_world)
 * [Source code](./examples/01_listen_world)
 
 ### Drum machine
+
+[![Drum machine](./assets/02_drum_machine.png)](http://5013.es/toys/sorollet/examples/02_drum_machine)
 
 Trying to build a semiacceptable drum machine using four Sorollet.js instances. Includes a step sequencer.
 
